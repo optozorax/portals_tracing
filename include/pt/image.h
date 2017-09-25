@@ -1,6 +1,8 @@
 #ifndef PT_IMAGE_H
 #define PT_IMAGE_H
 
+#include <pt/basics.h>
+
 namespace pt
 {
 
@@ -10,9 +12,16 @@ namespace pt
 		Image(int width, int height);
 		~Image();
 
+		/** Берет из цветов квадратный корень, потому что монитор представляет цвет пикселя не линейно возрастающий, а нелинейно, и так как этот рисунок - результат рендеринга, то здесь так же надо представлять цвета мира, чтобы они корректно отображались на экране. */
 		void colorCorrection(void);
 
-		void writeBmp(std::wstring name) const;
+		int getWidth() const;
+		int getHeight() const;
+		Color& operator()(int x, int y);
+	private:
+		Color*	m_pix;
+		int 	m_width;
+		int		m_height;
 	};
 
 };

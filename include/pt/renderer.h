@@ -8,11 +8,18 @@
 namespace pt
 {
 
+	/** Каждый рендерер должен самостоятельно запускать новые лучи с учетом их коэффициента рассеивания. */
 	class Renderer
 	{
 	public:
 		virtual ~Renderer() {}
-		virtual void render(Camera& camera, Image& img, Object& scene) = 0 const;
+		virtual void render(Camera& camera, Image& img, Object& scene) = 0;
+
+		/** Функции, необходимые для отслеживания прогресса рендеринга. Необходимы, так как рендеринг может длиться очень долго. */
+		virtual bool onStartRender(void) = 0;
+		virtual bool onEveryLine(float percent) = 0;
+		virtual bool onEndRendering(void) = 0;
+
 	};
 
 };

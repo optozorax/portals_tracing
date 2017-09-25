@@ -1,6 +1,9 @@
 #ifndef PT_CAMERA_H
 #define PT_CAMERA_H
 
+#include <pt/Vector.h>
+#include <pt/object.h>
+
 namespace pt
 {
 
