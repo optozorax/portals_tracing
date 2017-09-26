@@ -7,6 +7,7 @@
 namespace pt
 {
 
+	//-------------------------------------------------------------------------
 	class Camera
 	{
 	public:
@@ -16,6 +17,21 @@ namespace pt
 		virtual Ray getRay(float x, float y) = 0;
 
 		Vector pos;
+	};
+
+	//-------------------------------------------------------------------------
+	class PerspectiveCamera : public Camera
+	{
+	public:
+		PerspectiveCamera(double focal, double viewAngle, Vector pos);
+
+		Ray getRay(float x, float y);
+
+		void lookAt(const Vector& towards);
+
+		double focal;
+		double viewAngle;
+		Vector toward;
 	};
 
 };

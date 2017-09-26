@@ -9,6 +9,8 @@ namespace pt
 
 	struct PointLightSource
 	{
+		PointLightSource(Vector pos, Vector clr) : pos(pos), clr(clr) {}
+
 		Vector pos;
 		Color clr;
 	};
