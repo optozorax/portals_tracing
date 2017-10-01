@@ -9,18 +9,12 @@ namespace pt
 	class Sphere : public Shape
 	{
 	public:
-		Sphere(Vector pos, double r, Material* material) :
-			pos(pos),
-			r(r),
-			Shape(material) {}
+		Sphere(Material* material) : Shape(material) {}
 
 		bool intersect(const Ray& ray, 
 					   Intersection& inter, 
 					   float tMin, 
 					   float tMax) const;
-
-		Vector pos;
-		double r;
 	};
 
 };

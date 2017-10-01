@@ -23,7 +23,7 @@ namespace pt
 	class PerspectiveCamera : public Camera
 	{
 	public:
-		PerspectiveCamera(double focal, double viewAngle, Vector pos);
+		PerspectiveCamera(double focal, double viewAngle, double aperture Vector pos);
 
 		Ray getRay(float x, float y);
 
