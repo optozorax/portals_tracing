@@ -6,6 +6,13 @@
 namespace pt
 {
 
+	class Color;
+
+	//-------------------------------------------------------------------------
+	float random(void);
+	Vector randomSphere(void);
+
+	//-------------------------------------------------------------------------
 	class Color
 	{
 	public:
@@ -27,13 +34,9 @@ namespace pt
 
 		/** Получает квадратный корень из цвета. При этом квадратный корень из альфа-канала не берется. */
 		Color& sqrt(void);
-	private:
 	};
 
 	const Color transparent(0, 0, 0, 0);
-
-	float random(void);
-	Vector randomSphere(void);
 
 };
 
