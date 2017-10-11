@@ -12,10 +12,10 @@ bool Transformation::intersect(const Ray& ray,
 }
 
 //-----------------------------------------------------------------------------
-bool Transformation::scatter(const Ray& ray,
-							 const Intersection& inter,
-							 Color& clrAbsorbtion,
-							 Ray& scattered) const {
+ScatterType Transformation::scatter(const Ray& ray,
+									const Intersection& inter,
+									Color& clrAbsorbtion,
+									Ray& scattered) const {
 
 }
 

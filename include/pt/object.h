@@ -26,8 +26,13 @@ namespace pt
 		float t;
 		Vector pos;
 		Vector normal;
-		/** Показывает насколько сильно данный луч может рассеиваться в этом положении. Используется исключительно рендерерами. Объект должен каждый раз задавать этот параметр. */
-		double diffusion;
+	};
+
+	enum ScatterType
+	{
+		SCATTER_END, // Возвращается, если луч поглотился, или достигнут источник света. Если луч поглотился, то объект обязан записать в clrAbsorbtion нулевой цвет. Если достигнут источник света, то туда записывается цвет света.
+		SCATTER_RAYTRACING_END, // Возвращается, если рейтрейсинг может остановиться на этом. Такое может возвращаться например для: обычного материала, подповерхностного рассеивания.
+		SCATTER_NEXT // Возвращается, если луч может идти дальше, например для: искривителей лучей(черные дыры, червоточины), прозрачные объекты, отражающие объекты.
 	};
 
 	//-------------------------------------------------------------------------
@@ -41,21 +46,25 @@ namespace pt
 							   float tMax) = 0 const;
 
 		/** Получает текущий луч, его пересечение с фигурой. Возвращает поглощенный цвет и направление отраженного луча. Функция возвращает true, если луч может идти дальше, false, если луч поглотился. Тогда, если он поглотился, в цвет поглощения обязано быть записано 0, если этот объект не является источником света. Если является источником света, то в цвет поголщения должен быть записан цвет свечения. */
-		virtual bool scatter(const Ray& ray,
-							 const Intersection& inter,
-							 Color& clrAbsorbtion,
-							 Ray& scattered) = 0 const;
+		virtual ScatterType scatter(const Ray& ray,
+									const Intersection& inter,
+									Color& clrAbsorbtion,
+									Ray& scattered,
+									/** Показывает насколько сильно данный луч может рассеиваться в этом положении. Используется исключительно рендерерами. Объект должен каждый раз задавать этот параметр. */
+									double& diffusion,
+									bool& rayTracingStop) = 0 const;
 	};
 
 	//-------------------------------------------------------------------------
 	class Material
 	{
 	public:
-		virtual ~Materail() {}
-		virtual bool scatter(const Ray& ray,
-							 const Intersection& inter,
-							 Color& clrAbsorbtion,
-							 Ray& scattered) = 0 const;	
+		virtual ~Material() {}
+		virtual ScatterType scatter(const Ray& ray,
+									const Intersection& inter,
+									Color& clrAbsorbtion,
+									Ray& scattered,
+									double& diffusion) = 0 const;	
 	};
 
 	//-------------------------------------------------------------------------
@@ -68,11 +77,12 @@ namespace pt
 							   Intersection& inter, 
 							   float tMin, 
 							   float tMax) = 0 const;
-		bool scatter(const Ray& ray,
-					 const Intersection& inter,
-					 Color& clrAbsorbtion,
-					 Ray& scattered) const final {
-			return materail->scatter(ray, inter, clrABsorbtion, scattered);
+		ScatterType scatter(const Ray& ray,
+							const Intersection& inter,
+							Color& clrAbsorbtion,
+							Ray& scattered,
+							double& diffusion) const final {
+			return material->scatter(ray, inter, clrABsorbtion, scattered, diffusion);
 		}	
 
 		Material* material;

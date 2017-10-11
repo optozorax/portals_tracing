@@ -42,6 +42,7 @@ namespace pt
 	double dot(const Vector& a, const Vector& b);
 	void reflect(Vector& ray, const Vector& normal);
 	bool refract(Vector& ray, const Vector& normal, double refractiveIndex);
+	Vector randomVector(void);
 
 //=============================================================================
 //=============================================================================

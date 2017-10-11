@@ -9,10 +9,10 @@ Light::Light(Color clr) {
 }
 
 //-----------------------------------------------------------------------------
-bool Light::scatter(const Ray& ray,
-					const Intersection& inter,
-					Color& clrAbsorbtion,
-					Ray& scattered) const {
+ScatterType Light::scatter(const Ray& ray,
+						   const Intersection& inter,
+						   Color& clrAbsorbtion,
+						   Ray& scattered) const {
 
 }
 

@@ -11,10 +11,14 @@ namespace pt
 	public:
 		Scatter(Color clr);
 
-		bool scatter(const Ray& ray,
-					 const Intersection& inter,
-					 Color& clrAbsorbtion,
-					 Ray& scattered) const;	
+		ScatterType scatter(const Ray& ray,
+							const Intersection& inter,
+							Color& clrAbsorbtion,
+							Ray& scattered,
+							double& diffusion) const;	
+
+	private:
+		Color m_clr;
 	};
 
 };

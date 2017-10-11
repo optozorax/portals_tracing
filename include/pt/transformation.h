@@ -23,10 +23,11 @@ namespace pt
 					   Intersection& inter, 
 					   float tMin, 
 					   float tMax) const;
-		bool scatter(const Ray& ray,
-					 const Intersection& inter,
-					 Color& clrAbsorbtion,
-					 Ray& scattered) const;
+		ScatterType scatter(const Ray& ray,
+							const Intersection& inter,
+							Color& clrAbsorbtion,
+							Ray& scattered,
+							double& diffusion) const;
 
 	protected:
 		virtual Ray transform(const Ray& ray) = 0 const;
