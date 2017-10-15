@@ -17,6 +17,8 @@ namespace pt
 
 		void render(Camera& camera, Image& img, Object& scene);
 
+		Color computeColor(Ray ray, const Object& scene);
+
 		bool onStartRender(void) {}
 		bool onEveryLine(float percent) {}
 		bool onEndRendering(void) {}

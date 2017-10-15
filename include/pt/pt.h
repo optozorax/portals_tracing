@@ -5,7 +5,7 @@
 #include <pt/camera.h>
 #include <pt/image.h>
 #include <pt/object.h>
-#include <pt/renderer.pt>
+#include <pt/renderer.h>
 #include <pt/transformation.h>
 #include <pt/vector.h>
 

@@ -1,4 +1,4 @@
-#include <pt/.h>
+#include <pt/material/scatter.h>
 
 namespace pt
 {

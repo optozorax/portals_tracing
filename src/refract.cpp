@@ -1,10 +1,10 @@
-#include <pt/.h>
+#include <pt/material/refract.h>
 
 namespace pt
 {
 
 //-----------------------------------------------------------------------------
-Refract::Refract(double refractiveIndex, double diffusion) {
+Refract::Refract(double refractiveIndex, double diffusion) : refractiveIndex(refractiveIndex), diffusion(diffusion) {
 
 }
 
@@ -12,8 +12,9 @@ Refract::Refract(double refractiveIndex, double diffusion) {
 ScatterType Refract::scatter(const Ray& ray,
 							 const Intersection& inter,
 							 Color& clrAbsorbtion,
-							 Ray& scattered) const {
-
+							 Ray& scattered,
+							 double& diffusion) const {
+	// @TODO make this
 }
 
 };

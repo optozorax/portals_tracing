@@ -1,4 +1,4 @@
-#include <pt/.h>
+#include <pt/object/scene.h>
 
 namespace pt
 {
@@ -6,8 +6,8 @@ namespace pt
 //-----------------------------------------------------------------------------
 bool Scene::intersect(const Ray& ray, 
 					  Intersection& inter, 
-					  float tMin, 
-					  float tMax) const {
+					  double tMin, 
+					  double tMax) const {
 	if (array.size() > 0) {
 		bool isIntersect = false;
 		Intersection inter1;

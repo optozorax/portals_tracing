@@ -9,14 +9,17 @@ namespace pt
 	class Orthogonal : public Camera
 	{
 	public:
-		Orthogonal(Vector pos, Vector lookToward, double resulution);
+		Orthogonal(Vector pos, double scale, double width, double height);
 
 		Ray getRay(float x, float y);
 
-		/** Направляет ортогональную камеру в указанном направлении. */
+		/** Направляет ортогональную камеру в указанную точку. */
 		void lookTowards(Vector toward);
 
-		Vector pos;
+		Vector i, j, k;
+		double scale;
+		double width;
+		double height;
 	};
 
 };

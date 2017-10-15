@@ -9,11 +9,12 @@ namespace pt
 	class Camera360 : public Camera
 	{
 	public:
-		Camera360(Vector pos, double resulution);
+		Camera360(Vector pos, double resolution);
 
 		Ray getRay(float x, float y);
 
 		Vector pos;
+		double resolution;
 	};
 
 };

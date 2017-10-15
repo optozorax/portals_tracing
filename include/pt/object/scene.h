@@ -11,8 +11,8 @@ namespace pt
 	public:
 		bool intersect(const Ray& ray, 
 					   Intersection& inter, 
-					   float tMin, 
-					   float tMax) const;
+					   double tMin, 
+					   double tMax) const;
 		ScatterType scatter(const Ray& ray,
 							const Intersection& inter,
 							Color& clrAbsorbtion,
@@ -21,7 +21,7 @@ namespace pt
 
 		std::vector<Object*> array;
 	private:
-		unsigned int m_current;
+		mutable unsigned int m_current;
 	};
 
 };

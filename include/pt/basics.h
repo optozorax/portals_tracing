@@ -2,6 +2,7 @@
 #define PT_BASICS_H
 
 #include <random>
+#include <pt/vector.h>
 
 namespace pt
 {
@@ -17,6 +18,7 @@ namespace pt
 	{
 	public:
 		double r, g, b, a;
+		Color() : r(0), g(0), b(0), a(0) {}
 		Color(double r, double g, double b, double a = 1) : r(r), g(g), b(b), a(a) {}
 
 		/** Делит цвет на некоторое число для взятия среднего арифметического среди нескольких цветов. Среднее арифметическое так же берется и для альфа канала. */
@@ -32,6 +34,7 @@ namespace pt
 	};
 
 	const Color transparent(0, 0, 0, 0);
+	const double pi = 3.141592653589793238462643383279;
 
 };
 

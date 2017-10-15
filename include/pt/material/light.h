@@ -1,5 +1,5 @@
-#ifndef PT_REFRACT_H
-#define PT_REFRACT_H
+#ifndef PT_LIGHT_H
+#define PT_LIGHT_H
 
 #include <pt/object.h>
 
@@ -14,8 +14,10 @@ namespace pt
 		ScatterType scatter(const Ray& ray,
 							const Intersection& inter,
 							Color& clrAbsorbtion,
-							Ray& scattered,,
+							Ray& scattered,
 							double& diffusion) const;	
+
+		Color clr;
 	};
 
 };

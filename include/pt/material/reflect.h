@@ -16,6 +16,9 @@ namespace pt
 							Color& clrAbsorbtion,
 							Ray& scattered,
 							double& diffusion) const;	
+
+		Color clr;
+		double mydiffusion;
 	};
 
 };

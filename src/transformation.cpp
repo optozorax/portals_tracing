@@ -1,4 +1,4 @@
-#include <pt/.h>
+#include <pt/transformation.h>
 
 namespace pt
 {
@@ -6,8 +6,8 @@ namespace pt
 //-----------------------------------------------------------------------------
 bool Transformation::intersect(const Ray& ray, 
 							   Intersection& inter, 
-							   float tMin, 
-							   float tMax) const {
+							   double tMin, 
+							   double tMax) const {
 
 }
 
@@ -15,7 +15,8 @@ bool Transformation::intersect(const Ray& ray,
 ScatterType Transformation::scatter(const Ray& ray,
 									const Intersection& inter,
 									Color& clrAbsorbtion,
-									Ray& scattered) const {
+									Ray& scattered,
+									double& diffusion) const {
 
 }
 

@@ -9,7 +9,7 @@ namespace pt
 
 	struct PointLightSource
 	{
-		PointLightSource(Vector pos, Vector clr) : pos(pos), clr(clr) {}
+		PointLightSource(Vector pos, Color clr) : pos(pos), clr(clr) {}
 
 		Vector pos;
 		Color clr;
@@ -20,9 +20,11 @@ namespace pt
 	class RayRenderer
 	{
 	public:
-		RayRenderer(double maxT = 100000);
+		RayRenderer(double maxDepth = 30, double maxT = 100000);
 
 		void render(Camera& camera, Image& img, Object& scene);
+
+		Color computeColor(Ray ray, const Object& scene);
 
 		bool onStartRender(void) {}
 		bool onEveryLine(float percent) {}
@@ -30,7 +32,6 @@ namespace pt
 
 		std::vector<PointLightSource> luminaries;
 		Color skyColor;
-		int samples;
 		int maxDepth;
 		int maxT;
 	};

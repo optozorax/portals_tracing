@@ -21,8 +21,8 @@ namespace pt
 
 		bool intersect(const Ray& ray, 
 					   Intersection& inter, 
-					   float tMin, 
-					   float tMax) const;
+					   double tMin, 
+					   double tMax) const;
 		ScatterType scatter(const Ray& ray,
 							const Intersection& inter,
 							Color& clrAbsorbtion,
@@ -30,11 +30,11 @@ namespace pt
 							double& diffusion) const;
 
 	protected:
-		virtual Ray transform(const Ray& ray) = 0 const;
-		virtual Ray iverse(const Ray& ray) = 0 const;
+		virtual Ray transform(const Ray& ray) const = 0;
+		virtual Ray inverse(const Ray& ray) const = 0;
 		
 	private:
-		Object* obj;
+		Object* m_obj;
 	};
 
 };

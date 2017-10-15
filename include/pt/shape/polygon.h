@@ -19,8 +19,8 @@ namespace pt
 
 		bool intersect(const Ray& ray, 
 					   Intersection& inter, 
-					   float tMin, 
-					   float tMax) const;
+					   double tMin, 
+					   double tMax) const;
 
 		std::vector<Point> array;
 	};
