@@ -13,7 +13,6 @@ namespace pt
 
 		Ray getRay(float x, float y);
 
-		Vector pos;
 		double resolution;
 	};
 

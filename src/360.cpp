@@ -4,7 +4,7 @@ namespace pt
 {
 
 //-----------------------------------------------------------------------------
-Camera360::Camera360(Vector pos, double resolution) : pos(pos), resolution(resolution) {}
+Camera360::Camera360(Vector pos, double resolution) : Camera(pos), resolution(resolution) {}
 
 //-----------------------------------------------------------------------------
 Ray Camera360::getRay(float x, float y) {

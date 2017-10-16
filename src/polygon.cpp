@@ -10,6 +10,7 @@ Polygon::Polygon(std::vector<Point> polygon, Material* material) : array(polygon
 //-----------------------------------------------------------------------------
 bool inPolygon(std::vector<Point> polygon, Point x) {
 	// @TODO make it
+	return false;
 }
 
 //-----------------------------------------------------------------------------
@@ -27,7 +28,7 @@ bool Polygon::intersect(const Ray& ray,
 		x.y = inter.pos.y;
 		return inPolygon(array, x);
 	} else
-		return false
+		return false;
 }
 
 };

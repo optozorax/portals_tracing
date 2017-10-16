@@ -15,9 +15,9 @@ namespace pt
 		virtual void render(Camera& camera, Image& img, Object& scene) = 0;
 
 		/** Функции, необходимые для отслеживания прогресса рендеринга. Необходимы, так как рендеринг может длиться очень долго. */
-		virtual bool onStartRender(void) = 0;
-		virtual bool onEveryLine(float percent) = 0;
-		virtual bool onEndRendering(void) = 0;
+		virtual void onStartRender(void) = 0;
+		virtual void onEveryLine(float percent) = 0;
+		virtual void onEndRendering(void) = 0;
 
 	};
 

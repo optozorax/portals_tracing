@@ -14,6 +14,7 @@ bool Sky::intersect(const Ray& ray,
 	inter.t = tMax;
 	inter.pos = ray.pos + ray.dir * inter.t;
 	inter.normal = ray.dir;
+	return true;
 }
 
 //-----------------------------------------------------------------------------

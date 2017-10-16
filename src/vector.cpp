@@ -1,4 +1,5 @@
 #include <math.h>
+#include <pt/basics.h>
 #include <pt/vector.h>
 
 namespace pt
@@ -29,6 +30,16 @@ bool refract(Vector& ray, const Vector& normal, double r) {
 		return true;
 	} else 
 		return false;
+}
+
+Vector randomSphere(void) {
+	double alpha = random() * 2 * pi;
+	double beta = random() * 2 * pi;
+	Vector r;
+	r.x = sin(alpha) * cos(beta);
+	r.y = sin(alpha) * sin(beta);
+	r.z = cos(beta);
+	return r;
 }
 
 };

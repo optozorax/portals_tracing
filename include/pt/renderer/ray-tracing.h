@@ -26,9 +26,9 @@ namespace pt
 
 		Color computeColor(Ray ray, const Object& scene);
 
-		bool onStartRender(void) {}
-		bool onEveryLine(float percent) {}
-		bool onEndRendering(void) {}
+		void onStartRender(void) {}
+		void onEveryLine(float percent) {}
+		void onEndRendering(void) {}
 
 		std::vector<PointLightSource> luminaries;
 		Color skyColor;

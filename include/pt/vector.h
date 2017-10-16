@@ -1,6 +1,8 @@
 #ifndef PT_VECTOR_H
 #define PT_VECTOR_H
 
+#include <math.h>
+
 namespace pt
 {
 
@@ -42,94 +44,113 @@ namespace pt
 	double dot(const Vector& a, const Vector& b);
 	void reflect(Vector& ray, const Vector& normal);
 	bool refract(Vector& ray, const Vector& normal, double refractiveIndex);
-	Vector randomVector(void);
+	Vector randomSphere(void);
 
 //=============================================================================
 //=============================================================================
 //=============================================================================
 
 //-----------------------------------------------------------------------------
-Vector::Vector() : Vector(0) {}
+inline Vector::Vector() : Vector(0) {}
 
 //-----------------------------------------------------------------------------
-Vector::Vector(double a) : x(a), y(a), z(a) {}
+inline Vector::Vector(double a) : x(a), y(a), z(a) {}
 
 //-----------------------------------------------------------------------------
-Vector::Vector(double x, double y, double z) : x(x), y(y), z(z) {}
+inline Vector::Vector(double x, double y, double z) : x(x), y(y), z(z) {}
 
 //-----------------------------------------------------------------------------
-Vector& Vector::negate(void) {
-
+inline Vector& Vector::negate(void) {
+	x = -x;
+	y = -y;
+	z = -z;
+	return *this;
 }
 
 //-----------------------------------------------------------------------------
-Vector& Vector::normalize(void) {
-	
+inline Vector& Vector::normalize(void) {
+	double length = getLength();
+	x /= length;
+	y /= length;
+	z /= length;
+	return *this;
 }
 
 //-----------------------------------------------------------------------------
-double Vector::getLength(void) const {
-	
+inline double Vector::getLength(void) const {
+	return sqrt(x*x + y*y + z*z);
 }
 
 //-----------------------------------------------------------------------------
-double Vector::getLengthSqr(void) const {
-	
+inline double Vector::getLengthSqr(void) const {
+	return x*x + y*y + z*z;
 }
 
 //-----------------------------------------------------------------------------
-Vector& Vector::operator+=(const Vector& a) {
-	
+inline Vector& Vector::operator+=(const Vector& a) {
+	x += a.x;
+	y += a.y;
+	z += a.z;
+	return *this;
 }
 
 //-----------------------------------------------------------------------------
-Vector& Vector::operator-=(const Vector& a) {
-	
+inline Vector& Vector::operator-=(const Vector& a) {
+	x -= a.x;
+	y -= a.y;
+	z -= a.z;
+	return *this;
 }
 
 //-----------------------------------------------------------------------------
-Vector& Vector::operator*=(double a) {
-	
+inline Vector& Vector::operator*=(double a) {
+	x *= a;
+	y *= a;
+	z *= a;
+	return *this;
 }
 
 //-----------------------------------------------------------------------------
-Vector& Vector::operator/=(double a) {
-	
+inline Vector& Vector::operator/=(double a) {
+	x /= a;
+	y /= a;
+	z /= a;
+	return *this;
 }
 
 //-----------------------------------------------------------------------------
-Vector operator-(const Vector& a) {
-
+inline Vector operator-(const Vector& a) {
+	return Vector(-a.x, -a.y, -a.z);
 }
 
 //-----------------------------------------------------------------------------
-Vector operator+(const Vector& a, const Vector& b) {
-
+inline Vector operator+(const Vector& a, const Vector& b) {
+	return Vector(a.x + b.x, a.y + b.y, a.z + b.z);
 }
 
 //-----------------------------------------------------------------------------
-Vector operator-(const Vector& a, const Vector& b) {
-
+inline Vector operator-(const Vector& a, const Vector& b) {
+	return Vector(a.x - b.x, a.y - b.y, a.z - b.z);
 }
 
 //-----------------------------------------------------------------------------
-Vector operator*(const Vector& a, double k) {
-
+inline Vector operator*(const Vector& a, double k) {
+	return Vector(a.x * k, a.y * k, a.z * k);
 }
 
 //-----------------------------------------------------------------------------
-Vector operator/(const Vector& a, double k) {
-
+inline Vector operator/(const Vector& a, double k) {
+	return Vector(a.x / k, a.y / k, a.z / k);
 }
 
 //-----------------------------------------------------------------------------
-bool operator==(const Vector& a, const Vector& b) {
-
+inline bool operator==(const Vector& a, const Vector& b) {
+	return a.x == b.x && a.y == b.y && a.z == b.z;
 }
 
 //-----------------------------------------------------------------------------
-bool operator!=(const Vector& a, const Vector& b) {
-	
+inline bool operator!=(const Vector& a, const Vector& b) {
+	return a.x != b.x && a.y != b.y && a.z != b.z;
 }
 
 };

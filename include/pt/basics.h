@@ -2,7 +2,6 @@
 #define PT_BASICS_H
 
 #include <random>
-#include <pt/vector.h>
 
 namespace pt
 {
@@ -10,8 +9,7 @@ namespace pt
 	class Color;
 
 	//-------------------------------------------------------------------------
-	float random(void);
-	Vector randomSphere(void);
+	double random(void);
 
 	//-------------------------------------------------------------------------
 	class Color
@@ -28,6 +26,9 @@ namespace pt
 
 		ИЛИ. Считает, что оба цвета полупрозрачные и считает как если бы текущий накладывался поверх a. */
 		Color& operator*(const Color& a);
+
+		Color& operator*(double a);
+		Color& operator+=(const Color& a);
 
 		/** Получает квадратный корень из цвета. При этом квадратный корень из альфа-канала не берется. */
 		Color& sqrt(void);

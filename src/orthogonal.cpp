@@ -17,6 +17,7 @@ Ray Orthogonal::getRay(float x, float y) {
 	Ray ray;
 	ray.pos = i*x + j*y + pos;
 	ray.dir = k;
+	return ray;
 }
 
 //-----------------------------------------------------------------------------

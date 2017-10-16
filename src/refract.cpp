@@ -15,6 +15,7 @@ ScatterType Refract::scatter(const Ray& ray,
 							 Ray& scattered,
 							 double& diffusion) const {
 	// @TODO make this
+	return SCATTER_END;
 }
 
 };

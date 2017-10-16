@@ -30,6 +30,13 @@ namespace pt
 						  double width, 
 						  double height);
 
+		void assign(double focal1, 
+					double viewAngle1, 
+					double aperture1, 
+					Vector pos1, 
+					double width1, 
+					double height1);
+
 		Ray getRay(float x, float y);
 
 		void lookAt(const Vector& towards);
@@ -37,7 +44,6 @@ namespace pt
 		double focal;
 		double aperture;
 		double viewAngle;
-		Vector toward;
 		Vector i, j, k;
 		double h;
 		double width, height;

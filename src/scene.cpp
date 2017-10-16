@@ -9,9 +9,9 @@ bool Scene::intersect(const Ray& ray,
 					  double tMin, 
 					  double tMax) const {
 	if (array.size() > 0) {
-		bool isIntersect = false;
 		Intersection inter1;
-		array[0]->intersect(ray, inter, tMin, tMax);
+		inter.t = tMax;
+		bool isIntersect = array[0]->intersect(ray, inter, tMin, tMax);;
 		m_current = 0;
 		for (int i = 1; i < array.size(); ++i) {
 			if (array[i]->intersect(ray, inter1, tMin, tMax)) {

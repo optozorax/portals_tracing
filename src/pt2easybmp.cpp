@@ -22,7 +22,8 @@ void saveAsBmp(Image& img, std::string name) {
 		}
 	}
 
-	AnImage.WriteToFile(name);
+	std::wstring wstr(name.begin(), name.end());
+	AnImage.WriteToFile(wstr.c_str());
 }
 
 //-----------------------------------------------------------------------------

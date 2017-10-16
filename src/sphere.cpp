@@ -10,7 +10,7 @@ bool Sphere::intersect(const Ray& ray,
 					   double tMax) const {
 	double a = dot(ray.dir, ray.dir);
 	double b = 2*dot(ray.dir, ray.pos);
-	double c = dot(ray.pos, ray.pos);
+	double c = dot(ray.pos, ray.pos) - 1;
 	double d = b*b - 4*a*c;
 	if (d < 0)
 		return false;
@@ -30,6 +30,7 @@ bool Sphere::intersect(const Ray& ray,
 	inter.t = t;
 	inter.pos = ray.pos + ray.dir * t;
 	inter.normal = inter.pos;
+	inter.normal.normalize();
 	return true;	
 }
 
