@@ -16,7 +16,7 @@ bool Scene::intersect(const Ray& ray,
 		for (int i = 1; i < array.size(); ++i) {
 			if (array[i]->intersect(ray, inter1, tMin, tMax)) {
 				isIntersect = true;
-				if (inter1.t < inter.t) {
+				if (inter1.t <= inter.t) {
 					inter = inter1;
 					m_current = i;
 				}

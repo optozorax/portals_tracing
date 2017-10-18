@@ -53,12 +53,15 @@ inline Color RayRenderer::computeColor(Ray ray, const Object& scene) {
 
 //-----------------------------------------------------------------------------
 void RayRenderer::render(Camera& camera, Image& img, Object& scene) {
+	onStartRender();
 	for (int i = 0; i < img.getWidth(); ++i) {
+		onEveryLine(double(i)/img.getWidth());
 		for (int j = 0; j < img.getHeight(); ++j) {
 			Ray ray = camera.getRay(i, j);
 			img(i, j) = computeColor(ray, scene);
 		}
 	}
+	onEndRendering();
 }
 
 };

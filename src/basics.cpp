@@ -37,10 +37,11 @@ Color& Color::operator*(const Color& a) {
 }
 
 //-----------------------------------------------------------------------------
-Color& Color::operator+=(const Color& a) {
-	r += a.r;
-	g += a.g;
-	b += a.b;
+Color& Color::operator+=(const Color& clr) {
+	a += clr.a;
+	r += clr.r;
+	g += clr.g;
+	b += clr.b;
 	return *this;
 }
 

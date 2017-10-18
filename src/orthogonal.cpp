@@ -9,26 +9,27 @@ Orthogonal::Orthogonal(Vector pos, double scale, double width, double height) : 
 
 //-----------------------------------------------------------------------------
 Ray Orthogonal::getRay(float x, float y) {
-	// @TODO test this
 	x -= width/2.0;
 	y -= height/2.0;
 	x *= scale;
 	y *= scale;
 	Ray ray;
-	ray.pos = i*x + j*y + pos;
+	ray.pos = i*x - j*y + pos;
 	ray.dir = k;
 	return ray;
 }
 
 //-----------------------------------------------------------------------------
 void Orthogonal::lookTowards(Vector toward) {
-	// @TODO test this
 	k = toward - pos;
 	k.normalize();
-	i.y = -k.x/k.y;
-	i.x = 1;
-	i.normalize();
+	if (!(k.x == 0 && k.y == 0)) {
+		i.x = -k.y;
+		i.y = k.x;
+		i.normalize();
+	}
 	j = cross(k, i);
+	i = -i;
 	j.normalize();
 }
 

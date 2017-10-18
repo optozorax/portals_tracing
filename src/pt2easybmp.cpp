@@ -28,7 +28,21 @@ void saveAsBmp(Image& img, std::string name) {
 
 //-----------------------------------------------------------------------------
 void loadAsBmp(Image& img, std::string name) {
-	// @TODO make this
+	//@ todo test this
+	BMP AnImage;
+	std::wstring wstr(name.begin(), name.end());
+	AnImage.WriteToFile(wstr.c_str());
+
+	RGBApixel pix;
+	for (int i = 0; i < AnImage.TellWidth(); i++) {
+		for (int j = 0; j < AnImage.TellHeight(); j++) {
+			pix = AnImage.GetPixel(i, j);
+			img(i, j).a = pix.Alpha / 255.0;
+			img(i, j).r = pix.Red / 255.0;
+			img(i, j).g = pix.Green / 255.0;
+			img(i, j).b = pix.Blue / 255.0;
+		}
+	}
 }
 
 };

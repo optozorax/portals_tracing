@@ -20,7 +20,6 @@ void PerspectiveCamera::assign(double focal1, double viewAngle1, double aperture
 
 //-----------------------------------------------------------------------------
 Ray PerspectiveCamera::getRay(float x, float y) {
-	// @TODO test this
 	x -= width/2.0;
 	y -= height/2.0;
 	x /= width/2.0;

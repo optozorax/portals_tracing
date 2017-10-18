@@ -32,6 +32,7 @@ bool refract(Vector& ray, const Vector& normal, double r) {
 		return false;
 }
 
+//-----------------------------------------------------------------------------
 Vector randomSphere(void) {
 	double alpha = random() * 2 * pi;
 	double beta = random() * 2 * pi;

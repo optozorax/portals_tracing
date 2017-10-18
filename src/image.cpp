@@ -23,6 +23,12 @@ void Image::resize(int width, int height) {
 	m_height = height;
 }
 
+void Image::clear(void) {
+	for (int i = 0; i < m_width * m_height; ++i) {
+		m_pix[i] = Color(0, 0, 0, 0);
+	}
+}
+
 //-----------------------------------------------------------------------------
 void Image::colorCorrection(void) {
 	for (int i = 0; i < m_width * m_height; ++i) {
@@ -32,7 +38,6 @@ void Image::colorCorrection(void) {
 		if (m_pix[i].g > 1) m_pix[i].g = 1;
 		if (m_pix[i].b > 1) m_pix[i].b = 1;
 	}
-
 }
 
 //-----------------------------------------------------------------------------
