@@ -17,7 +17,7 @@ namespace pt
 							Ray& scattered,
 							double& diffusion) const;	
 		double refractiveIndex;
-		double diffusion;
+		double m_diffusion;
 	};
 
 };
