@@ -7,17 +7,16 @@ namespace pt
 {
 
 	class Transformation;
-	/*class TrMove;
+	class TrMove;
 	class TrRotate;
 	class TrScale;
-	class TrLookAt;*/
+	/*class TrLookAt;*/
 
 	//-------------------------------------------------------------------------
 	class Transformation : public Object
 	{
 	public:
 		Transformation(Object* obj) : m_obj(obj) {}
-		virtual ~Transformation() {}
 
 		bool intersect(const Ray& ray, 
 					   Intersection& inter, 
@@ -29,12 +28,69 @@ namespace pt
 							Ray& scattered,
 							double& diffusion) const;
 
-	protected:
-		virtual Ray transform(const Ray& ray) const = 0;
-		virtual Ray inverse(const Ray& ray) const = 0;
+		virtual Vector transform(const Vector& p) const = 0;
+		virtual Vector inverse(const Vector& p) const = 0;
 		
 	private:
 		Object* m_obj;
+		mutable Ray ray1;
+		mutable Intersection inter1;
+	};
+
+	//-------------------------------------------------------------------------
+	class TrMove : public Transformation
+	{
+	public:
+		TrMove(Vector diff, Object* obj);
+
+		Vector transform(const Vector& p) const;
+		Vector inverse(const Vector& p) const;
+
+		Vector diff;
+	};
+
+	//-------------------------------------------------------------------------
+	class TrRotate : public Transformation
+	{
+	public:
+		TrRotate(Vector angles, Object* obj);
+
+		Vector transform(const Vector& p) const;
+		Vector inverse(const Vector& p) const;
+
+		void rotate2(double& x, double &y, const double& angle) const;
+
+		Vector angles; 
+	};
+
+	//-------------------------------------------------------------------------
+	class TrScale : public Transformation
+	{
+	public:
+		TrScale(Vector scale, Object* obj);
+
+		Vector transform(const Vector& p) const;
+		Vector inverse(const Vector& p) const;
+
+		Vector scale;
+	};
+
+	//-------------------------------------------------------------------------
+	class TrComplex : public Transformation
+	{
+	public:
+		TrComplex(Vector scale, Vector angles, Vector diff, Object* obj);
+
+		Vector transform(const Vector& p) const;
+		Vector inverse(const Vector& p) const;
+
+		Vector& scale;
+		Vector& angles;
+		Vector& diff;
+	private:
+		TrScale m_scale;
+		TrRotate m_rotate;
+		TrMove m_move;
 	};
 
 };
