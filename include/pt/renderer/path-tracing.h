@@ -17,8 +17,6 @@ namespace pt
 
 		void render(Camera& camera, Image& img, Object& scene);
 
-		Color computeColor(Ray ray, const Object& scene);
-
 		void onStartRender(void) {}
 		void onEveryLine(float percent) {}
 		void onEndRendering(void) {}
@@ -26,6 +24,26 @@ namespace pt
 		int samples;
 		int maxDepth;
 		int maxT;
+	protected:
+		Color computeColor(Ray ray, const Object& scene);
+	};
+
+	//-------------------------------------------------------------------------
+	class FitfulPathRenderer : public PathRenderer
+	{
+	public:
+		FitfulPathRenderer(int maxDepth = 30,
+						   double maxT = 100000);
+
+		void init(Camera* camera, Image* img, Object* scene);
+		/** Делает рендеринг некоторого количества семплов всего изображения, после этого возвращает копию изображения, которую можно нарисовать на экране. */
+		Image renderStep(int samples);
+
+	private:
+		Camera* m_camera;
+		Image* m_img;
+		Object* m_scene;
+		int m_samples;
 	};
 
 };

@@ -55,4 +55,43 @@ void PathRenderer::render(Camera& camera, Image& img, Object& scene) {
 	onEndRendering();
 }
 
+//-----------------------------------------------------------------------------
+FitfulPathRenderer::FitfulPathRenderer(int maxDepth, double maxT) : PathRenderer(0, maxDepth, maxT) {}
+
+//-----------------------------------------------------------------------------
+void FitfulPathRenderer::init(Camera* camera, Image* img, Object* scene) {
+	m_samples = 0;
+	m_camera = camera;
+	m_img = img;
+	m_scene = scene;
+}
+		
+//-----------------------------------------------------------------------------
+Image FitfulPathRenderer::renderStep(int samples) {
+	onStartRender();
+	for (int i = 0; i < m_img->getWidth(); ++i) {
+		onEveryLine(double(i)/m_img->getWidth());
+		for (int j = 0; j < m_img->getHeight(); ++j) {
+			for (int k = 0; k < samples; ++k) {
+				double x = i + random();
+				double y = j + random();
+				Ray ray = m_camera->getRay(x, y);
+				(*m_img)(i, j) += computeColor(ray, *m_scene);
+			}
+		}
+	}
+	onEndRendering();
+
+	m_samples += samples;
+	Image img2(m_img->getWidth(), m_img->getHeight());
+	for (int i = 0; i < img2.getWidth(); ++i) {
+		for (int j = 0; j < img2.getHeight(); ++j) {
+			img2(i, j) = (*m_img)(i, j);
+			img2(i, j) /= m_samples;
+		}
+	}
+	
+	return img2;
+}
+
 };

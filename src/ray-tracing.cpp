@@ -4,8 +4,7 @@ namespace pt
 {
 
 //-----------------------------------------------------------------------------
-RayRenderer::RayRenderer(double maxDepth, double maxT) : maxDepth(maxDepth), maxT(maxT) {
-
+RayRenderer::RayRenderer(int antialiasing, double maxDepth, double maxT) : maxDepth(maxDepth), maxT(maxT), antialiasing(antialiasing) {
 }
 
 //-----------------------------------------------------------------------------
@@ -57,8 +56,16 @@ void RayRenderer::render(Camera& camera, Image& img, Object& scene) {
 	for (int i = 0; i < img.getWidth(); ++i) {
 		onEveryLine(double(i)/img.getWidth());
 		for (int j = 0; j < img.getHeight(); ++j) {
-			Ray ray = camera.getRay(i, j);
-			img(i, j) = computeColor(ray, scene);
+			for (int ki = 0; ki < antialiasing; ++ki) {
+				for (int kj = 0; kj < antialiasing; ++kj) {
+					double x = i + double(ki)/antialiasing;
+					double y = j + double(kj)/antialiasing;
+					Ray ray = camera.getRay(x, y);
+					img(i, j) += computeColor(ray, scene);	
+				}
+			}
+			if (antialiasing != 0.1)
+				img(i, j) /= antialiasing * antialiasing;
 		}
 	}
 	onEndRendering();

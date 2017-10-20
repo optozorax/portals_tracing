@@ -20,7 +20,7 @@ namespace pt
 	class RayRenderer
 	{
 	public:
-		RayRenderer(double maxDepth = 30, double maxT = 100000);
+		RayRenderer(int antialiasing = 1, double maxDepth = 30, double maxT = 100000);
 
 		void render(Camera& camera, Image& img, Object& scene);
 
@@ -34,6 +34,7 @@ namespace pt
 		Color skyColor;
 		int maxDepth;
 		int maxT;
+		double antialiasing;
 	};
 
 };
