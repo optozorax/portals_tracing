@@ -49,7 +49,7 @@ ScatterType Transformation::scatter(const Ray& ray,
 }
 
 //-----------------------------------------------------------------------------
-TrMove::TrMove(Vector diff, Object* obj) : diff(diff), Transformation(obj) {}
+TrMove::TrMove(const Vector& diff, Object* obj) : diff(diff), Transformation(obj) {}
 
 //-----------------------------------------------------------------------------
 Vector TrMove::transform(const Vector& p) const {
@@ -62,7 +62,7 @@ Vector TrMove::inverse(const Vector& p) const {
 }
 
 //-----------------------------------------------------------------------------
-TrRotate::TrRotate(Vector angles, Object* obj) : angles(angles), Transformation(obj) {}
+TrRotate::TrRotate(const Vector& angles, Object* obj) : angles(angles), Transformation(obj) {}
 
 //-----------------------------------------------------------------------------
 void TrRotate::rotate2(double& x, double &y, const double& angle) const {
@@ -91,7 +91,7 @@ Vector TrRotate::inverse(const Vector& p) const {
 }
 
 //-----------------------------------------------------------------------------
-TrScale::TrScale(Vector scale, Object* obj) : scale(scale), Transformation(obj) {}
+TrScale::TrScale(const Vector& scale, Object* obj) : scale(scale), Transformation(obj) {}
 
 //-----------------------------------------------------------------------------
 Vector TrScale::transform(const Vector& p) const {
@@ -112,7 +112,7 @@ Vector TrScale::inverse(const Vector& p) const {
 }
 
 //-----------------------------------------------------------------------------
-TrComplex::TrComplex(Vector scale, Vector angles, Vector diff, Object* obj) : m_scale(scale, nullptr), m_rotate(angles, nullptr), m_move(diff, nullptr), scale(m_scale.scale), angles(m_rotate.angles), diff(m_move.diff), Transformation(obj) {}
+TrComplex::TrComplex(const Vector& scale, const Vector& angles, const Vector& diff, Object* obj) : m_scale(scale, nullptr), m_rotate(angles, nullptr), m_move(diff, nullptr), scale(m_scale.scale), angles(m_rotate.angles), diff(m_move.diff), Transformation(obj) {}
 
 //-----------------------------------------------------------------------------
 Vector TrComplex::transform(const Vector& p) const {

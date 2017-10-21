@@ -41,7 +41,7 @@ namespace pt
 	class TrMove : public Transformation
 	{
 	public:
-		TrMove(Vector diff, Object* obj);
+		TrMove(const Vector& diff, Object* obj);
 
 		Vector transform(const Vector& p) const;
 		Vector inverse(const Vector& p) const;
@@ -53,7 +53,7 @@ namespace pt
 	class TrRotate : public Transformation
 	{
 	public:
-		TrRotate(Vector angles, Object* obj);
+		TrRotate(const Vector& angles, Object* obj);
 
 		Vector transform(const Vector& p) const;
 		Vector inverse(const Vector& p) const;
@@ -67,7 +67,7 @@ namespace pt
 	class TrScale : public Transformation
 	{
 	public:
-		TrScale(Vector scale, Object* obj);
+		TrScale(const Vector& scale, Object* obj);
 
 		Vector transform(const Vector& p) const;
 		Vector inverse(const Vector& p) const;
@@ -79,7 +79,7 @@ namespace pt
 	class TrComplex : public Transformation
 	{
 	public:
-		TrComplex(Vector scale, Vector angles, Vector diff, Object* obj);
+		TrComplex(const Vector& scale, const Vector& angles, const Vector& diff, Object* obj);
 
 		Vector transform(const Vector& p) const;
 		Vector inverse(const Vector& p) const;
