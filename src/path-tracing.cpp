@@ -20,10 +20,28 @@ Color PathRenderer::computeColor(Ray ray, const Object& scene) {
 
 	for (int i = 0; i < maxDepth; ++i) {
 		if (scene.intersect(ray, inter, 0, maxT)) {
+			// Получить рассевание луча объектом
 			returned = scene.scatter(ray, inter, clrAbsorbtion, scattered, diffusion);
+
+			// Если цвет непрозрачный, то отправить луч сквозь объект с некоторой вероятностью
+			if (clrAbsorbtion.a != 1) {
+				if (random() > clrAbsorbtion.a) {
+					scattered.dir = ray.dir;
+					clrAbsorbtion = Color(1, 1, 1, 1);
+					diffusion = 0;
+				}
+			}
+
+			// Посчитать результирующй цвет после данного отражения
 			resultColor = clrAbsorbtion * resultColor;
+
+			// Сместить положение луча в некотором направлении
+			scattered.pos += scattered.dir * 0.001;
+
+			// Изменить направление в соответствии с рассеиванием
 			scattered.dir += randomSphere() * diffusion;
 			scattered.dir.normalize();
+
 			ray = scattered;
 			if (returned == SCATTER_END)
 				break;

@@ -25,6 +25,7 @@ namespace pt
 		void render(Camera& camera, Image& img, Object& scene);
 
 		Color computeColor(Ray ray, const Object& scene);
+		Color computeLightColor(Ray ray, const Object& scene, bool haveMaterial, Vector normal);
 
 		void onStartRender(void) {}
 		void onEveryLine(float percent) {}
