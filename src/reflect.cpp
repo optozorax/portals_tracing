@@ -4,7 +4,7 @@ namespace pt
 {
 
 //-----------------------------------------------------------------------------
-Reflect::Reflect(Color clr, double diffusion) : clr(clr), mydiffusion(diffusion) {
+Reflect::Reflect(Color clr, double diffusion) : clr(clr), diffuse(diffusion) {
 }
 
 //-----------------------------------------------------------------------------
@@ -14,10 +14,10 @@ ScatterType Reflect::scatter(const Ray& ray,
 							 Ray& scattered,
 							 double& diffusion) const {
 	clrAbsorbtion = clr;
-	scattered.pos = inter.pos + inter.normal * 0.001;
+	scattered.pos = inter.pos;// + inter.normal * 0.001;
 	scattered.dir = ray.dir;
 	reflect(scattered.dir, inter.normal);
-	diffusion = mydiffusion;
+	diffusion = diffuse;
 	if (dot(scattered.dir, inter.normal) > 0)
 		return SCATTER_NEXT;
 	else

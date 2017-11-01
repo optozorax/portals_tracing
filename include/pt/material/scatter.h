@@ -16,9 +16,8 @@ namespace pt
 							Color& clrAbsorbtion,
 							Ray& scattered,
 							double& diffusion) const;	
-
-	private:
-		Color m_clr;
+		
+		Color clr;
 	};
 
 };

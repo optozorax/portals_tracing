@@ -4,7 +4,7 @@ namespace pt
 {
 
 //-----------------------------------------------------------------------------
-Refract::Refract(double refractiveIndex, double diffusion) : refractiveIndex(refractiveIndex), m_diffusion(diffusion) {
+Refract::Refract(double refractiveIndex, double diffusion) : refractiveIndex(refractiveIndex), diffuse(diffusion) {
 
 }
 
@@ -33,8 +33,8 @@ ScatterType Refract::scatter(const Ray& ray,
 		reflect(scattered.dir, normal);
 	}
 
-	scattered.pos = inter.pos + scattered.dir * 0.001;
-	diffusion = m_diffusion;
+	scattered.pos = inter.pos;// + scattered.dir * 0.001;
+	diffusion = diffuse;
 	clrAbsorbtion = Color(1, 1, 1, 1);
 
 	return SCATTER_NEXT;

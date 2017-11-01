@@ -21,9 +21,8 @@ namespace pt
 							Ray& scattered,
 							double& diffusion) const;
 
-	private:
-		Color m_clr1;
-		Color m_clr2;
+		Color clr1;
+		Color clr2;
 	};
 
 };

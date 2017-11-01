@@ -18,7 +18,7 @@ namespace pt
 							double& diffusion) const;	
 
 		Color clr;
-		double mydiffusion;
+		double diffuse;
 	};
 
 };
