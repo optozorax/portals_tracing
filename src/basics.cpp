@@ -14,7 +14,7 @@ double random(void) {
 }
 
 //-----------------------------------------------------------------------------
-Color& Color::operator/=(double k) {
+Color Color::operator/=(double k) {
 	r /= k;
 	g /= k;
 	b /= k;
@@ -23,7 +23,17 @@ Color& Color::operator/=(double k) {
 }
 
 //-----------------------------------------------------------------------------
-Color& Color::operator*(const Color& a) {
+Color overlay(const Color& upper, const Color& lower) {
+	Color out;
+	out.a = upper.a + lower.a * (1 - upper.a);
+	out.r = (upper.r * upper.a + lower.r * lower.a * (1 - upper.a))/out.a;
+	out.g = (upper.g * upper.a + lower.g * lower.a * (1 - upper.a))/out.a;
+	out.b = (upper.b * upper.a + lower.b * lower.a * (1 - upper.a))/out.a;
+	return out;
+}
+
+//-----------------------------------------------------------------------------
+Color Color::operator*(const Color& a) {
 	// @TODO test this
 	Color clr = *this;
 	//clr.r = clr.r + a.r*(1 - clr.a);
@@ -37,7 +47,7 @@ Color& Color::operator*(const Color& a) {
 }
 
 //-----------------------------------------------------------------------------
-Color& Color::operator+=(const Color& clr) {
+Color Color::operator+=(const Color& clr) {
 	a += clr.a;
 	r += clr.r;
 	g += clr.g;
@@ -46,7 +56,7 @@ Color& Color::operator+=(const Color& clr) {
 }
 
 //-----------------------------------------------------------------------------
-Color& Color::operator*(double a) {
+Color Color::operator*(double a) {
 	Color clr = *this;
 	clr.r *= a;
 	clr.g *= a;
@@ -55,7 +65,7 @@ Color& Color::operator*(double a) {
 }
 
 //-----------------------------------------------------------------------------
-Color& Color::sqrt(void) {
+Color Color::sqrt(void) {
 	r = ::sqrt(r);
 	g = ::sqrt(g);
 	b = ::sqrt(b);
