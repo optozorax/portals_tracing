@@ -8,7 +8,7 @@ Orthogonal::Orthogonal(Vector pos, double scale, double width, double height) : 
 }
 
 //-----------------------------------------------------------------------------
-Ray Orthogonal::getRay(float x, float y) {
+Ray Orthogonal::getRay(float x, float y) const {
 	x -= width/2.0;
 	y -= height/2.0;
 	x *= scale;

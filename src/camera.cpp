@@ -15,22 +15,22 @@ void PerspectiveCamera::assign(double focal1, double viewAngle1, double aperture
 	pos = pos1;
 	width = width1;
 	height = height1;
-	h = 2 * focal * sin(viewAngle/2.0) / cos(viewAngle/2.0);
+	h = 2 * tan(viewAngle/2.0);
 }
 
 //-----------------------------------------------------------------------------
-Ray PerspectiveCamera::getRay(float x, float y) {
-	x -= width/2.0;
-	y -= height/2.0;
-	x /= width/2.0;
-	y /= width/2.0;
-	x *= h/2.0;
-	y *= h/2.0;
-	x = -x;
-	y = -y;
+Ray PerspectiveCamera::getRay(float x, float y) const {
+	x = (x-width/2.0)/height*h;
+	y = (height/2.0-y)/height*h;
+	Vector offset;
+	double alpha = random() * 2 * pi;
+	double r = random();
+	offset.x = sin(alpha)*r * aperture;
+	offset.y = cos(alpha)*r * aperture;
+	offset = i * offset.x + j * offset.y;
 	Ray ray;
-	ray.dir = (pos + i*x + j*y + k*focal) - pos;
-	ray.pos = pos;
+	ray.dir = i*x + j*y + k - offset/focal;
+	ray.pos = pos + offset;
 	ray.dir.normalize();
 	return ray;
 }
@@ -39,13 +39,8 @@ Ray PerspectiveCamera::getRay(float x, float y) {
 void PerspectiveCamera::lookAt(const Vector& towards) {
 	k = towards - pos;
 	k.normalize();
-	if (!(k.x == 0 && k.y == 0)) {
-		i.x = -k.y;
-		i.y = k.x;
-		i.normalize();
-	}
-	j = cross(k, i);
-	j.normalize();
+	i = cross(Vector(0, 0, 1), k).normalize();
+	j = cross(k, i).normalize();
 }
 
 };
