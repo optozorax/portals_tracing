@@ -15,7 +15,7 @@ namespace pt
 	class Polygon : public Shape
 	{
 	public:
-		Polygon(std::vector<Point> polygon, Material* material);
+		Polygon(std::vector<Point> polygon, Coords coords, Material* material);
 
 		bool intersect(const Ray& ray, 
 					   Intersection& inter, 
@@ -23,6 +23,11 @@ namespace pt
 					   double tMax) const;
 
 		std::vector<Point> array;
+		Coords coords;
+	private:
+		double d;
+		Vector normal;
+		Point min, max;
 	};
 
 };

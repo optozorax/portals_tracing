@@ -2,11 +2,13 @@
 #define PT_BASICS_H
 
 #include <random>
+#include <pt/vector.h>
 
 namespace pt
 {
 
 	class Color;
+	struct Coords;
 
 	//-------------------------------------------------------------------------
 	double random(void);
@@ -38,6 +40,12 @@ namespace pt
 
 	const Color transparent(0, 0, 0, 0);
 	const double pi = 3.141592653589793238462643383279;
+
+	struct Coords
+	{
+		Vector i, j, k;
+		Vector pos;
+	};
 
 };
 
