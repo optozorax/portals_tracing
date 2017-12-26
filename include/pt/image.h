@@ -10,6 +10,8 @@ namespace pt
 	{
 	public:
 		Image(int width, int height);
+		Image(const Image& img);
+		Image(const Image* img);
 		~Image();
 
 		void resize(int width, int height);
