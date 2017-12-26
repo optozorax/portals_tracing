@@ -15,7 +15,10 @@ namespace pt
 					 int maxDepth = 30,
 					 double maxT = 100000);
 
-		void render(Camera& camera, Image& img, Object& scene);
+		void render(const Camera& camera, Image& img, const Object& scene);
+
+		Color computeColor(Ray ray, const Object& scene);
+		Color computePixel(int x, int y, const Camera& camera, const Object& scene);
 
 		void onStartRender(void) {}
 		void onEveryLine(float percent) {}
@@ -24,8 +27,6 @@ namespace pt
 		int samples;
 		int maxDepth;
 		int maxT;
-	protected:
-		Color computeColor(Ray ray, const Object& scene);
 	};
 
 	//-------------------------------------------------------------------------

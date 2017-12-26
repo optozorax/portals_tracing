@@ -17,14 +17,16 @@ namespace pt
 
 	//-------------------------------------------------------------------------
 	/** Испускает из камеры ровно один луч, когда луч достигает тела, проверяет, достижим ли источник света, если да, то закрашивает его с учетом источника освещения, иначе с учетом неба или вообще полностью темным закрашивает. */
-	class RayRenderer
+	class RayRenderer : public Renderer
 	{
 	public:
 		RayRenderer(int antialiasing = 1, double maxDepth = 30, double maxT = 100000);
 
-		void render(Camera& camera, Image& img, Object& scene);
+		void render(const Camera& camera, Image& img, const Object& scene);
 
 		Color computeColor(Ray ray, const Object& scene);
+		Color computePixel(int x, int y, const Camera& camera, const Object& scene);
+		
 		Color computeLightColor(Ray ray, const Object& scene, bool haveMaterial, Vector normal);
 
 		void onStartRender(void) {}

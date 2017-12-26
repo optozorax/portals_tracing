@@ -8,7 +8,22 @@ RayRenderer::RayRenderer(int antialiasing, double maxDepth, double maxT) : maxDe
 }
 
 //-----------------------------------------------------------------------------
-inline Color RayRenderer::computeColor(Ray ray, const Object& scene) {
+Color RayRenderer::computePixel(int x, int y, const Camera& cam, const Object& scene) {
+	Color clr(0, 0, 0, 0);
+	for (int ki = 0; ki < antialiasing; ++ki) {
+		for (int kj = 0; kj < antialiasing; ++kj) {
+			double x1 = x + double(ki)/antialiasing;
+			double y1 = y + double(kj)/antialiasing;
+			Ray ray = cam.getRay(x1, y1);
+			clr += computeColor(ray, scene);
+		}
+	}
+	clr /= antialiasing * antialiasing;
+	return clr;
+}
+
+//-----------------------------------------------------------------------------
+Color RayRenderer::computeColor(Ray ray, const Object& scene) {
 	Color materialColor(1, 1, 1, 1);
 	Intersection inter;
 	Color clrAbsorbtion;
@@ -128,20 +143,12 @@ Color RayRenderer::computeLightColor(Ray ray, const Object& scene, bool haveMate
 }
 
 //-----------------------------------------------------------------------------
-void RayRenderer::render(Camera& camera, Image& img, Object& scene) {
+void RayRenderer::render(const Camera& camera, Image& img, const Object& scene) {
 	onStartRender();
 	for (int i = 0; i < img.getWidth(); ++i) {
 		onEveryLine(double(i)/img.getWidth());
 		for (int j = 0; j < img.getHeight(); ++j) {
-			for (int ki = 0; ki < antialiasing; ++ki) {
-				for (int kj = 0; kj < antialiasing; ++kj) {
-					double x = i + double(ki)/antialiasing;
-					double y = j + double(kj)/antialiasing;
-					Ray ray = camera.getRay(x, y);
-					img(i, j) += computeColor(ray, scene);
-				}
-			}
-			img(i, j) /= antialiasing * antialiasing;
+			img(i, j) = computePixel(i, j, camera, scene);
 		}
 	}
 	onEndRendering();

@@ -10,6 +10,19 @@ PathRenderer::PathRenderer(int samples,
 }
 
 //-----------------------------------------------------------------------------
+Color PathRenderer::computePixel(int x, int y, const Camera& camera, const Object& scene) {
+	Color clr(0, 0, 0, 0);
+	for (int i = 0; i < samples; ++i) {
+		double x1 = x + random();
+		double y1 = y + random();
+		Ray ray = camera.getRay(x1, y1);
+		clr += computeColor(ray, scene);
+	}
+	clr /= samples;
+	return clr;
+}
+
+//-----------------------------------------------------------------------------
 Color PathRenderer::computeColor(Ray ray, const Object& scene) {
 	Color resultColor = Color(1, 1, 1, 1);
 	Intersection inter;
@@ -56,18 +69,12 @@ Color PathRenderer::computeColor(Ray ray, const Object& scene) {
 }
 
 //-----------------------------------------------------------------------------
-void PathRenderer::render(Camera& camera, Image& img, Object& scene) {
+void PathRenderer::render(const Camera& camera, Image& img, const Object& scene) {
 	onStartRender();
 	for (int i = 0; i < img.getWidth(); ++i) {
 		onEveryLine(double(i)/img.getWidth());
 		for (int j = 0; j < img.getHeight(); ++j) {
-			for (int k = 0; k < samples; ++k) {
-				double x = i + random();
-				double y = j + random();
-				Ray ray = camera.getRay(x, y);
-				img(i, j) += computeColor(ray, scene);
-			}
-			img(i, j) /= samples;
+			img(i, j) = computePixel(i, j, camera, scene);
 		}
 	}
 	onEndRendering();
