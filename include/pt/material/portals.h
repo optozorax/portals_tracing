@@ -3,23 +3,19 @@
 
 #include <pt/vector.h>
 #include <pt/object.h>
-#include <pt/material/scatter.h>
-#include <pt/shape/triangle.h>
+#include <pt/shape/polygon.h>
 
 namespace pt
 {
 
+	//-------------------------------------------------------------------------
 	class Portals : public Object
 	{
 	public:
-		Portals(Vector a, Vector b, Vector c,
-				Vector a1, Vector b1, Vector c1,
-				Color backside);
+		Portals(CoordSystem c1, CoordSystem c2, Poly2 poly, Material* first, Material* second);
 		~Portals();
 
-		void assign(Vector a, Vector b, Vector c,
-					Vector a1, Vector b1, Vector c1,
-					Color backside);
+		void assign(CoordSystem c1, CoordSystem c2, Poly2 poly, Material* first, Material* second);
 
 		bool intersect(const Ray& ray, 
 					   Intersection& inter, 
@@ -32,11 +28,13 @@ namespace pt
 							Ray& scattered,
 							double& diffusion) const;
 	private:
-		Vector i, j, k;
-		Vector i1, j1, k1;
-		Vector a, a1;
-		Triangle *t1, *t2;
-		Scatter *back;
+		Polygon pg1;
+		Polygon pg2;
+		CoordSystem p1;
+		CoordSystem p2;
+		Poly2 poly;
+		Material* first;
+		Material* second;
 		mutable int currentTriangle;
 	};
 
