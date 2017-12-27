@@ -22,6 +22,9 @@ Polygon::Polygon(std::vector<Point> polygon, Coords coords, Material* material) 
 }
 
 //-----------------------------------------------------------------------------
+/** Big thanks to M. Galetzka and P. Glauner. This code was copied from https://github.com/pglauner/point_in_polygon . */
+
+//-----------------------------------------------------------------------------
 struct Line {
 	Point p1;
 	Point p2;

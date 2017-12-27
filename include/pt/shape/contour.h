@@ -14,7 +14,7 @@ namespace pt
 	class Contour : public Shape
 	{
 	public:
-		Contour(std::vector<Vector> array, double thick, Material* material) : m_sphere(material), m_cylinder(material), Shape(material) {
+		Contour(std::vector<Vector> array, double thick, Material* material) : Shape(material) {
 			assign(array, thick);
 		}
 
@@ -26,10 +26,8 @@ namespace pt
 					   double tMax) const;
 	private:
 		Scene					m_scene;
-		Sphere					m_sphere;
-		Cylinder				m_cylinder;
-		std::vector<TrComplex*>	m_spheres;
-		std::vector<TrComplex*>	m_cylinders;
+		std::vector<Sphere> 	m_spheres;
+		std::vector<Cylinder> 	m_cylinders;
 	};
 
 };

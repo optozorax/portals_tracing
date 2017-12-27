@@ -42,7 +42,7 @@ bool Triangle::intersect(const Ray& ray,
 			double S2 = area(bc, xb, xc);
 			double S3 = area(ac, xa, xc);
 
-			if (fabs((S1 + S2 + S3)/S) < 1.001f) {
+			if (fabs((S1 + S2 + S3)/S) < 1.0001f) {
 				inter.t = t;
 				if (dot(ray.dir, normal) < 0)
 					inter.normal = normal;

@@ -8,30 +8,43 @@ bool Sphere::intersect(const Ray& ray,
 					   Intersection& inter, 
 					   double tMin, 
 					   double tMax) const {
-	double a = dot(ray.dir, ray.dir);
-	double b = 2*dot(ray.dir, ray.pos);
-	double c = dot(ray.pos, ray.pos) - 1;
-	double d = b*b - 4*a*c;
-	if (d < 0)
-		return false;
+	Vector V = ray.dir;
+	Vector P = ray.pos - A;
 
-	double t1 = (-b + sqrt(d)) / (2*a);
-	double t2 = (-b - sqrt(d)) / (2*a);
-	double t;
+	double vv = dot(V, V);
+	double pp = dot(P, P);
+	double pv = dot(P, V);
 
-	if (t1 < t2 && t1 >= tMin && t1 <= tMax)
-		t = t1;
-	else
-		if (t2 >= tMin && t2 <= tMax)
-			t = t2;
-		else
+	float a = vv;
+	float b = 2.0 * pv;
+	float c = pp - r*r;
+
+	float d = b*b - 4*a*c;
+	if (d >= 0) {
+		d = sqrt(d);
+		float t1 = (-b-d)/(2.0*a);
+		float t2 = (-b+d)/(2.0*a);
+		if (t1 > tMin && t1 < tMax) {
+			inter.t = t1;
+			inter.pos = ray.pos + ray.dir * t1;
+			inter.normal = inter.pos - A;
+			inter.normal.normalize();
+			if (dot(ray.dir, inter.normal) >= 0)
+				inter.normal = -inter.normal;
+			return true;
+		} else
+		if (t2 > tMin && t2 < tMax) {
+			inter.t = t2;
+			inter.pos = ray.pos + ray.dir * t2;
+			inter.normal = inter.pos - A;
+			inter.normal.normalize();
+			if (dot(ray.dir, inter.normal) >= 0)
+				inter.normal = -inter.normal;
+			return true;
+		} else
 			return false;
-
-	inter.t = t;
-	inter.pos = ray.pos + ray.dir * t;
-	inter.normal = inter.pos;
-	inter.normal.normalize();
-	return true;	
+	} else
+		return false;
 }
 
 };
