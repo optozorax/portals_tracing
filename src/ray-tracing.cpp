@@ -34,7 +34,6 @@ Color RayRenderer::computeColor(Ray ray, const Object& scene) {
 	bool haveMaterial = false;
 	for (int i = 0; i < maxDepth; ++i) {
 		if (scene.intersect(ray, inter, 0, maxT)) {
-			haveMaterial = true;
 			returned = scene.scatter(ray, inter, clrAbsorbtion, scattered, diffusion);
 
 			// Если полигон полупрозрачный, то его цвет будет комбинацией двух лучей, сложенных с учетом прозрачности
@@ -58,7 +57,7 @@ Color RayRenderer::computeColor(Ray ray, const Object& scene) {
 				// Получаем цвет луча, который пошел бы обычным путем
 				Color ray1color;
 				if (returned == SCATTER_END || returned == SCATTER_RAYTRACING_END) {
-					ray1color = computeLightColor(scattered, scene, true, inter.normal);
+					ray1color = computeLightColor(scattered, scene, inter.normal);
 					ray1color = clrAbsorbtion * ray1color;
 				} else
 					ray1color = computeColor(scattered, scene);
@@ -79,67 +78,120 @@ Color RayRenderer::computeColor(Ray ray, const Object& scene) {
 			materialColor = clrAbsorbtion * materialColor;
 			ray = scattered;
 			scattered.dir.normalize();
-			if (returned == SCATTER_END || returned == SCATTER_RAYTRACING_END)
+			if (returned == SCATTER_END || returned == SCATTER_RAYTRACING_END) {
+				haveMaterial = true;
 				break;
+			}
 		} else
 			break;
 	}
 
 	Color returnColor;
-	Color lightColor = computeLightColor(ray, scene, haveMaterial, inter.normal);
+	Color lightColor = skyColor;
+	if (haveMaterial) 
+		lightColor += computeLightColor(ray, scene, inter.normal);
 	returnColor = materialColor * lightColor;
 	return returnColor;
 }
 
 //-----------------------------------------------------------------------------
-Color RayRenderer::computeLightColor(Ray ray, const Object& scene, bool haveMaterial, Vector normal) {
-	Intersection inter;
-	Vector rayPos = ray.pos;
-	inter.normal = normal;
+Color RayRenderer::computeLightColor(Ray ray, const Object& scene, Vector normal) {
+	Color lightColor(0, 0, 0);
 
-	// Инициируем освещенность глобальным освещением - цветом неба
-	Color lightColor = skyColor;
-	if (haveMaterial) {
-		for (int i = 0; i < luminaries.size(); ++i) {
-
-			// Получаем направление к источнику света
-			ray.dir = luminaries[i].pos - ray.pos;
-			ray.dir.normalize();
-
-			// Данное значение показывает насколько много света освещает тело, следовательно оно влияет на освещенность.
-			double cosine = dot(normal, ray.dir);
-			if (cosine > 0) {
-				Color current(1, 1, 1, 1);
-				again:
-				if (scene.intersect(ray, inter, 0, maxT)) {
-					if (inter.t > (luminaries[i].pos - ray.pos).getLength())
-						// Если при взгляде на точечный источник света на пути к нему нету объектов(пересечение со сценой дальше, чем источник света), то данный источник света освещает объект, и прибавляем его к цвету освещения
-						lightColor += current * luminaries[i].clr * cosine;
-					else {
-						Color clrAbsorbtion;
-						Ray scattered;
-						double diffusion;
-						ScatterType returned = scene.scatter(ray, inter, clrAbsorbtion, scattered, diffusion);
-						// Если на пути к источнику света есть полупрозрачный полигон, то делаем особые вычисления, чтобы вычислить сколько света по каждому из каналов пройдет от данного источника света, затем смещаем луч, чтобы посчитать что есть дальше
-						if (clrAbsorbtion.a < 1) {
-							current.r *= (1 - clrAbsorbtion.a*(1 - clrAbsorbtion.r * (1 - clrAbsorbtion.a)));
-							current.g *= (1 - clrAbsorbtion.a*(1 - clrAbsorbtion.g * (1 - clrAbsorbtion.a)));
-							current.b *= (1 - clrAbsorbtion.a*(1 - clrAbsorbtion.b * (1 - clrAbsorbtion.a)));
-							ray.pos = inter.pos + ray.dir * 0.001;
-							goto again;
-						}
-					}
-				} else
-					// Если при взгляде на точечный источник света на пути к нему нету объектов, то данный источник света освещает объект, и прибавляем его к цвету освещения
-					lightColor += current * luminaries[i].clr * cosine;
-
-				// Возвращаем предыдущее положение луча, так как мы его могли менять во время путешествия сквозь полупрозрачные объекты
-				ray.pos = rayPos;
-			}
-		}
+	for (int i = 0; i < luminaries.size(); ++i) {
+		double tMax = (luminaries[i].pos - ray.pos).getLength();
+		lightColor += rayPassage(ray.pos, normal, luminaries[i].pos, luminaries[i].clr, scene, 3, tMax);
 	}
 
 	return lightColor;
+}
+
+//-----------------------------------------------------------------------------
+Color RayRenderer::rayPassage(Vector pos, Vector normal, Vector lightPos, Color lightColor, const Object& scene, int depth, double tMax) {
+	if (depth == 0)
+		return Color(0, 0, 0, 0);
+
+	Color result(0, 0, 0, 0);
+	// Перебираем все порталы
+	for (int i = 0; i < portals.size(); ++i) {
+		// Создаем копию текущего портала и копию этого же портала, только порталы расположены в обратном порядке. Чтобы обработать как прямой порядок следования порталов, так и обратный.
+		Portals current(portals[i]->p1, portals[i]->p2, portals[i]->poly, nullptr, nullptr);
+		CoordSystem coords1 = current.p2;
+		coords1.k = -coords1.k;
+		CoordSystem coords2 = current.p1;
+		coords2.k = -coords2.k;
+		Portals currentInverse(coords1, coords2, current.poly, nullptr, nullptr);
+
+		// Здесь обрабатывается один портал и источник света
+		auto func = [&] (Portals* current) -> Color {
+			// Получаем положение телепортированного источника света 1->2
+			Vector lightTeleportPos = teleportVector(current->p1, current->p2, lightPos);
+
+			Ray ray;
+			ray.pos = pos;
+			ray.dir = lightTeleportPos - pos;
+			ray.dir.normalize();
+
+			double cosine = dot(ray.dir, normal);
+
+			Color result1(0, 0, 0, 0);
+			Intersection inter;
+			// Если луч, соединяющий текущее положение и телепортированный источник света точно пересекает 2 портал, при этом таким образом, что луч входит в этот портал, то 
+			if (cosine > 0 && dot(ray.dir, current->p2.k) < 0 && current->pg2.intersect(ray, inter, 0, tMax)) {
+				// Делаем проход луча от текущего положения до 2, при этом источник света телепортированный. Глубина-1
+				Color clr1 = rayPassage(ray.pos, ray.dir, lightTeleportPos, lightColor, scene, depth-1, inter.t - 0.01);
+					
+				// Телепортируем текущее положение 2->1
+				Ray ray1;
+				ray1.pos = teleportVector(current->p2, current->p1, pos);
+				ray1.dir = lightPos - ray1.pos;
+				ray1.dir.normalize();
+				ray1.pos += ray1.dir * (inter.t + 0.01);
+
+				// Делаем проход луча от 1 до истинного положения источника света. Глубина-1. Цвет источника освещения уже изменен первым проходом
+				Color clr2 = rayPassage(ray1.pos, ray1.dir, lightPos, clr1, scene, depth-1, tMax - inter.t);
+
+				// Прибавляем их к результирующему цвету умноженному на новый косинус
+				result1 = clr2 * cosine;
+			}
+
+			return result1;
+		};
+
+		// Обрабатываем прямой и обратный порядок следования порталов
+		result += func(&current);
+		result += func(&currentInverse);
+	}
+
+	Ray ray;
+	ray.pos = pos;
+	ray.dir = lightPos - pos;
+	ray.dir.normalize();
+	double cosine = dot(ray.dir, normal);
+	Intersection inter;
+	if (cosine > 0) {
+		again:
+		// Проверяем, есть ли на пути к источнику освещения какие-либо объекты
+		if (scene.intersect(ray, inter, 0, tMax)) {
+			Color clrAbsorbtion;
+			Ray scattered;
+			double diffusion;
+			ScatterType returned = scene.scatter(ray, inter, clrAbsorbtion, scattered, diffusion);
+			// Если на пути к источнику света есть полупрозрачный полигон, то делаем особые вычисления, чтобы вычислить сколько света по каждому из каналов пройдет от данного источника света, затем смещаем луч, чтобы посчитать что есть дальше
+			if (clrAbsorbtion.a < 1) {
+				lightColor.r *= (1 - clrAbsorbtion.a*(1 - clrAbsorbtion.r * (1 - clrAbsorbtion.a)));
+				lightColor.g *= (1 - clrAbsorbtion.a*(1 - clrAbsorbtion.g * (1 - clrAbsorbtion.a)));
+				lightColor.b *= (1 - clrAbsorbtion.a*(1 - clrAbsorbtion.b * (1 - clrAbsorbtion.a)));
+				ray.pos = inter.pos + ray.dir * 0.001;
+				tMax -= inter.t;
+				goto again;
+			}
+		} else
+			// Если нет, то прибавляем к результирующему цвету источник освещения
+			result += lightColor * cosine;
+	}
+
+	return result;
 }
 
 //-----------------------------------------------------------------------------

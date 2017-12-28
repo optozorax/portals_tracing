@@ -62,6 +62,11 @@ namespace pt
 						  const CoordSystem& second,
 						  const Vector& absolutePos);
 
+	/** Телепортирует направление. Направление всегда находится началом в начале абсоютный координат. */
+	Vector teleportDirection(const CoordSystem& first,
+							 const CoordSystem& second,
+							 const Vector& direction);
+
 	/** Аналогично функции teleportVector телепортирует систему координат, сохраняя относительное положение результата относительно second таким же, как и относительное положение p относительно second. */
 	CoordSystem teleportCoordSystem(const CoordSystem& first,
 									const CoordSystem& second,

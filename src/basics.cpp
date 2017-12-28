@@ -90,12 +90,19 @@ Vector teleportVector(const CoordSystem& first, const CoordSystem& second, const
 }
 
 //-----------------------------------------------------------------------------
+Vector teleportDirection(const CoordSystem& first,
+						 const CoordSystem& second,
+						 const Vector& direction) {
+	return teleportVector(first, second, first.pos + direction) - second.pos;
+}
+
+//-----------------------------------------------------------------------------
 CoordSystem teleportCoordSystem(const CoordSystem& first, const CoordSystem& second, const CoordSystem& p) {
 	CoordSystem newsys;
 	newsys.pos = teleportVector(first, second, p.pos);
-	newsys.i = teleportVector(first, second, p.i);
-	newsys.j = teleportVector(first, second, p.j);
-	newsys.k = teleportVector(first, second, p.k);
+	newsys.i = teleportDirection(first, second, p.i);
+	newsys.j = teleportDirection(first, second, p.j);
+	newsys.k = teleportDirection(first, second, p.k);
 	return newsys;
 }
 
@@ -115,7 +122,7 @@ bool isRightCoordSystem(const CoordSystem& coords) {
 	return dot(cross(coords.i, coords.j), coords.k) > 0;
 }
 
-
+//-----------------------------------------------------------------------------
 void rotate2(double& x, double &y, const double& angle) {
 	double x1 = cos(angle)*x - sin(angle)*y;
 	double y1 = sin(angle)*x + cos(angle)*y;

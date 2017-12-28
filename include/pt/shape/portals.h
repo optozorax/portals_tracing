@@ -27,7 +27,6 @@ namespace pt
 							Color& clrAbsorbtion,
 							Ray& scattered,
 							double& diffusion) const;
-	private:
 		Polygon pg1;
 		Polygon pg2;
 		CoordSystem p1;

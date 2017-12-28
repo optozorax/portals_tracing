@@ -1,4 +1,4 @@
-#include "portals.h"
+#include <pt/shape/portals.h>
 
 namespace pt
 {
@@ -78,15 +78,12 @@ ScatterType Portals::scatter(const Ray& ray,
 	scattered.pos = inter.pos;
 	scattered.dir = ray.dir;
 	if (currentTriangle == 1) {
-		scattered.dir = teleportVector(p1, p2, scattered.pos + scattered.dir);
 		scattered.pos = teleportVector(p1, p2, scattered.pos);
-		scattered.dir -= scattered.pos;
+		scattered.dir = teleportDirection(p1, p2, scattered.dir);
 	} else {
-		scattered.dir = teleportVector(p2, p1, scattered.pos + scattered.dir);
 		scattered.pos = teleportVector(p2, p1, scattered.pos);
-		scattered.dir -= scattered.pos;
+		scattered.dir = teleportDirection(p2, p1, scattered.dir);
 	}
-	scattered.pos += scattered.dir * 0.001;
 	clrAbsorbtion = Color(1, 1, 1, 1);
 	diffusion = 0;
 	return SCATTER_NEXT;

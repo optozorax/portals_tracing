@@ -2,6 +2,7 @@
 #define PT_RAY_RENDERER_H
 
 #include <vector>
+#include <pt/shape/portals.h>
 #include <pt/renderer.h>
 
 namespace pt
@@ -27,13 +28,15 @@ namespace pt
 		Color computeColor(Ray ray, const Object& scene);
 		Color computePixel(int x, int y, const Camera& camera, const Object& scene);
 		
-		Color computeLightColor(Ray ray, const Object& scene, bool haveMaterial, Vector normal);
+		Color computeLightColor(Ray ray, const Object& scene, Vector normal);
+		Color rayPassage(Vector pos, Vector normal, Vector lightPos, Color lightColor, const Object& scene, int depth, double tMax);
 
 		void onStartRender(void) {}
 		void onEveryLine(float percent) {}
 		void onEndRendering(void) {}
 
 		std::vector<PointLightSource> luminaries;
+		std::vector<Portals*> portals;
 		Color skyColor;
 		int maxDepth;
 		int maxT;
