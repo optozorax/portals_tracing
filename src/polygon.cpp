@@ -47,8 +47,9 @@ bool Polygon::intersect(const Ray& ray,
 			r.y = (dot(x, coords.j) - dot(coords.pos, coords.j))/dot(coords.j, coords.j);
 
 			bool inRect = r.x >= min.x && r.y >= min.y && r.x <= max.x && r.y <= max.y;
+			bool inPolygon = pointInPolygon(array, r);
 
-			if (inRect && pointInPolygon(array, r)) {
+			if (inRect && inPolygon) {
 				inter.t = t;
 				if (dot(ray.dir, normal) < 0)
 					inter.normal = normal;

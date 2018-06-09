@@ -49,10 +49,10 @@ Color RayRenderer::computeColor(Ray ray, const Object& scene) {
 				Ray through;
 				through.pos = scattered.pos;
 				through.dir = ray.dir;
-				through.pos += through.dir * 0.001;
+				through.pos += through.dir * 0.00001;
 				Color ray2color = computeColor(through, scene);
 
-				scattered.pos += scattered.dir * 0.001;
+				scattered.pos += scattered.dir * 0.00001;
 
 				// Получаем цвет луча, который пошел бы обычным путем
 				Color ray1color;
@@ -73,12 +73,14 @@ Color RayRenderer::computeColor(Ray ray, const Object& scene) {
 				return rayColor;
 			}
 
-			scattered.pos += scattered.dir * 0.001;
+			scattered.pos += scattered.dir * 0.00001;
 
 			materialColor = clrAbsorbtion * materialColor;
 			ray = scattered;
 			scattered.dir.normalize();
-			if (returned == SCATTER_END || returned == SCATTER_RAYTRACING_END) {
+			if (returned == SCATTER_END) {
+				break;
+			} else if (returned == SCATTER_RAYTRACING_END) {
 				haveMaterial = true;
 				break;
 			}
@@ -86,12 +88,13 @@ Color RayRenderer::computeColor(Ray ray, const Object& scene) {
 			break;
 	}
 
-	Color returnColor;
-	Color lightColor = skyColor;
-	if (haveMaterial) 
+	if (haveMaterial) {
+		Color lightColor = skyColor;
 		lightColor += computeLightColor(ray, scene, inter.normal);
-	returnColor = materialColor * lightColor;
-	return returnColor;
+		return materialColor * lightColor;
+	} else {
+		return materialColor;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -172,7 +175,7 @@ Color RayRenderer::rayPassage(Vector pos, Vector normal, Vector lightPos, Color 
 	if (cosine > 0) {
 		again:
 		// Проверяем, есть ли на пути к источнику освещения какие-либо объекты
-		if (scene.intersect(ray, inter, 0, tMax)) {
+		if (scene.intersect(ray, inter, 0, tMax+1) && inter.t <= tMax) {
 			Color clrAbsorbtion;
 			Ray scattered;
 			double diffusion;

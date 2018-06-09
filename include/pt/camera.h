@@ -7,6 +7,8 @@
 namespace pt
 {
 
+	Vector getRotatedVector(const Vector& pos, double r, double alpha, double beta);
+
 	//-------------------------------------------------------------------------
 	class Camera
 	{

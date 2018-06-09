@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <pt/vector.h>
+#include <pt/vector2.h>
 
 namespace pt
 {
@@ -21,7 +22,7 @@ namespace pt
 	public:
 		double r, g, b, a;
 		Color() : r(0), g(0), b(0), a(0) {}
-		Color(double r, double g, double b, double a = 1) : r(r), g(g), b(b), a(a) {}
+		Color(double r, double g, double b, double a = 1) : r(r*r), g(g*g), b(b*b), a(a) {}
 
 		/** Делит цвет на некоторое число для взятия среднего арифметического среди нескольких цветов. Среднее арифметическое так же берется и для альфа канала. */
 		Color operator/=(double k);
@@ -49,13 +50,24 @@ namespace pt
 		Vector pos;
 	};
 
-	const CoordSystem standard = {{0, 0, 1}, {0, 1, 0}, {1, 0, 0}, {0, 0, 0}};
+	bool operator==(const CoordSystem& a, const CoordSystem& b);
+
+	const CoordSystem standard = {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}, {0, 0, 0}};
+
+	/** Вектор pos - положение на плоскости. plane задает эту плоскость, где оси x, y - векторы i, j у системы координат, нормаль - k, положение центра - pos. Возвращает положение точки pos в трехмерном пространстве. */
+	Vector transform(const CoordSystem& plane, const Vector2 pos);
 
 	/** Выражает вектор p из обычных координат в координаты new. При этом его абсолютное расположение сохраняется.  */
 	Vector toCoordSystem(const CoordSystem& newsys, Vector p);
 
 	/** Вектор p задан в координатах current, преобразует его к абсолютным координатам и возвращает. Его абсолютное положение сохраняется. */
 	Vector fromCoordSystem(const CoordSystem& current, const Vector& p);
+
+	/** Выражает направление p из обычных координат в координаты new. */
+	Vector toCoordSystemDirection(const CoordSystem& newsys, Vector p);
+
+	/** Направление p задано в координатах current, преобразует его к абсолютным координатам и возвращает. */
+	Vector fromCoordSystemDirection(const CoordSystem& current, const Vector& p);
 
 	/** Предполагает, что точка absolutePos(заданная в абсоютных координатах) вошла в портал, заданный системой координат first. Телепортирует его в систему координат second, при этом возвращая абсолютные координаты. Относительное расположение результирующего вектора в системе координат second точно такое же, как и в системе координат first. */
 	Vector teleportVector(const CoordSystem& first,
@@ -84,11 +96,6 @@ namespace pt
 	CoordSystem rotate(const CoordSystem& coords, Vector angles);
 
 	//-------------------------------------------------------------------------
-	struct Vector2 
-	{
-		double x, y;
-	};
-
 	typedef std::vector<Vector2> Poly2;
 
 	bool pointInPolygon(const Poly2& poly, Vector2 p);

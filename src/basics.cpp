@@ -69,18 +69,38 @@ Color Color::sqrt(void) {
 }
 
 //-----------------------------------------------------------------------------
+bool operator==(const CoordSystem& a, const CoordSystem& b) {
+	return a.pos == b.pos && a.i == b.i && a.j == b.j && a.k == b.k;
+}
+
+//-----------------------------------------------------------------------------
+Vector transform(const CoordSystem& plane, const Vector2 pos) {
+	return plane.pos + plane.i * pos.x + plane.j * pos.y;
+}
+
+//-----------------------------------------------------------------------------
 Vector toCoordSystem(const CoordSystem& newsys, Vector p) {
 	Vector pnew;
 	p -= newsys.pos;
-	pnew.x = dot(p, newsys.i);
-	pnew.y = dot(p, newsys.j);
-	pnew.z = dot(p, newsys.k);
+	pnew.x = dot(p, newsys.i)/dot(newsys.i, newsys.i);
+	pnew.y = dot(p, newsys.j)/dot(newsys.j, newsys.j);
+	pnew.z = dot(p, newsys.k)/dot(newsys.k, newsys.k);
 	return pnew;
 }
 
 //-----------------------------------------------------------------------------
 Vector fromCoordSystem(const CoordSystem& current, const Vector& p) {
 	return current.pos + current.i * p.x + current.j * p.y + current.k * p.z;
+}
+
+//-----------------------------------------------------------------------------
+Vector toCoordSystemDirection(const CoordSystem& newsys, Vector p) {
+	return toCoordSystem(newsys, p + newsys.pos);
+}
+
+//-----------------------------------------------------------------------------
+Vector fromCoordSystemDirection(const CoordSystem& current, const Vector& p) {
+	return fromCoordSystem(current, p) - current.pos;
 }
 
 //-----------------------------------------------------------------------------
@@ -93,7 +113,8 @@ Vector teleportVector(const CoordSystem& first, const CoordSystem& second, const
 Vector teleportDirection(const CoordSystem& first,
 						 const CoordSystem& second,
 						 const Vector& direction) {
-	return teleportVector(first, second, first.pos + direction) - second.pos;
+	Vector inFirst = toCoordSystemDirection(first, direction);
+	return fromCoordSystemDirection(second, inFirst);
 }
 
 //-----------------------------------------------------------------------------

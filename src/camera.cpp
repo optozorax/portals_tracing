@@ -4,6 +4,14 @@ namespace pt
 {
 
 //-----------------------------------------------------------------------------
+Vector getRotatedVector(const Vector& pos, double r, double alpha, double beta) {
+	Vector pos1(Vector(sin(pt::pi/2 - beta) * cos(alpha), sin(pt::pi/2 - beta) * sin(alpha), cos(pt::pi/2 - beta)));
+	pos1 *= r; 
+	pos1 += pos;
+	return pos1;
+}
+
+//-----------------------------------------------------------------------------
 PerspectiveCamera::PerspectiveCamera(double focal, double viewAngle, double aperture, Vector pos, double width, double height) : Camera(pos) {
 	assign(focal, viewAngle, aperture, pos, width, height);
 }
