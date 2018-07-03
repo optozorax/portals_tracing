@@ -16,7 +16,7 @@ namespace pt
 		Camera(Vector pos) : pos(pos) {}
 
 		virtual ~Camera() {}
-		virtual Ray getRay(float x, float y) const = 0;
+		virtual Ray getRay(double x, double y) const = 0;
 
 		Vector pos;
 	};
@@ -39,7 +39,7 @@ namespace pt
 					double width1, 
 					double height1);
 
-		Ray getRay(float x, float y) const;
+		Ray getRay(double x, double y) const;
 
 		void lookAt(const Vector& towards);
 

@@ -20,17 +20,17 @@ bool Cylinder::intersect(const Ray& ray,
 	double dp = dot(D, P);
 	double pv = dot(P, V);
 
-	float a = dd * vv -  dv * dv;
-	float b = 2.0 * (dd * pv - dp * dv);
-	float c = dd * pp - dp * dp - r*r * dd;
+	double a = dd * vv -  dv * dv;
+	double b = 2.0 * (dd * pv - dp * dv);
+	double c = dd * pp - dp * dp - r*r * dd;
 
-	float d = b*b - 4*a*c;
+	double d = b*b - 4*a*c;
 	if (d >= 0) {
 		d = sqrt(d);
-		float t1 = (-b-d)/(2.0*a);
-		float t2 = (-b+d)/(2.0*a);
-		float t1p = dot(P + V*t1, D)/dd;
-		float t2p = dot(P + V*t2, D)/dd;
+		double t1 = (-b-d)/(2.0*a);
+		double t2 = (-b+d)/(2.0*a);
+		double t1p = dot(P + V*t1, D)/dd;
+		double t2p = dot(P + V*t2, D)/dd;
 		if (t1 > tMin && t1 < tMax && t1p >= 0 && t1p <= 1)  {
 			inter.t = t1;
 			inter.pos = ray.pos + ray.dir * t1;

@@ -19,7 +19,7 @@ namespace pt
 
 		/** Функции, необходимые для отслеживания прогресса рендеринга. Необходимы, так как рендеринг может длиться очень долго. */
 		virtual void onStartRender(void) = 0;
-		virtual void onEveryLine(float percent) = 0;
+		virtual void onEveryLine(double percent) = 0;
 		virtual void onEndRendering(void) = 0;
 
 	};

@@ -27,7 +27,7 @@ void PerspectiveCamera::assign(double focal1, double viewAngle1, double aperture
 }
 
 //-----------------------------------------------------------------------------
-Ray PerspectiveCamera::getRay(float x, float y) const {
+Ray PerspectiveCamera::getRay(double x, double y) const {
 	x = (x-width/2.0)/height*h;
 	y = (height/2.0-y)/height*h;
 	Vector offset;

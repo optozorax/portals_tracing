@@ -21,7 +21,7 @@ namespace pt
 		Color computePixel(int x, int y, const Camera& camera, const Object& scene);
 
 		void onStartRender(void) {}
-		void onEveryLine(float percent) {}
+		void onEveryLine(double percent) {}
 		void onEndRendering(void) {}
 
 		int samples;

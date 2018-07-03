@@ -23,7 +23,7 @@ namespace pt
 	//-------------------------------------------------------------------------
 	struct Intersection
 	{
-		float t;
+		double t;
 		Vector pos;
 		Vector normal;
 	};

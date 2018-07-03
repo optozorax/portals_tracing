@@ -11,7 +11,7 @@ namespace pt
 	public:
 		Orthogonal(Vector pos, double scale, double width, double height);
 
-		Ray getRay(float x, float y) const;
+		Ray getRay(double x, double y) const;
 
 		/** Направляет ортогональную камеру в указанную точку. */
 		void lookTowards(Vector toward);

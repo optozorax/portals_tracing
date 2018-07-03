@@ -32,7 +32,7 @@ namespace pt
 		Color rayPassage(Vector pos, Vector normal, Vector lightPos, Color lightColor, const Object& scene, int depth, double tMax);
 
 		void onStartRender(void) {}
-		void onEveryLine(float percent) {}
+		void onEveryLine(double percent) {}
 		void onEndRendering(void) {}
 
 		std::vector<PointLightSource> luminaries;

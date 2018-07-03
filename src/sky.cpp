@@ -24,7 +24,7 @@ ScatterType Sky::scatter(const Ray& ray,
 						 Ray& scattered,
 						 double& diffusion) const {
 	Vector dir = ray.dir;
-	float k = (dir.normalize().z + 1) * 0.5f;
+	double k = (dir.normalize().z + 1) * 0.5;
 	clrAbsorbtion.r = clr1.r * (1 - k) + clr2.r * k;
 	clrAbsorbtion.g = clr1.g * (1 - k) + clr2.g * k;
 	clrAbsorbtion.b = clr1.b * (1 - k) + clr2.b * k;
