@@ -18,10 +18,7 @@ ScatterType Reflect::scatter(const Ray& ray,
 	scattered.dir = ray.dir;
 	reflect(scattered.dir, inter.normal);
 	diffusion = diffuse;
-	if (dot(scattered.dir, inter.normal) > 0)
-		return SCATTER_NEXT;
-	else
-		return SCATTER_END;
+	return SCATTER_NEXT;
 }
 
 };

@@ -13,9 +13,12 @@ bool MathRoom::intersect(const Ray& ray,
 					Intersection& inter, 
 					double tMin, 
 					double tMax) const {
-	if (ray.dir.z == 0)
+	double t;
+	if (ray.dir.z == 0) {
+		t = tMax;
 		goto to_sphere;
-	double t = -ray.pos.z/ray.dir.z;
+	}
+	t = -ray.pos.z/ray.dir.z;
 	if (tMin < t && t < tMax) {
 		// Попали на плоскость пола
 		inter.t = t;

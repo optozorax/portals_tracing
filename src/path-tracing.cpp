@@ -48,19 +48,19 @@ Color PathRenderer::computeColor(Ray ray, const Object& scene) {
 			// Посчитать результирующй цвет после данного отражения
 			resultColor = clrAbsorbtion * resultColor;
 
-			// Сместить положение луча в некотором направлении
-			scattered.pos += scattered.dir * 0.001;
-
 			// Изменить направление в соответствии с рассеиванием
 			scattered.dir += randomSphere() * diffusion;
 			scattered.dir.normalize();
+
+			// Сместить положение луча в некотором направлении
+			scattered.pos += scattered.dir * 0.00001;
 
 			ray = scattered;
 			if (returned == SCATTER_END)
 				break;
 		} else {
-			if (i == 0)
-				resultColor = Color(0, 0, 0, 0);
+			//if (i == 0)
+			resultColor = Color(0, 0, 0, 0);
 			break;
 		}
 	}

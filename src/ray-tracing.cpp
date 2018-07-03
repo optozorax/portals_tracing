@@ -76,8 +76,8 @@ Color RayRenderer::computeColor(Ray ray, const Object& scene) {
 			scattered.pos += scattered.dir * 0.00001;
 
 			materialColor = clrAbsorbtion * materialColor;
-			ray = scattered;
 			scattered.dir.normalize();
+			ray = scattered;
 			if (returned == SCATTER_END) {
 				break;
 			} else if (returned == SCATTER_RAYTRACING_END) {
