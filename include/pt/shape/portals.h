@@ -37,6 +37,9 @@ namespace pt
 		mutable int currentTriangle;
 	};
 
+	//-------------------------------------------------------------------------
+	Portals invert(Portals a);
+
 };
 
 #endif

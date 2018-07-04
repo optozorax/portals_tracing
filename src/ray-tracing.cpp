@@ -37,7 +37,7 @@ Color RayRenderer::computeColor(Ray ray, const Object& scene) {
 			returned = scene.scatter(ray, inter, clrAbsorbtion, scattered, diffusion);
 
 			// Если полигон полупрозрачный, то его цвет будет комбинацией двух лучей, сложенных с учетом прозрачности
-			if (clrAbsorbtion.a != 1) {
+			if (clrAbsorbtion.a != 1.0) {
 				// Изменяем и сохраняем глубину рендерера, чтобы он не зациклился
 				int temp = maxDepth;
 				maxDepth -= i;

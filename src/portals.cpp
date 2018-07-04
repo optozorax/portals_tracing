@@ -89,4 +89,13 @@ ScatterType Portals::scatter(const Ray& ray,
 	return SCATTER_NEXT;
 }
 
+//-----------------------------------------------------------------------------
+Portals invert(Portals a) {
+	CoordSystem coords1 = a.p2;
+	coords1.k = -coords1.k;
+	CoordSystem coords2 = a.p1;
+	coords2.k = -coords2.k;
+	return Portals(coords1, coords2, a.poly, a.second, a.first);
+}
+
 }
