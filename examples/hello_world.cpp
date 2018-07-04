@@ -26,7 +26,7 @@ public:
 		time = GetTickCount();
 	}
 
-	void onEveryLine(float percent) {
+	void onEveryLine(double percent) {
 		std::cout << "\rRender time: " << (GetTickCount() - time)/1000.0 << "s; Percent: " << percent * 100 << "%";
 	}
 
@@ -52,27 +52,28 @@ int main() {
 	ren.luminaries.push_back(PointLightSource(Vector(0, 1, 3), Color(0.2, 0.2, 0.2)));
 
 	Scene scene;
-	scene.array.push_back(new Sphere(new Reflect(Color(0.7, 0.7, 0.7), 0)));
-	//scene.array.push_back(new Sphere(new Scatter(Color(0.1, 0.1, 0.1))));
+	scene.array.push_back(new Sphere(Vector(0, 0, 0), 1, new Reflect(Color(0.7, 0.7, 0.7), 0)));
 	const double size = 500;
 	const double depth = -3;
 	Vector a(-size, -size, depth);
 	Vector b(-size, size, depth);
 	Vector c(size, size, depth);
 	Vector d(size, -size, depth);
-	scene.array.push_back(new Triangle(a, b, c, new Scatter(Color(0.1, 0, 0.1))));
-	scene.array.push_back(new Triangle(c, d, a, new Scatter(Color(0.1, 0, 0.2))));
+	scene.array.push_back(new Triangle(a, b, c, new Scatter(Color(0.4, 0, 0.4))));
+	scene.array.push_back(new Triangle(c, d, a, new Scatter(Color(0.4, 0, 0.6))));
 	a = Vector(-5, 5, 1);
 	b = Vector(-5, 6, 3);
 	c = Vector(-8, 9, 5);
-	scene.array.push_back(new Triangle(a, b, c, new Scatter(Color(0.1, 0, 0.1))));
+	scene.array.push_back(new Triangle(a, b, c, new Scatter(Color(0.4, 0, 0.4))));
 	a = Vector(0, 0, 1);
 	b = Vector(-0.5, 1.2, 1);
 	c = Vector(-1.2, 1.2, 1);
-	scene.array.push_back(new Triangle(a, b, c, new Scatter(pt::Color(0.1, 0.1, 0.2))));
+	scene.array.push_back(new Triangle(a, b, c, new Scatter(pt::Color(0.4, 0.4, 0.6))));
 
 	Vector pos(sin(pi/2 - beta) * cos(alpha), sin(pi/2 - beta) * sin(alpha), cos(pi/2 - beta));
 	pos *= 3;
+
+	scene.array.push_back(new Sky(Color(0.3, 0.3, 0.9), Color(1, 1, 1)));
 
 	PerspectiveCamera cam(1, pi/2.0, 0, pos, img.getWidth(), img.getHeight());
 	cam.lookAt(Vector(0));
@@ -92,13 +93,11 @@ int main() {
 	saveAsBmp(img, "hello_world_ray_ort.bmp");
 
 	PathRenderer2 ren2(100);
-	scene.array.push_back(new Sky(Color(0.3, 0.3, 0.9), Color(1, 1, 1)));
 	img.clear();
 	ren2.render(cam, img, scene);
 	img.colorCorrection();
 	saveAsBmp(img, "hello_world_path_perspective.bmp");
 
-	scene.array.push_back(new Sky(Color(0.3, 0.3, 0.9), Color(1, 1, 1)));
 	img.clear();
 	ren2.render(cam2, img, scene);
 	img.colorCorrection();
