@@ -77,10 +77,12 @@ namespace {
 //-----------------------------------------------------------------------------
 Color computeLight(Vector pos, Vector normal,
 				   const Object& scene,
-				   const std::vector<PointLightSource>& luminaries,
+				   const std::vector<PointLight>& luminaries,
 				   const std::vector<Portals*>& portals, 
 				   std::vector<std::pair<Portals, Vector> >& teleportation,
 				   int depth) {
+	// В этой функции предполагается, что все источники света должны быть телепортированы через порталы, указанные в teleportation, и для всех них как раз проверяется, чтобы через все эти порталы свет мог попасть к текущему месту, которое проверяется на освещенность
+
 	// Тут тоже отложим поддержку прозрачности до лучших времен
 	Color result(0, 0, 0, 0);
 	Intersection inter;
@@ -90,47 +92,67 @@ Color computeLight(Vector pos, Vector normal,
 	Ray ray;
 
 	for (auto i : luminaries) {
+		// Эта переменная отвечает за то, чтобы луч света проходил через все текущие порталы, если она на миг становится false, то перебор данного источника света сразу прекращается
 		bool isPass = true;
 		for (int j = teleportation.size() - 1; j >= 0; --j) {
+			// Получаем луч, который идет от текущего телепортированного положения до текущего источника света
 			Vector& pos = teleportation[j].second;
 			Portals& portal = teleportation[j].first;
 			ray = {pos, i.pos - pos};
 			ray.dir.normalize();
 
+			// Проверяем, чтобы этот луч входил в портал
 			isPass &= dot(ray.dir, portal.p2.k) > 0;
 			if (!isPass) goto next;
 			isPass &= portal.pg2.intersect(ray, inter, 0, 100000);
 			if (!isPass) goto next;
 
+			// Проверяем, чтобы на пути от портала до текущего положения источника света не было препятствий
 			ray.pos += ray.dir * (inter.t + 0.00001);
 			t = (i.pos - ray.pos).getLength();
 			isIntersect = scene.intersect(ray, inter, 0, t + 1);
-			isPass &= !isIntersect || (isIntersect && inter.t < t);
+			isPass &= !isIntersect || (isIntersect && inter.t > t);
 			if (!isPass) goto next;
-			i.pos -= ray.dir * 0.00002;
+
+			// Сдвигаем источник света по лучу ближе к текущему месту, на освещенность данного конкретного места не повлияет, а после сдвига телепортируем, чтобы рассчитывать это для других порталов
+			i.pos -= ray.dir * (t + 0.00003);
 			i.pos = teleportVector(portal.p2, portal.p1, i.pos);
 		}
 
+		// Получаем луч от текущего абсолютного места до текущего источника света
 		ray = {pos, i.pos - pos};
 		ray.dir.normalize();
+		normal.normalize();
 		ray.pos += ray.dir * 0.00001;
+
+		// Проверяем, чтобы на пути не было препятствий
 		t = (i.pos - pos).getLength();
 		isIntersect = scene.intersect(ray, inter, 0, t + 1);
 		isPass &= !isIntersect || (isIntersect && inter.t > t);
 		if (!isPass) goto next;
+
+		// Если всех этих препятствий нет, то прибавляем освещение от этого источника света
 		cosine = dot(ray.dir, normal);
 		result += i.clr * cosine;
 
 		next:;
 	}
+
+	// Далее, если позволяет глубина, перебираем все порталы дальше
 	if (depth >= 0) {
 		for (auto j : portals) {
 			auto recursion = [&] (const Portals& portal) {
-				Vector newPos = teleportVector(portal.p1, portal.p2, teleportation.back().second);
+				Vector newPos;
+				if (teleportation.size() != 0)
+					newPos = teleportVector(portal.p1, portal.p2, teleportation.back().second);
+				else
+					newPos = teleportVector(portal.p1, portal.p2, pos);
 				teleportation.push_back({portal, newPos});
 				result += computeLight(pos, normal, scene, luminaries, portals, teleportation, depth-1);
 				teleportation.pop_back();
 			};
+
+			// Перебираем прямой и обратный порядок следования порталов
 			recursion(*j);
 			recursion(invert(*j));
 		}
@@ -252,13 +274,13 @@ Color StandardRendererWithPointLight::computeColor(Ray ray) {
 			scattered.dir.normalize();
 
 			// Сместить положение луча в некотором направлении
-			scattered.pos += inter.normal * 0.00001;
+			scattered.pos += scattered.dir * 0.00001;
 
 			// Считаем цвет освещения, но его надо считать только когда у нас обычный материал
 			if (returned == SCATTER_RAYTRACING_END) {
 				Color lightColor = Color(1, 1, 1, 1);
 				std::vector<std::pair<Portals, Vector> > teleportation;
-				lightColor += computeLight(scattered.pos, inter.normal, scene, luminaries, portals, teleportation, 3);
+				lightColor += computeLight(scattered.pos, inter.normal, scene, luminaries, portals, teleportation, 2);
 				clrAbsorbtion = lightColor * clrAbsorbtion;
 			}
 

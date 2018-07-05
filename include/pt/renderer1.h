@@ -15,9 +15,9 @@ namespace pt
 
 	//-------------------------------------------------------------------------
 	/** Точечный источник света, характеризуется положением и цветом. Так как все цвета нормализуются, то от цвета берется квадратный корень, чтобы освещение на самом деле вело себя как освещение. */
-	struct PointLightSource
+	struct PointLight
 	{
-		PointLightSource(Vector pos, Color clr) : pos(pos), clr(clr.sqrt()) {}
+		PointLight(Vector pos, Color clr) : pos(pos), clr(clr.sqrt()) {}
 
 		Vector pos;
 		Color clr;
@@ -26,7 +26,7 @@ namespace pt
 	/** Считает все возможное освещение от точечных источников освещения в данной позиции сцены, при этом учитывается наличие порталов, а так же то, что объекты могут быть полупрозрачны. */
 	Color computeLight(Vector pos, Vector normal,
 					   const Object& scene,
-					   const std::vector<PointLightSource>& luminaries,
+					   const std::vector<PointLight>& luminaries,
 					   const std::vector<Portals*>& portals,
 					   std::vector<std::pair<Portals, Vector> >& teleportation,
 					   int depth);
@@ -74,10 +74,10 @@ namespace pt
 		void render(void);
 
 		/** Массив точечных источников освещения. Пользователь сам их задает, далее это учитывается при рендеринге. */
-		std::vector<PointLightSource>	luminaries;
+		std::vector<PointLight>	luminaries;
 
 		/** Массив указателей на объекты порталов. Только таким образом можно учесть телепортацию точечных источников освещения через порталы, из сцены нельзя получить информацию о порталах. Так же получается, что пользователь сам задает когда ему надо учитывать в освещении портал, а когда не надо. */
-		std::vector<Portals*>			portals;
+		std::vector<Portals*>	portals;
 	protected:
 		int maxDepth;
 		double diffusionCoef;
