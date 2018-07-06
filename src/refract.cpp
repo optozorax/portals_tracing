@@ -15,7 +15,7 @@ ScatterType Refract::scatter(const Ray& ray,
 							 Ray& scattered,
 							 double& diffusion) const {
 	double ri;
-	Vector normal;
+	vec3 normal;
 
 	if (dot(ray.dir, inter.normal) > 0) {
 		// Out of object

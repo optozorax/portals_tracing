@@ -1,7 +1,6 @@
 #ifndef PT_OBJECT_H
 #define PT_OBJECT_H
 
-#include <pt/vector.h>
 #include <pt/basics.h>
 
 namespace pt
@@ -16,16 +15,16 @@ namespace pt
 	//-------------------------------------------------------------------------
 	struct Ray
 	{
-		Vector pos;
-		Vector dir;
+		vec3 pos;
+		vec3 dir;
 	};
 
 	//-------------------------------------------------------------------------
 	struct Intersection
 	{
 		double t;
-		Vector pos;
-		Vector normal;
+		vec3 pos;
+		vec3 normal;
 	};
 
 	enum ScatterType

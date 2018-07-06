@@ -9,14 +9,14 @@ namespace pt
 	class Cylinder : public Shape
 	{
 	public:
-		Cylinder(Vector a, Vector b, double r, Material* material) : Shape(material), A(a), B(b), r(r) {}
+		Cylinder(vec3 a, vec3 b, double r, Material* material) : Shape(material), A(a), B(b), r(r) {}
 
 		bool intersect(const Ray& ray, 
 					   Intersection& inter, 
 					   double tMin, 
 					   double tMax) const;
 	private:
-		Vector A, B;
+		vec3 A, B;
 		double r;
 	};
 

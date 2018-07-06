@@ -1,7 +1,6 @@
 #ifndef PT_PORTALS_H
 #define PT_PORTALS_H
 
-#include <pt/vector.h>
 #include <pt/object.h>
 #include <pt/shape/polygon.h>
 
@@ -12,10 +11,10 @@ namespace pt
 	class Portals : public Object
 	{
 	public:
-		Portals(CoordSystem c1, CoordSystem c2, Poly2 poly, Material* first, Material* second);
+		Portals(CoordSystem c1, CoordSystem c2, std::vector<vec2> poly, Material* first, Material* second);
 		~Portals();
 
-		void assign(CoordSystem c1, CoordSystem c2, Poly2 poly, Material* first, Material* second);
+		void assign(CoordSystem c1, CoordSystem c2, std::vector<vec2> poly, Material* first, Material* second);
 
 		bool intersect(const Ray& ray, 
 					   Intersection& inter, 
@@ -31,7 +30,7 @@ namespace pt
 		Polygon pg2;
 		CoordSystem p1;
 		CoordSystem p2;
-		Poly2 poly;
+		std::vector<vec2> poly;
 		Material* first;
 		Material* second;
 		mutable int currentTriangle;

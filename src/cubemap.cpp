@@ -100,7 +100,7 @@ ScatterType CubeMap::scatter(const Ray& ray,
 						 Color& clrAbsorbtion,
 						 Ray& scattered,
 						 double& diffusion) const {
-	Vector dir = ray.dir;
+	vec3 dir = ray.dir;
 	int index = 0;
 	double u = 0, v = 0;
 

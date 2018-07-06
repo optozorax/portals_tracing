@@ -10,21 +10,21 @@ namespace pt
 	class Polygon : public Shape
 	{
 	public:
-		Polygon(const Poly2& polygon, CoordSystem coords, Material* material);
+		Polygon(const std::vector<vec2>& polygon, CoordSystem coords, Material* material);
 
-		void assign(const Poly2& polygon, CoordSystem coords, Material* material);
+		void assign(const std::vector<vec2>& polygon, CoordSystem coords, Material* material);
 
 		bool intersect(const Ray& ray, 
 					   Intersection& inter, 
 					   double tMin, 
 					   double tMax) const;
 	private:
-		std::vector<Vector2> array;
+		std::vector<vec2> array;
 		CoordSystem coords;
 		
 		double d;
-		Vector normal;
-		Vector2 min, max;
+		vec3 normal;
+		vec2 min, max;
 	};
 
 };

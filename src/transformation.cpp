@@ -49,20 +49,20 @@ ScatterType Transformation::scatter(const Ray& ray,
 }
 
 //-----------------------------------------------------------------------------
-TrMove::TrMove(const Vector& diff, Object* obj) : diff(diff), Transformation(obj) {}
+TrMove::TrMove(const vec3& diff, Object* obj) : diff(diff), Transformation(obj) {}
 
 //-----------------------------------------------------------------------------
-Vector TrMove::transform(const Vector& p) const {
+vec3 TrMove::transform(const vec3& p) const {
 	return p - diff;
 }
 
 //-----------------------------------------------------------------------------
-Vector TrMove::inverse(const Vector& p) const {
+vec3 TrMove::inverse(const vec3& p) const {
 	return p + diff;
 }
 
 //-----------------------------------------------------------------------------
-TrRotate::TrRotate(const Vector& angles, Object* obj) : angles(angles), Transformation(obj) {}
+TrRotate::TrRotate(const vec3& angles, Object* obj) : angles(angles), Transformation(obj) {}
 
 //-----------------------------------------------------------------------------
 void TrRotate::rotate2(double& x, double &y, const double& angle) const {
@@ -73,8 +73,8 @@ void TrRotate::rotate2(double& x, double &y, const double& angle) const {
 }
 
 //-----------------------------------------------------------------------------
-Vector TrRotate::transform(const Vector& p) const {
-	Vector a = p;
+vec3 TrRotate::transform(const vec3& p) const {
+	vec3 a = p;
 	rotate2(a.x, a.y, angles.z);
 	rotate2(a.x, a.z, angles.y);
 	rotate2(a.y, a.z, angles.x);
@@ -82,8 +82,8 @@ Vector TrRotate::transform(const Vector& p) const {
 }
 
 //-----------------------------------------------------------------------------
-Vector TrRotate::inverse(const Vector& p) const {
-	Vector a = p;
+vec3 TrRotate::inverse(const vec3& p) const {
+	vec3 a = p;
 	rotate2(a.y, a.z, -angles.x);
 	rotate2(a.x, a.z, -angles.y);
 	rotate2(a.x, a.y, -angles.z);
@@ -91,11 +91,11 @@ Vector TrRotate::inverse(const Vector& p) const {
 }
 
 //-----------------------------------------------------------------------------
-TrScale::TrScale(const Vector& scale, Object* obj) : scale(scale), Transformation(obj) {}
+TrScale::TrScale(const vec3& scale, Object* obj) : scale(scale), Transformation(obj) {}
 
 //-----------------------------------------------------------------------------
-Vector TrScale::transform(const Vector& p) const {
-	Vector a = p;
+vec3 TrScale::transform(const vec3& p) const {
+	vec3 a = p;
 	a.x /= scale.x;
 	a.y /= scale.y;
 	a.z /= scale.z;
@@ -103,8 +103,8 @@ Vector TrScale::transform(const Vector& p) const {
 }
 
 //-----------------------------------------------------------------------------
-Vector TrScale::inverse(const Vector& p) const {
-	Vector a = p;
+vec3 TrScale::inverse(const vec3& p) const {
+	vec3 a = p;
 	a.x *= scale.x;
 	a.y *= scale.y;
 	a.z *= scale.z;
@@ -112,16 +112,16 @@ Vector TrScale::inverse(const Vector& p) const {
 }
 
 //-----------------------------------------------------------------------------
-TrComplex::TrComplex(const Vector& scale, const Vector& angles, const Vector& diff, Object* obj) : m_scale(scale, nullptr), m_rotate(angles, nullptr), m_move(diff, nullptr), scale(m_scale.scale), angles(m_rotate.angles), diff(m_move.diff), Transformation(obj) {}
+TrComplex::TrComplex(const vec3& scale, const vec3& angles, const vec3& diff, Object* obj) : m_scale(scale, nullptr), m_rotate(angles, nullptr), m_move(diff, nullptr), scale(m_scale.scale), angles(m_rotate.angles), diff(m_move.diff), Transformation(obj) {}
 
 //-----------------------------------------------------------------------------
-Vector TrComplex::transform(const Vector& p) const {
+vec3 TrComplex::transform(const vec3& p) const {
 	//return m_move.transform(m_rotate.transform(m_scale.transform(p)));
 	return m_scale.transform(m_rotate.transform(m_move.transform(p)));
 }
 
 //-----------------------------------------------------------------------------
-Vector TrComplex::inverse(const Vector& p) const {
+vec3 TrComplex::inverse(const vec3& p) const {
 	//return m_scale.inverse(m_rotate.inverse(m_move.inverse(p)));
 	return m_move.inverse(m_rotate.inverse(m_scale.inverse(p)));
 }

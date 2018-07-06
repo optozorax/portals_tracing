@@ -9,16 +9,16 @@ namespace pt
 	class Triangle : public Shape
 	{
 	public:
-		Triangle(Vector a, Vector b, Vector c, Material* material);
+		Triangle(vec3 a, vec3 b, vec3 c, Material* material);
 
 		bool intersect(const Ray& ray, 
 					   Intersection& inter, 
 					   double tMin, 
 					   double tMax) const;
 
-		Vector a, b, c;
+		vec3 a, b, c;
 	private:
-		Vector normal;
+		vec3 normal;
 		double d;
 		double S;
 		double ab, bc, ac;

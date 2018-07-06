@@ -9,7 +9,7 @@ namespace pt
 	class Camera360 : public Camera
 	{
 	public:
-		Camera360(Vector pos, double resolution);
+		Camera360(vec3 pos, double resolution);
 
 		Ray getRay(double x, double y, bool isDiffuse) const;
 

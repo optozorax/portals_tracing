@@ -7,6 +7,5 @@
 #include <pt/object.h>
 #include <pt/renderer.h>
 #include <pt/transformation.h>
-#include <pt/vector.h>
 
 #endif

@@ -22,7 +22,7 @@ bool MathRoom::intersect(const Ray& ray,
 	if (tMin < t && t < tMax) {
 		// Попали на плоскость пола
 		inter.t = t;
-		inter.normal = Vector(0, 0, 1);
+		inter.normal = vec3(0, 0, 1);
 		inter.pos = ray.pos + ray.dir * inter.t;
 
 		x = inter.pos.x;

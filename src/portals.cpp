@@ -4,7 +4,7 @@ namespace pt
 {
 
 //-----------------------------------------------------------------------------
-Portals::Portals(CoordSystem c1, CoordSystem c2, Poly2 poly, Material* first, Material* second) : p1(c1), p2(c2), poly(poly), first(first), second(second), pg1(poly, c1, nullptr), pg2(poly, c2, nullptr) {
+Portals::Portals(CoordSystem c1, CoordSystem c2, std::vector<vec2> poly, Material* first, Material* second) : p1(c1), p2(c2), poly(poly), first(first), second(second), pg1(poly, c1, nullptr), pg2(poly, c2, nullptr) {
 }
 
 //-----------------------------------------------------------------------------
@@ -12,7 +12,7 @@ Portals::~Portals() {
 }
 
 //-----------------------------------------------------------------------------
-void Portals::assign(CoordSystem c1, CoordSystem c2, Poly2 poly1, Material* first1, Material* second1) {
+void Portals::assign(CoordSystem c1, CoordSystem c2, std::vector<vec2> poly1, Material* first1, Material* second1) {
 	pg1.assign(poly1, c1, nullptr);
 	pg2.assign(poly1, c2, nullptr);
 	p1 = c1;

@@ -9,18 +9,18 @@ namespace pt
 	class Orthogonal : public Camera
 	{
 	public:
-		Orthogonal(Vector pos, double scale, double width, double height);
+		Orthogonal(vec3 pos, double scale, double width, double height);
 
 		Ray getRay(double x, double y, bool isDiffuse) const;
 
 		/** Направляет ортогональную камеру в указанную точку. */
-		void lookTowards(Vector toward);
+		void lookTowards(vec3 toward);
 
 		double scale;
 		double width;
 		double height;
 	private:
-		Vector i, j, k;
+		vec3 i, j, k;
 	};
 
 };

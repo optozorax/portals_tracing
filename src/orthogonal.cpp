@@ -4,7 +4,7 @@ namespace pt
 {
 
 //-----------------------------------------------------------------------------
-Orthogonal::Orthogonal(Vector pos, double scale, double width, double height) : Camera(pos), scale(scale), width(width), height(height) {
+Orthogonal::Orthogonal(vec3 pos, double scale, double width, double height) : Camera(pos), scale(scale), width(width), height(height) {
 }
 
 //-----------------------------------------------------------------------------
@@ -20,7 +20,7 @@ Ray Orthogonal::getRay(double x, double y, bool isDiffuse) const {
 }
 
 //-----------------------------------------------------------------------------
-void Orthogonal::lookTowards(Vector toward) {
+void Orthogonal::lookTowards(vec3 toward) {
 	k = toward - pos;
 	k.normalize();
 	if (!(k.x == 0 && k.y == 0)) {

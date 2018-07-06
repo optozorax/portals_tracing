@@ -4,7 +4,7 @@ namespace pt
 {
 
 //-----------------------------------------------------------------------------
-void Contour::assign(const std::vector<Vector>& array, double thick, bool isClosed) {
+void Contour::assign(const std::vector<vec3>& array, double thick, bool isClosed) {
 	for (int i = 0; i < array.size(); ++i)
 		m_spheres.push_back(Sphere(array[i], thick, nullptr));
 	for (int i = 0; i < array.size()-1; ++i)

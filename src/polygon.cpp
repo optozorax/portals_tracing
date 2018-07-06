@@ -4,12 +4,12 @@ namespace pt
 {
 
 //-----------------------------------------------------------------------------
-Polygon::Polygon(const std::vector<Vector2>& polygon, CoordSystem coords1, Material* material) : Shape(material) {
+Polygon::Polygon(const std::vector<vec2>& polygon, CoordSystem coords1, Material* material) : Shape(material) {
 	assign(polygon, coords1, material);
 }
 
 //-----------------------------------------------------------------------------
-void Polygon::assign(const Poly2& polygon, CoordSystem coords1, Material* material1) {
+void Polygon::assign(const std::vector<vec2>& polygon, CoordSystem coords1, Material* material1) {
 	array = polygon;
 	coords = coords1;
 	material = material1;
@@ -40,9 +40,9 @@ bool Polygon::intersect(const Ray& ray,
 
 		if (t > tMin && t < tMax) {
 			// Position when ray intersect plane
-			Vector x = ray.pos + ray.dir * t;
+			vec3 x = ray.pos + ray.dir * t;
 
-			Vector2 r;
+			vec2 r;
 			r.x = (dot(x, coords.i) - dot(coords.pos, coords.i))/dot(coords.i, coords.i);
 			r.y = (dot(x, coords.j) - dot(coords.pos, coords.j))/dot(coords.j, coords.j);
 

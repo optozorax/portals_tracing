@@ -28,8 +28,8 @@ namespace pt
 							Ray& scattered,
 							double& diffusion) const;
 
-		virtual Vector transform(const Vector& p) const = 0;
-		virtual Vector inverse(const Vector& p) const = 0;
+		virtual vec3 transform(const vec3& p) const = 0;
+		virtual vec3 inverse(const vec3& p) const = 0;
 		
 	private:
 		Object* m_obj;
@@ -41,52 +41,52 @@ namespace pt
 	class TrMove : public Transformation
 	{
 	public:
-		TrMove(const Vector& diff, Object* obj);
+		TrMove(const vec3& diff, Object* obj);
 
-		Vector transform(const Vector& p) const;
-		Vector inverse(const Vector& p) const;
+		vec3 transform(const vec3& p) const;
+		vec3 inverse(const vec3& p) const;
 
-		Vector diff;
+		vec3 diff;
 	};
 
 	//-------------------------------------------------------------------------
 	class TrRotate : public Transformation
 	{
 	public:
-		TrRotate(const Vector& angles, Object* obj);
+		TrRotate(const vec3& angles, Object* obj);
 
-		Vector transform(const Vector& p) const;
-		Vector inverse(const Vector& p) const;
+		vec3 transform(const vec3& p) const;
+		vec3 inverse(const vec3& p) const;
 
 		void rotate2(double& x, double &y, const double& angle) const;
 
-		Vector angles; 
+		vec3 angles; 
 	};
 
 	//-------------------------------------------------------------------------
 	class TrScale : public Transformation
 	{
 	public:
-		TrScale(const Vector& scale, Object* obj);
+		TrScale(const vec3& scale, Object* obj);
 
-		Vector transform(const Vector& p) const;
-		Vector inverse(const Vector& p) const;
+		vec3 transform(const vec3& p) const;
+		vec3 inverse(const vec3& p) const;
 
-		Vector scale;
+		vec3 scale;
 	};
 
 	//-------------------------------------------------------------------------
 	class TrComplex : public Transformation
 	{
 	public:
-		TrComplex(const Vector& scale, const Vector& angles, const Vector& diff, Object* obj);
+		TrComplex(const vec3& scale, const vec3& angles, const vec3& diff, Object* obj);
 
-		Vector transform(const Vector& p) const;
-		Vector inverse(const Vector& p) const;
+		vec3 transform(const vec3& p) const;
+		vec3 inverse(const vec3& p) const;
 
-		Vector& scale;
-		Vector& angles;
-		Vector& diff;
+		vec3& scale;
+		vec3& angles;
+		vec3& diff;
 	private:
 		TrScale m_scale;
 		TrRotate m_rotate;

@@ -8,8 +8,8 @@ bool Sphere::intersect(const Ray& ray,
 					   Intersection& inter, 
 					   double tMin, 
 					   double tMax) const {
-	Vector V = ray.dir;
-	Vector P = ray.pos - A;
+	vec3 V = ray.dir;
+	vec3 P = ray.pos - A;
 
 	double vv = dot(V, V);
 	double pp = dot(P, P);

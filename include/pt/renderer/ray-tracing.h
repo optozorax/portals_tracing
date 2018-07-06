@@ -10,9 +10,9 @@ namespace pt
 
 	struct PointLightSource
 	{
-		PointLightSource(Vector pos, Color clr) : pos(pos), clr(clr) {}
+		PointLightSource(vec3 pos, Color clr) : pos(pos), clr(clr) {}
 
-		Vector pos;
+		vec3 pos;
 		Color clr;
 	};
 
@@ -28,8 +28,8 @@ namespace pt
 		Color computeColor(Ray ray, const Object& scene);
 		Color computePixel(int x, int y, const Camera& camera, const Object& scene);
 		
-		Color computeLightColor(Ray ray, const Object& scene, Vector normal);
-		Color rayPassage(Vector pos, Vector normal, Vector lightPos, Color lightColor, const Object& scene, int depth, double tMax);
+		Color computeLightColor(Ray ray, const Object& scene, vec3 normal);
+		Color rayPassage(vec3 pos, vec3 normal, vec3 lightPos, Color lightColor, const Object& scene, int depth, double tMax);
 
 		void onStartRender(void) {}
 		void onEveryLine(double percent) {}

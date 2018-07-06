@@ -98,7 +98,7 @@ Color RayRenderer::computeColor(Ray ray, const Object& scene) {
 }
 
 //-----------------------------------------------------------------------------
-Color RayRenderer::computeLightColor(Ray ray, const Object& scene, Vector normal) {
+Color RayRenderer::computeLightColor(Ray ray, const Object& scene, vec3 normal) {
 	Color lightColor(0, 0, 0);
 
 	for (int i = 0; i < luminaries.size(); ++i) {
@@ -110,7 +110,7 @@ Color RayRenderer::computeLightColor(Ray ray, const Object& scene, Vector normal
 }
 
 //-----------------------------------------------------------------------------
-Color RayRenderer::rayPassage(Vector pos, Vector normal, Vector lightPos, Color lightColor, const Object& scene, int depth, double tMax) {
+Color RayRenderer::rayPassage(vec3 pos, vec3 normal, vec3 lightPos, Color lightColor, const Object& scene, int depth, double tMax) {
 	if (depth == 0)
 		return Color(0, 0, 0, 0);
 
@@ -128,7 +128,7 @@ Color RayRenderer::rayPassage(Vector pos, Vector normal, Vector lightPos, Color 
 		// Здесь обрабатывается один портал и источник света
 		auto func = [&] (Portals* current) -> Color {
 			// Получаем положение телепортированного источника света 1->2
-			Vector lightTeleportPos = teleportVector(current->p1, current->p2, lightPos);
+			vec3 lightTeleportPos = teleportVector(current->p1, current->p2, lightPos);
 
 			Ray ray;
 			ray.pos = pos;

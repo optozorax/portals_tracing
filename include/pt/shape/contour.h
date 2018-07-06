@@ -14,11 +14,11 @@ namespace pt
 	class Contour : public Shape
 	{
 	public:
-		Contour(std::vector<Vector> array, double thick, bool isClosed, Material* material) : Shape(material) {
+		Contour(std::vector<vec3> array, double thick, bool isClosed, Material* material) : Shape(material) {
 			assign(array, thick, isClosed);
 		}
 
-		void assign(const std::vector<Vector>& array, double thick, bool isClosed);
+		void assign(const std::vector<vec3>& array, double thick, bool isClosed);
 
 		bool intersect(const Ray& ray, 
 					   Intersection& inter, 

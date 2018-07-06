@@ -191,7 +191,7 @@ Color StandardRendererWithPointLight::computeColor(Ray ray) {
 			// Считаем цвет освещения, но его надо считать только когда у нас обычный материал
 			if (returned == SCATTER_RAYTRACING_END) {
 				Color lightColor = Color(1, 1, 1, 1);
-				std::vector<std::pair<Portals, Vector> > teleportation;
+				std::vector<std::pair<Portals, vec3> > teleportation;
 				lightColor += computeLight(scattered.pos, inter.normal, teleportation, 3);
 				clrAbsorbtion = lightColor * clrAbsorbtion;
 			}
@@ -245,8 +245,8 @@ Color StandardRendererWithPointLight::computeColor(Ray ray) {
 
 //-----------------------------------------------------------------------------
 Color StandardRendererWithPointLight::computeLight(
-	Vector pos, Vector normal,
-	std::vector<std::pair<Portals, Vector> >& teleportation,
+	vec3 pos, vec3 normal,
+	std::vector<std::pair<Portals, vec3> >& teleportation,
 	int depth) {
 	// В этой функции предполагается, что все источники света должны быть телепортированы через порталы, указанные в teleportation, и для всех них как раз проверяется, чтобы через все эти порталы свет мог попасть к текущему месту, которое проверяется на освещенность
 
@@ -263,7 +263,7 @@ Color StandardRendererWithPointLight::computeLight(
 		bool isPass = true;
 		for (int j = teleportation.size() - 1; j >= 0; --j) {
 			// Получаем луч, который идет от текущего телепортированного положения до текущего источника света
-			Vector& pos = teleportation[j].second;
+			vec3& pos = teleportation[j].second;
 			Portals& portal = teleportation[j].first;
 			ray = {pos, i.pos - pos};
 			ray.dir.normalize();
@@ -309,7 +309,7 @@ Color StandardRendererWithPointLight::computeLight(
 	if (depth > 0) {
 		for (auto j : portals) {
 			auto recursion = [&] (const Portals& portal) {
-				Vector newPos;
+				vec3 newPos;
 				if (teleportation.size() != 0)
 					newPos = teleportVector(portal.p1, portal.p2, teleportation.back().second);
 				else

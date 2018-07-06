@@ -1,16 +1,45 @@
 #ifndef PT_BASICS_H
 #define PT_BASICS_H
 
-#include <vector>
-#include <pt/vector.h>
-#include <pt/vector2.h>
+#include <prtl/coord_system.h>
+#include <prtl/vector2.h>
+#include <prtl/vector3.h>
+#include <prtl/common.h>
+#include <prtl/polygon.h>
 
 namespace pt
 {
 
-	class Color;
-	struct CoordSystem;
-	struct Vector2;
+	// Используем это сущности из prtl
+	using prtl::vec3;
+	using prtl::vec2;
+	using prtl::CoordSystem;
+	using prtl::pointInPolygon;
+	using prtl::dot;
+	using prtl::cross;
+	using prtl::calculateCoordSystem;
+	using prtl::computeCenter;
+	using prtl::computeContour;
+	using prtl::fromCoordSystem;
+	using prtl::fromCoordSystemDirection;
+	using prtl::isCoordSystemNear;
+	using prtl::isPolygonsEqual;
+	using prtl::isRightCoordSystem;
+	using prtl::isVec2Near;
+	using prtl::isVec3Near;
+	using prtl::operator*;
+	using prtl::operator+;
+	using prtl::operator-;
+	using prtl::operator/;
+	using prtl::rotate;
+	using prtl::rotateAroundAxis;
+	using prtl::standard;
+	using prtl::teleportCoordSystem;
+	using prtl::teleportDirection;
+	using prtl::teleportVector;
+	using prtl::toCoordSystem;
+	using prtl::toCoordSystemDirection;
+	using prtl::transform;
 
 	//-------------------------------------------------------------------------
 	const double pi = 3.141592653589793238462643383279;
@@ -44,61 +73,9 @@ namespace pt
 	Color overlay(const Color& upper, const Color& lower);
 
 	//-------------------------------------------------------------------------
-	struct CoordSystem
-	{
-		Vector i, j, k;
-		Vector pos;
-	};
-
-	bool operator==(const CoordSystem& a, const CoordSystem& b);
-
-	const CoordSystem standard = {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}, {0, 0, 0}};
-
-	/** Вектор pos - положение на плоскости. plane задает эту плоскость, где оси x, y - векторы i, j у системы координат, нормаль - k, положение центра - pos. Возвращает положение точки pos в трехмерном пространстве. */
-	Vector transform(const CoordSystem& plane, const Vector2 pos);
-
-	/** Выражает вектор p из обычных координат в координаты new. При этом его абсолютное расположение сохраняется.  */
-	Vector toCoordSystem(const CoordSystem& newsys, Vector p);
-
-	/** Вектор p задан в координатах current, преобразует его к абсолютным координатам и возвращает. Его абсолютное положение сохраняется. */
-	Vector fromCoordSystem(const CoordSystem& current, const Vector& p);
-
-	/** Выражает направление p из обычных координат в координаты new. */
-	Vector toCoordSystemDirection(const CoordSystem& newsys, Vector p);
-
-	/** Направление p задано в координатах current, преобразует его к абсолютным координатам и возвращает. */
-	Vector fromCoordSystemDirection(const CoordSystem& current, const Vector& p);
-
-	/** Предполагает, что точка absolutePos(заданная в абсоютных координатах) вошла в портал, заданный системой координат first. Телепортирует его в систему координат second, при этом возвращая абсолютные координаты. Относительное расположение результирующего вектора в системе координат second точно такое же, как и в системе координат first. */
-	Vector teleportVector(const CoordSystem& first,
-						  const CoordSystem& second,
-						  const Vector& absolutePos);
-
-	/** Телепортирует направление. Направление всегда находится началом в начале абсоютный координат. */
-	Vector teleportDirection(const CoordSystem& first,
-							 const CoordSystem& second,
-							 const Vector& direction);
-
-	/** Аналогично функции teleportVector телепортирует систему координат, сохраняя относительное положение результата относительно second таким же, как и относительное положение p относительно second. */
-	CoordSystem teleportCoordSystem(const CoordSystem& first,
-									const CoordSystem& second,
-									const CoordSystem& p);
-
-	/** Вектор a - начало этой системы координат. Вектор (b-a) - ось I. Ортогональная часть из (c-a) - ось J. Векторное произведение I на J - ось K. Обязательное условие - три точки с заданными радиус-векторами не должны находиться на одной прямой!!! */
-	CoordSystem calculateCoordSystem(const Vector& a, 
-									 const Vector& b, 
-									 const Vector& c);
-
-	/** Определяет, является ли система координат правой. */
-	bool isRightCoordSystem(const CoordSystem& coords);
-
-	/** Поворачивает систему координат по заданным углам эйлера angles. См. https://ru.wikipedia.org/wiki/Углы_Эйлера . */
-	CoordSystem rotate(const CoordSystem& coords, Vector angles);
-
-	//-------------------------------------------------------------------------
-	typedef std::vector<Vector2> Poly2;
-
-	bool pointInPolygon(const Poly2& poly, Vector2 p);
+	void reflect(vec3& ray, const vec3& normal);
+	bool refract(vec3& ray, const vec3& normal, double refractiveIndex);
+	vec3 randomSphere(void);
 
 };
 

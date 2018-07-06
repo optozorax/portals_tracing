@@ -4,7 +4,6 @@
 #include <vector>
 
 #include <pt/basics.h>
-#include <pt/vector.h>
 #include <pt/camera.h>
 #include <pt/image.h>
 #include <pt/object.h>
@@ -17,9 +16,9 @@ namespace pt
 	/** Точечный источник света, характеризуется положением и цветом. Так как все цвета нормализуются, то от цвета берется квадратный корень, чтобы освещение на самом деле вело себя как освещение. */
 	struct PointLight
 	{
-		PointLight(Vector pos, Color clr) : pos(pos), clr(clr.sqrt()) {}
+		PointLight(vec3 pos, Color clr) : pos(pos), clr(clr.sqrt()) {}
 
-		Vector pos;
+		vec3 pos;
 		Color clr;
 	};
 
@@ -88,8 +87,8 @@ namespace pt
 		Color computeColor(Ray ray);
 
 		/** Считает все возможное освещение от точечных источников освещения в данной позиции сцены, при этом учитывается наличие порталов, а так же то, что объекты могут быть полупрозрачны. */
-		Color computeLight(Vector pos, Vector normal,
-						   std::vector<std::pair<Portals, Vector> >& teleportation,
+		Color computeLight(vec3 pos, vec3 normal,
+						   std::vector<std::pair<Portals, vec3> >& teleportation,
 						   int depth);
 	};
 
