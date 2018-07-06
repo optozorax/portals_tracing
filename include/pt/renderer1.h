@@ -61,13 +61,13 @@ namespace pt
 	{
 	public:
 		/** Инициализация рендеринга. Для каждой новой картинки необходимо заново инициализировать рендерер.
-			Для ray-tracing: diffusionCoef = 0, isBreakOnMaterial = true.
-			Для path-tracing: diffusionCoef = 1, isBreakOnMaterial = false. */
+			Для ray-tracing: isDiffuse = 0, isBreakOnMaterial = true.
+			Для path-tracing: isDiffuse = 1, isBreakOnMaterial = false. */
 		StandardRendererWithPointLight(const Camera& camera, 
 									   const Object& scene,
 									   Image& img, 
 									   int maxDepth, 
-									   double diffusionCoef, 
+									   bool isDiffuse, 
 									   bool isBreakOnMaterial);
 
 		/** Рендерит в заданную картинку с заданной камерой, сценой и параметрами. Порядок рендеринга - случайные пиксели, это дает возможность хорошо предсказывать время рендеринга. */
@@ -80,7 +80,7 @@ namespace pt
 		std::vector<Portals*>	portals;
 	protected:
 		int maxDepth;
-		double diffusionCoef;
+		bool isDiffuse;
 		bool isBreakOnMaterial;
 
 		double time;

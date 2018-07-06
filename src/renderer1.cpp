@@ -169,11 +169,11 @@ StandardRendererWithPointLight::StandardRendererWithPointLight(const Camera& cam
 	const Object& scene,
 	Image& img, 
 	int maxDepth, 
-	double diffusionCoef, 
+	bool isDiffuse, 
 	bool isBreakOnMaterial) : 
 	Renderer1(camera, scene, img),
 	maxDepth(maxDepth),
-	diffusionCoef(diffusionCoef),
+	isDiffuse(isDiffuse),
 	isBreakOnMaterial(isBreakOnMaterial) {
 }
 
@@ -245,7 +245,7 @@ void StandardRendererWithPointLight::onEndRendering(void) {
 
 //-----------------------------------------------------------------------------
 Color StandardRendererWithPointLight::computePixel(int x, int y) {
-	return computeColor(camera.getRay(x, y));
+	return computeColor(camera.getRay(x, y, isDiffuse));
 }
 
 //-----------------------------------------------------------------------------
@@ -269,8 +269,8 @@ Color StandardRendererWithPointLight::computeColor(Ray ray) {
 			clrAbsorbtion.a = 1;
 
 			// Изменить направление в соответствии с рассеиванием
-			if (diffusionCoef != 0)
-				scattered.dir += randomSphere() * diffusion * diffusionCoef;
+			if (isDiffuse)
+				scattered.dir += randomSphere() * diffusion;
 			scattered.dir.normalize();
 
 			// Сместить положение луча в некотором направлении
@@ -350,7 +350,7 @@ Color RayTracing::computePixel(int x, int y) {
 		for (int kj = 0; kj < antialiasing; ++kj) {
 			double x1 = x + double(ki)/antialiasing;
 			double y1 = y + double(kj)/antialiasing;
-			Ray ray = camera.getRay(x1, y1);
+			Ray ray = camera.getRay(x1, y1, isDiffuse);
 			clr += computeColor(ray);
 		}
 	}
@@ -376,7 +376,7 @@ Color PathTracing::computePixel(int x, int y) {
 	for (int i = 0; i < samples; ++i) {
 		double x1 = x + random();
 		double y1 = y + random();
-		Ray ray = camera.getRay(x1, y1);
+		Ray ray = camera.getRay(x1, y1, isDiffuse);
 		clr += computeColor(ray);
 	}
 	clr /= samples;

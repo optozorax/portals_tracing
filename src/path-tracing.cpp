@@ -15,7 +15,7 @@ Color PathRenderer::computePixel(int x, int y, const Camera& camera, const Objec
 	for (int i = 0; i < samples; ++i) {
 		double x1 = x + random();
 		double y1 = y + random();
-		Ray ray = camera.getRay(x1, y1);
+		Ray ray = camera.getRay(x1, y1, true);
 		clr += computeColor(ray, scene);
 	}
 	clr /= samples;
@@ -100,7 +100,7 @@ Image FitfulPathRenderer::renderStep(int samples) {
 			for (int k = 0; k < samples; ++k) {
 				double x = i + random();
 				double y = j + random();
-				Ray ray = m_camera->getRay(x, y);
+				Ray ray = m_camera->getRay(x, y, true);
 				(*m_img)(i, j) += computeColor(ray, *m_scene);
 			}
 		}

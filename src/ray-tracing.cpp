@@ -14,7 +14,7 @@ Color RayRenderer::computePixel(int x, int y, const Camera& cam, const Object& s
 		for (int kj = 0; kj < antialiasing; ++kj) {
 			double x1 = x + double(ki)/antialiasing;
 			double y1 = y + double(kj)/antialiasing;
-			Ray ray = cam.getRay(x1, y1);
+			Ray ray = cam.getRay(x1, y1, false);
 			clr += computeColor(ray, scene);
 		}
 	}

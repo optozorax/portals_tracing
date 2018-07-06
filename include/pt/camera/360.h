@@ -11,7 +11,7 @@ namespace pt
 	public:
 		Camera360(Vector pos, double resolution);
 
-		Ray getRay(double x, double y) const;
+		Ray getRay(double x, double y, bool isDiffuse) const;
 
 		double resolution;
 	};

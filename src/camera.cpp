@@ -27,18 +27,21 @@ void PerspectiveCamera::assign(double focal1, double viewAngle1, double aperture
 }
 
 //-----------------------------------------------------------------------------
-Ray PerspectiveCamera::getRay(double x, double y) const {
+Ray PerspectiveCamera::getRay(double x, double y, bool isDiffuse) const {
 	x = (x-width/2.0)/height*h;
 	y = (height/2.0-y)/height*h;
-	Vector offset;
-	double alpha = random() * 2 * pi;
-	double r = random();
-	offset.x = sin(alpha)*r * aperture;
-	offset.y = cos(alpha)*r * aperture;
-	offset = i * offset.x + j * offset.y;
-	Ray ray;
-	ray.dir = i*x + j*y + k - offset/focal;
-	ray.pos = pos + offset;
+	Ray ray = {};
+	if (isDiffuse) {
+		Vector offset;
+		double alpha = random() * 2 * pi;
+		double r = random();
+		offset.x = sin(alpha)*r * aperture;
+		offset.y = cos(alpha)*r * aperture;
+		offset = i * offset.x + j * offset.y;
+		ray.dir -= offset / focal;
+		ray.pos = pos + offset;
+	}
+	ray.dir = i * x + j * y + k;
 	ray.dir.normalize();
 	return ray;
 }

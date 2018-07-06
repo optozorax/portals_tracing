@@ -7,7 +7,7 @@ namespace pt
 Camera360::Camera360(Vector pos, double resolution) : Camera(pos), resolution(resolution) {}
 
 //-----------------------------------------------------------------------------
-Ray Camera360::getRay(double x, double y) const {
+Ray Camera360::getRay(double x, double y, bool isDiffuse) const {
 	x -= resolution;
 	y -= resolution / 2.0;
 	x *= pi/resolution;
