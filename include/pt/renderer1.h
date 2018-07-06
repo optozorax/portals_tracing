@@ -58,7 +58,8 @@ namespace pt
 		StandardRendererWithPointLight(const Camera& camera, 
 									   const Object& scene,
 									   Image& img, 
-									   int maxDepth, 
+									   int maxDepth,
+									   double tMax, 
 									   bool isDiffuse, 
 									   bool isBreakOnMaterial);
 
@@ -72,6 +73,7 @@ namespace pt
 		std::vector<Portals*>	portals;
 	protected:
 		int maxDepth;
+		double tMax;
 		bool isDiffuse;
 		bool isBreakOnMaterial;
 
@@ -109,7 +111,8 @@ namespace pt
 				   const Object& scene,
 				   Image& img, 
 				   int aliasing = 1,
-				   int maxDepth = 30);
+				   int maxDepth = 30,
+				   double tMax = 100000);
 
 	protected:
 		int antialiasing;
@@ -137,7 +140,8 @@ namespace pt
 					const Object& scene,
 					Image& img, 
 					int samples = 400,
-					int maxDepth = 30);
+					int maxDepth = 30,
+					double tMax = 100000);
 
 	protected:
 		int samples;

@@ -79,10 +79,12 @@ StandardRendererWithPointLight::StandardRendererWithPointLight(const Camera& cam
 	const Object& scene,
 	Image& img, 
 	int maxDepth, 
+	double tMax,
 	bool isDiffuse, 
 	bool isBreakOnMaterial) : 
 	Renderer1(camera, scene, img),
 	maxDepth(maxDepth),
+	tMax(tMax),
 	isDiffuse(isDiffuse),
 	isBreakOnMaterial(isBreakOnMaterial) {
 }
@@ -168,7 +170,7 @@ Color StandardRendererWithPointLight::computeColor(Ray ray) {
 	ScatterType returned;
 	
 	for (int i = 0; i < maxDepth; ++i) {
-		if (scene.intersect(ray, inter, 0, 100000)) {
+		if (scene.intersect(ray, inter, 0, tMax)) {
 			returned = scene.scatter(ray, inter, clrAbsorbtion, scattered, diffusion);
 
 			if (returned == SCATTER_NEXT)
@@ -269,7 +271,7 @@ Color StandardRendererWithPointLight::computeLight(
 			// Проверяем, чтобы этот луч входил в портал
 			isPass &= dot(ray.dir, portal.p2.k) > 0;
 			if (!isPass) goto next;
-			isPass &= portal.pg2.intersect(ray, inter, 0, 100000);
+			isPass &= portal.pg2.intersect(ray, inter, 0, tMax);
 			if (!isPass) goto next;
 
 			// Проверяем, чтобы на пути от портала до текущего положения источника света не было препятствий
@@ -334,7 +336,8 @@ RayTracing::RayTracing(const Camera& camera,
 					   const Object& scene,
 					   Image& img, 
 					   int aliasing,
-					   int maxDepth) : StandardRendererWithPointLight(camera, scene, img, maxDepth, 0, true), antialiasing(aliasing) {
+					   int maxDepth,
+					   double tMax) : StandardRendererWithPointLight(camera, scene, img, maxDepth, tMax, 0, true), antialiasing(aliasing) {
 }
 
 //-----------------------------------------------------------------------------
@@ -361,7 +364,8 @@ PathTracing::PathTracing(const Camera& camera,
 						 const Object& scene,
 						 Image& img, 
 						 int samples,
-						 int maxDepth) : StandardRendererWithPointLight(camera, scene, img, maxDepth, 1, false), samples(samples) {
+						 int maxDepth,
+						 double tMax) : StandardRendererWithPointLight(camera, scene, img, maxDepth, tMax, 1, false), samples(samples) {
 }
 
 //-----------------------------------------------------------------------------
