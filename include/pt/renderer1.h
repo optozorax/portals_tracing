@@ -23,14 +23,6 @@ namespace pt
 		Color clr;
 	};
 
-	/** Считает все возможное освещение от точечных источников освещения в данной позиции сцены, при этом учитывается наличие порталов, а так же то, что объекты могут быть полупрозрачны. */
-	Color computeLight(Vector pos, Vector normal,
-					   const Object& scene,
-					   const std::vector<PointLight>& luminaries,
-					   const std::vector<Portals*>& portals,
-					   std::vector<std::pair<Portals, Vector> >& teleportation,
-					   int depth);
-
 	//-------------------------------------------------------------------------
 	/** Абстрактный класс рендерера. */
 	class Renderer1
@@ -92,6 +84,11 @@ namespace pt
 
 		Color computePixel(int x, int y);
 		Color computeColor(Ray ray);
+
+		/** Считает все возможное освещение от точечных источников освещения в данной позиции сцены, при этом учитывается наличие порталов, а так же то, что объекты могут быть полупрозрачны. */
+		Color computeLight(Vector pos, Vector normal,
+						   std::vector<std::pair<Portals, Vector> >& teleportation,
+						   int depth);
 	};
 
 	//-------------------------------------------------------------------------
