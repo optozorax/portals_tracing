@@ -139,7 +139,7 @@ Color computeLight(Vector pos, Vector normal,
 	}
 
 	// Далее, если позволяет глубина, перебираем все порталы дальше
-	if (depth >= 0) {
+	if (depth > 0) {
 		for (auto j : portals) {
 			auto recursion = [&] (const Portals& portal) {
 				Vector newPos;
@@ -280,7 +280,7 @@ Color StandardRendererWithPointLight::computeColor(Ray ray) {
 			if (returned == SCATTER_RAYTRACING_END) {
 				Color lightColor = Color(1, 1, 1, 1);
 				std::vector<std::pair<Portals, Vector> > teleportation;
-				lightColor += computeLight(scattered.pos, inter.normal, scene, luminaries, portals, teleportation, 2);
+				lightColor += computeLight(scattered.pos, inter.normal, scene, luminaries, portals, teleportation, 3);
 				clrAbsorbtion = lightColor * clrAbsorbtion;
 			}
 

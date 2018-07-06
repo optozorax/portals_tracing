@@ -17,6 +17,7 @@
 
 int main() {
 	using namespace pt;
+	bool isDrawHints = false;
 
 	Image img(1000, 500);
 	Scene scene;
@@ -95,10 +96,13 @@ int main() {
 	double spsize = 0.05;
 	Vector spherePos = lightPos + Vector(0, 0, spsize + 0.01);
 	scene.array.push_back(new Sphere(spherePos, spsize, new Scatter(Color(1, 1, 1, 1))));
-	Vector spherePos1 = teleportVector(ren.portals[1]->p2, ren.portals[1]->p1, spherePos);
-	scene.array.push_back(new Sphere(spherePos1, spsize, new Scatter(Color(0.5, 0.5, 0.5, 1))));
-	Vector spherePos2 = teleportVector(ren.portals[0]->p2, ren.portals[0]->p1, spherePos1);
-	scene.array.push_back(new Sphere(spherePos2, spsize, new Scatter(Color(0.25, 0.25, 0.25, 1))));
+
+	if (isDrawHints) {
+		Vector spherePos1 = teleportVector(ren.portals[1]->p2, ren.portals[1]->p1, spherePos);
+		scene.array.push_back(new Sphere(spherePos1, spsize, new Scatter(Color(0.5, 0.5, 0.5, 1))));
+		Vector spherePos2 = teleportVector(ren.portals[0]->p2, ren.portals[0]->p1, spherePos1);
+		scene.array.push_back(new Sphere(spherePos2, spsize, new Scatter(Color(0.25, 0.25, 0.25, 1))));
+	}
 
 	// Добавляем небо
 	scene.array.push_back(new Sky(Color(0.3, 0.3, 0.9), Color(1, 1, 1)));
@@ -112,12 +116,31 @@ int main() {
 	// Рендерим первую картинку
 	ren.render();
 	img.colorCorrection();
-	saveAsBmp(img, "portal_light_test1.bmp");
+	if (isDrawHints)
+		saveAsBmp(img, "portal_light_test1_hints_1.bmp");
+	else
+		saveAsBmp(img, "portal_light_test1_1.bmp");
 
 	// Рендерим вторую картинку с другого угла
 	cam.pos = {0, -3, 1.2};
 	cam.lookAt({0, 0, 0.5});
 	ren.render();
 	img.colorCorrection();
-	saveAsBmp(img, "portal_light_test2.bmp");
+	if (isDrawHints)
+		saveAsBmp(img, "portal_light_test1_hints_2.bmp");
+	else
+		saveAsBmp(img, "portal_light_test1_2.bmp");
+
+	// Рендерим картинку сверху
+	Orthogonal cam2(Vector(1, 1, 5), 10.0 / img.getWidth() , img.getWidth(), img.getHeight());
+	cam2.lookTowards(Vector(1, 1 - 0.001, 0));
+	RayTracing ren2(cam2, scene, img, 1);
+	ren2.luminaries = ren.luminaries;
+	ren2.portals = ren.portals;
+	ren2.render();
+	img.colorCorrection();
+	if (isDrawHints)
+		saveAsBmp(img, "portal_light_test1_hints_3.bmp");
+	else
+		saveAsBmp(img, "portal_light_test1_3.bmp");
 }
