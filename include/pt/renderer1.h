@@ -60,21 +60,31 @@ namespace pt
 									   int maxDepth,
 									   double tMax, 
 									   bool isDiffuse, 
-									   bool isBreakOnMaterial);
+									   bool isBreakOnMaterial,
+									   bool isWriteText);
+
+		~StandardRendererWithPointLight();
 
 		/** Рендерит в заданную картинку с заданной камерой, сценой и параметрами. Порядок рендеринга - случайные пиксели, это дает возможность хорошо предсказывать время рендеринга. */
 		void render(void);
 
+		/** Добавляет во внутреннее хранилище портал для последующей обработки. */
+		void addPortal(Portals* portal);
+
+		/** Удаляет все порталы из обработки рендером. */
+		void clearPortals(void);
+
 		/** Массив точечных источников освещения. Пользователь сам их задает, далее это учитывается при рендеринге. */
 		std::vector<PointLight>	luminaries;
-
-		/** Массив указателей на объекты порталов. Только таким образом можно учесть телепортацию точечных источников освещения через порталы, из сцены нельзя получить информацию о порталах. Так же получается, что пользователь сам задает когда ему надо учитывать в освещении портал, а когда не надо. */
-		std::vector<Portals*>	portals;
 	protected:
+		std::vector<Portals*> portals;
+		std::vector<Portals*> invertedPortals;
+
 		int maxDepth;
 		double tMax;
 		bool isDiffuse;
 		bool isBreakOnMaterial;
+		bool isWriteText;
 
 		double time;
 
@@ -88,7 +98,7 @@ namespace pt
 
 		/** Считает все возможное освещение от точечных источников освещения в данной позиции сцены, при этом учитывается наличие порталов, а так же то, что объекты могут быть полупрозрачны. */
 		Color computeLight(vec3 pos, vec3 normal,
-						   std::vector<std::pair<Portals, vec3> >& teleportation,
+						   std::vector<std::pair<Portals*, vec3> >& teleportation,
 						   int depth);
 	};
 
@@ -110,6 +120,7 @@ namespace pt
 				   const Object& scene,
 				   Image& img, 
 				   int aliasing = 1,
+				   bool isWriteText = true,
 				   int maxDepth = 30,
 				   double tMax = 100000);
 
@@ -139,6 +150,7 @@ namespace pt
 					const Object& scene,
 					Image& img, 
 					int samples = 400,
+					bool isWriteText = true,
 					int maxDepth = 30,
 					double tMax = 100000);
 

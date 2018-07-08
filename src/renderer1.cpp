@@ -81,12 +81,36 @@ StandardRendererWithPointLight::StandardRendererWithPointLight(const Camera& cam
 	int maxDepth, 
 	double tMax,
 	bool isDiffuse, 
-	bool isBreakOnMaterial) : 
+	bool isBreakOnMaterial,
+	bool isWriteText) : 
 	Renderer1(camera, scene, img),
 	maxDepth(maxDepth),
 	tMax(tMax),
 	isDiffuse(isDiffuse),
-	isBreakOnMaterial(isBreakOnMaterial) {
+	isBreakOnMaterial(isBreakOnMaterial),
+	isWriteText(isWriteText) {
+}
+
+//-----------------------------------------------------------------------------
+StandardRendererWithPointLight::~StandardRendererWithPointLight() {
+	for (auto i : invertedPortals)
+		delete i;
+}
+
+//-----------------------------------------------------------------------------
+void StandardRendererWithPointLight::addPortal(Portals* portal) {
+	portals.push_back(portal);
+	Portals* inv = new Portals(*portal);
+	*inv = invert(*portal);
+	invertedPortals.push_back(inv);
+}
+
+//-----------------------------------------------------------------------------
+void StandardRendererWithPointLight::clearPortals(void) {
+	for (auto i : invertedPortals)
+		delete i;
+	portals.clear();
+	invertedPortals.clear();
 }
 
 //-----------------------------------------------------------------------------
@@ -110,49 +134,55 @@ void StandardRendererWithPointLight::render(void) {
 //-----------------------------------------------------------------------------
 void StandardRendererWithPointLight::onStartRender(void) {
 	using namespace std;
-	time = getCurrentTime();
-	cout << setfill(' ') << setiosflags(ios_base::right);
-	cout << "Percent |" << setw(23) << "Time passed |" << setw(23) << "Approximate time |" << setw(24) << "Time Left |" << endl;
-	cout << setfill('-') << setw(79) << '|' << endl;
-	cout << setfill(' ');
+	if (isWriteText) {
+		time = getCurrentTime();
+		cout << setfill(' ') << setiosflags(ios_base::right);
+		cout << "Percent |" << setw(23) << "Time passed |" << setw(23) << "Approximate time |" << setw(24) << "Time Left |" << endl;
+		cout << setfill('-') << setw(79) << '|' << endl;
+		cout << setfill(' ');
+	}
 }
 
 //-----------------------------------------------------------------------------
 void StandardRendererWithPointLight::onEveryLine(double percent) {
 	using namespace std;
-	stringstream sout;
+	if (isWriteText) {
+		stringstream sout;
 
-	cout << '\r';
+		cout << '\r';
 
-	sout.str(std::string());
-	sout << setprecision(2) << percent * 100 << "% |";
-	cout << setw(9) << sout.str();
+		sout.str(std::string());
+		sout << setprecision(2) << percent * 100 << "% |";
+		cout << setw(9) << sout.str();
 
-	sout.str(std::string());
-	sout << getTimeString(getTimePassed(time)) << " |";
-	cout << setw(23) << sout.str();
+		sout.str(std::string());
+		sout << getTimeString(getTimePassed(time)) << " |";
+		cout << setw(23) << sout.str();
 
-	sout.str(std::string());
-	sout << getTimeString(getApproxTime(time, percent)) << " |";
-	cout << setw(23) << sout.str();
+		sout.str(std::string());
+		sout << getTimeString(getApproxTime(time, percent)) << " |";
+		cout << setw(23) << sout.str();
 
-	sout.str(std::string());
-	sout << getTimeString(getLeftTime(time, percent)) << " |";
-	cout << setw(24) << sout.str();
+		sout.str(std::string());
+		sout << getTimeString(getLeftTime(time, percent)) << " |";
+		cout << setw(24) << sout.str();
+	}
 }
 
 //-----------------------------------------------------------------------------
 void StandardRendererWithPointLight::onEndRendering(void) {
 	using namespace std;
-	cout << '\r' << setw(9) << "100% |";
+	if (isWriteText) {
+		cout << '\r' << setw(9) << "100% |";
 
-	stringstream sout;
-	sout.clear();
-	sout << getTimeString(getTimePassed(time)) << " |";
-	cout << setw(23) << sout.str();
+		stringstream sout;
+		sout.clear();
+		sout << getTimeString(getTimePassed(time)) << " |";
+		cout << setw(23) << sout.str();
 
-	cout << setw(23) << "0s |" << setw(24) << "0s |" << endl;
-	cout << endl;
+		cout << setw(23) << "0s |" << setw(24) << "0s |" << endl;
+		cout << endl;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -191,7 +221,7 @@ Color StandardRendererWithPointLight::computeColor(Ray ray) {
 			// Считаем цвет освещения, но его надо считать только когда у нас обычный материал
 			if (returned == SCATTER_RAYTRACING_END) {
 				Color lightColor = Color(1, 1, 1, 1);
-				std::vector<std::pair<Portals, vec3> > teleportation;
+				std::vector<std::pair<Portals*, vec3> > teleportation;
 				lightColor += computeLight(scattered.pos, inter.normal, teleportation, 3);
 				clrAbsorbtion = lightColor * clrAbsorbtion;
 			}
@@ -246,7 +276,7 @@ Color StandardRendererWithPointLight::computeColor(Ray ray) {
 //-----------------------------------------------------------------------------
 Color StandardRendererWithPointLight::computeLight(
 	vec3 pos, vec3 normal,
-	std::vector<std::pair<Portals, vec3> >& teleportation,
+	std::vector<std::pair<Portals*, vec3> >& teleportation,
 	int depth) {
 	// В этой функции предполагается, что все источники света должны быть телепортированы через порталы, указанные в teleportation, и для всех них как раз проверяется, чтобы через все эти порталы свет мог попасть к текущему месту, которое проверяется на освещенность
 
@@ -264,7 +294,7 @@ Color StandardRendererWithPointLight::computeLight(
 		for (int j = teleportation.size() - 1; j >= 0; --j) {
 			// Получаем луч, который идет от текущего телепортированного положения до текущего источника света
 			vec3& pos = teleportation[j].second;
-			Portals& portal = teleportation[j].first;
+			Portals& portal = *teleportation[j].first;
 			ray = {pos, i.pos - pos};
 			ray.dir.normalize();
 
@@ -307,21 +337,21 @@ Color StandardRendererWithPointLight::computeLight(
 
 	// Далее, если позволяет глубина, перебираем все порталы дальше
 	if (depth > 0) {
-		for (auto j : portals) {
-			auto recursion = [&] (const Portals& portal) {
+		for (int i = 0; i < portals.size(); ++i) {
+			auto recursion = [&] (Portals* portal) {
 				vec3 newPos;
 				if (teleportation.size() != 0)
-					newPos = teleportVector(portal.p1, portal.p2, teleportation.back().second);
+					newPos = teleportVector(portal->p1, portal->p2, teleportation.back().second);
 				else
-					newPos = teleportVector(portal.p1, portal.p2, pos);
+					newPos = teleportVector(portal->p1, portal->p2, pos);
 				teleportation.push_back({portal, newPos});
 				result += computeLight(pos, normal, teleportation, depth-1);
 				teleportation.pop_back();
 			};
 
 			// Перебираем прямой и обратный порядок следования порталов
-			recursion(*j);
-			recursion(invert(*j));
+			recursion(portals[i]);
+			recursion(invertedPortals[i]);
 		}
 	}
 	return result;
@@ -336,8 +366,9 @@ RayTracing::RayTracing(const Camera& camera,
 					   const Object& scene,
 					   Image& img, 
 					   int aliasing,
+					   bool isWriteText,
 					   int maxDepth,
-					   double tMax) : StandardRendererWithPointLight(camera, scene, img, maxDepth, tMax, 0, true), antialiasing(aliasing) {
+					   double tMax) : StandardRendererWithPointLight(camera, scene, img, maxDepth, tMax, false, true, isWriteText), antialiasing(aliasing) {
 }
 
 //-----------------------------------------------------------------------------
@@ -364,8 +395,9 @@ PathTracing::PathTracing(const Camera& camera,
 						 const Object& scene,
 						 Image& img, 
 						 int samples,
+						 bool isWriteText,
 						 int maxDepth,
-						 double tMax) : StandardRendererWithPointLight(camera, scene, img, maxDepth, tMax, 1, false), samples(samples) {
+						 double tMax) : StandardRendererWithPointLight(camera, scene, img, maxDepth, tMax, true, false, isWriteText), samples(samples) {
 }
 
 //-----------------------------------------------------------------------------

@@ -35,7 +35,7 @@ bool Polygon::intersect(const Ray& ray,
 						Intersection& inter, 
 						double tMin, 
 						double tMax) const {
-	if (dot(ray.dir, normal)) {
+	if (dot(ray.dir, normal) != 0) {
 		double t = (-d - dot(ray.pos, normal))/dot(ray.dir, normal);
 
 		if (t > tMin && t < tMax) {
@@ -47,9 +47,10 @@ bool Polygon::intersect(const Ray& ray,
 			r.y = (dot(x, coords.j) - dot(coords.pos, coords.j))/dot(coords.j, coords.j);
 
 			bool inRect = r.x >= min.x && r.y >= min.y && r.x <= max.x && r.y <= max.y;
-			bool inPolygon = pointInPolygon(array, r);
+			if (!inRect)
+				return false;
 
-			if (inRect && inPolygon) {
+			if (pointInPolygon(array, r)) {
 				inter.t = t;
 				if (dot(ray.dir, normal) < 0)
 					inter.normal = normal;

@@ -23,8 +23,8 @@ int main() {
 	Scene scene;
 
 	// Создаем камеру
-	Vector camPos = {0, -4, 4};
-	Vector lookAt = {0, 0, 0.5};
+	vec3 camPos = {0, -4, 4};
+	vec3 lookAt = {0, 0, 0.5};
 	PerspectiveCamera cam(1, pi / 2.0, 0, camPos, img.getWidth(), img.getHeight());
 	cam.lookAt(lookAt);
 
@@ -32,7 +32,7 @@ int main() {
 
 	// Создаем пол
 	const double size = 500;
-	std::vector<Vector2> mas2;
+	std::vector<vec2> mas2;
 	mas2.push_back({-size, -size});
 	mas2.push_back({-size, size});
 	mas2.push_back({size, size});
@@ -46,14 +46,14 @@ int main() {
 	Color portalSecondColor1 = Color(0.33, 0, 1); // dark blue
 
 	// Массивы для порталов
-	std::vector<Vector2> mas;
+	std::vector<vec2> mas;
 	mas.push_back({-1, -1});
 	mas.push_back({-1, 1});
 	mas.push_back({1, 1});
 	mas.push_back({1, -1});
 
 	double h = 0.1;
-	std::vector<Vector2> contour;
+	std::vector<vec2> contour;
 	contour.push_back({-1, 1});
 	contour.push_back({-1-h, 1+h});
 	contour.push_back({1+h, 1+h});
@@ -87,20 +87,20 @@ int main() {
 	scene.array.push_back(new pt::Polygon(contour, p22, new Scatter(portalSecondColor1)));
 
 	// Источник освещения
-	Vector lightPos = p22.pos;
+	vec3 lightPos = p22.pos;
 	lightPos.z += 1;
 	lightPos.x += 0.5;
 	ren.luminaries.push_back(PointLight(lightPos, Color(0.5, 0.5, 0.5)));
 
 	// Добавляем сферы, которые показывают положение источника освещения
 	double spsize = 0.05;
-	Vector spherePos = lightPos + Vector(0, 0, spsize + 0.01);
+	vec3 spherePos = lightPos + vec3(0, 0, spsize + 0.01);
 	scene.array.push_back(new Sphere(spherePos, spsize, new Scatter(Color(1, 1, 1, 1))));
 
 	if (isDrawHints) {
-		Vector spherePos1 = teleportVector(ren.portals[1]->p2, ren.portals[1]->p1, spherePos);
+		vec3 spherePos1 = teleportVector(ren.portals[1]->p2, ren.portals[1]->p1, spherePos);
 		scene.array.push_back(new Sphere(spherePos1, spsize, new Scatter(Color(0.5, 0.5, 0.5, 1))));
-		Vector spherePos2 = teleportVector(ren.portals[0]->p2, ren.portals[0]->p1, spherePos1);
+		vec3 spherePos2 = teleportVector(ren.portals[0]->p2, ren.portals[0]->p1, spherePos1);
 		scene.array.push_back(new Sphere(spherePos2, spsize, new Scatter(Color(0.25, 0.25, 0.25, 1))));
 	}
 
@@ -109,7 +109,7 @@ int main() {
 
 	// Для отладки
 	/*Ray ray;
-	ray.pos = Vector(0, -4, 1);
+	ray.pos = vec3(0, -4, 1);
 	ray.dir = -ray.pos.normalize();
 	ren.computeColor(ray);*/
 
@@ -132,8 +132,8 @@ int main() {
 		saveAsBmp(img, "portal_light_test1_2.bmp");
 
 	// Рендерим картинку сверху
-	Orthogonal cam2(Vector(1, 1, 5), 10.0 / img.getWidth() , img.getWidth(), img.getHeight());
-	cam2.lookTowards(Vector(1, 1 - 0.001, 0));
+	Orthogonal cam2(vec3(1, 1, 5), 10.0 / img.getWidth() , img.getWidth(), img.getHeight());
+	cam2.lookTowards(vec3(1, 1 - 0.001, 0));
 	RayTracing ren2(cam2, scene, img, 1);
 	ren2.luminaries = ren.luminaries;
 	ren2.portals = ren.portals;
