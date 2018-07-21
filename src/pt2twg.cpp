@@ -17,7 +17,8 @@ void toTwgImage(const Image& img, twg::ImageBase& twgImg) {
 //-----------------------------------------------------------------------------
 void toPtImage(Image& img, const twg::ImageBase& twgImg) {
 	using namespace twg;
-	img.resize(twgImg.width(), twgImg.height());
+	if (img.getWidth() != twgImg.width() || img.getHeight() != twgImg.height())
+		img.resize(twgImg.width(), twgImg.height());
 	for (int i = 0; i < img.getWidth(); i++) {
 		for (int j = 0; j < img.getHeight(); j++) {
 			ColorUnion pix(twgImg[Point_i(i, j)]);
@@ -25,6 +26,11 @@ void toPtImage(Image& img, const twg::ImageBase& twgImg) {
 			img(i, j).r = pix.rgba.r / 255.0;
 			img(i, j).g = pix.rgba.g / 255.0;
 			img(i, j).b = pix.rgba.b / 255.0;
+
+			img(i, j).a *= img(i, j).a;
+			img(i, j).r *= img(i, j).r;
+			img(i, j).g *= img(i, j).b;
+			img(i, j).b *= img(i, j).b;
 		}
 	}
 }
