@@ -5,24 +5,50 @@
 #include <twg/window/window_events.h>
 
 #include <pt/pt.h>
-#include <pt/pt2twg.h>
-
+#include <pt/object/scene.h>
 #include <pt/renderer/thread-renderer.h>
 
 namespace pt
 {
 
+	/** Класс для просмотра 3Д сцен. Чтобы реализовать программу для просмотра 3Д сцен, необходимо наследоваться от этого класса, реализовать функции. */
 	class PtWindow : public twg::WindowEvents
 	{
 	public:
-		PtWindow(twg::WindowType type, Renderer* ren, Camera* cam, Object* scene);
+		PtWindow(twg::WindowType type, StandardRenderer* ren);
 		virtual ~PtWindow();
+		
+		// Переделать сцену
+		void reCreateScene(void);
 
-		void start(void);
+		// Функции, которые реализует наследуемый класс
+		virtual void setFirstCam(double& focal, double& viewAngle, vec3& pos, vec3& lookAt, double& distance, double& alpha, double& beta) = 0; // Вызывается при инициализации камеры
+		virtual void createScene(Scene& scene) = 0; // Вызывается, чтобы создать сцену
+		virtual void onRightMouseClick(void) = 0; // Вызывается при нажатии правой кнопки мыши
+		virtual void reCreateSceneUser(Scene& scene) = 0; // Вызывается, когда сцену надо обновить
+	private:
+		Image					img;
+		twg::ImageBase			img1;
 
-		virtual void onChangeCam(double alpha, double beta, double distance, int width, int height) = 0;
-		virtual void createScene(void) = 0;
-		virtual void func() {}
+		ThreadPartiallyRender	ren;
+
+		Scene					scene;
+
+		PerspectiveCamera		cam;
+		vec3					pos;
+		vec3					lookAt;
+		double					focal;
+		double					viewAngle;
+		double					alpha;
+		double					beta;
+		double					distance;
+
+		bool					moveRegime;
+		bool 					isEnter;
+		twg::Point_i			last;
+		bool					isStarted;
+		
+		const int fps = 5;
 
 		//---------------------------------------------------------------------
 		bool onMouse(twg::Point_i pos, twg::MouseType type);
@@ -30,22 +56,9 @@ namespace pt
 		bool onFocus(bool isKilled);
 		bool onMessage(twg::int32u id, void* data);
 
-		void changeCam(void);
-	private:
-		Image					img;
-		double					alpha;
-		double					beta;
-		double					distance;
-		bool					moveRegime;
-		bool 					isEnter;
-		twg::Point_i			last;
-		ThreadPartiallyRender	ren;
-		Camera*					cam;
-		Object*					scene;
-		bool					isStarted;
+		void start(void);
 
-		
-		const int fps = 5;
+		void changeCam(void);
 	};
 
 };

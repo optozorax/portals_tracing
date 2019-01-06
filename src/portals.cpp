@@ -1,10 +1,11 @@
+#include <prtl/portal.h>
 #include <pt/shape/portals.h>
 
 namespace pt
 {
 
 //-----------------------------------------------------------------------------
-Portals::Portals(CoordSystem c1, CoordSystem c2, std::vector<vec2> poly, Material* first, Material* second) : p1(c1), p2(c2), poly(poly), first(first), second(second), pg1(poly, c1, nullptr), pg2(poly, c2, nullptr) {
+Portals::Portals(crd3 c1, crd3 c2, std::vector<vec2> poly, Material* first, Material* second) : p1(c1), p2(c2), poly(poly), first(first), second(second), pg1(poly, c1, nullptr), pg2(poly, c2, nullptr) {
 }
 
 //-----------------------------------------------------------------------------
@@ -12,7 +13,7 @@ Portals::~Portals() {
 }
 
 //-----------------------------------------------------------------------------
-void Portals::assign(CoordSystem c1, CoordSystem c2, std::vector<vec2> poly1, Material* first1, Material* second1) {
+void Portals::assign(crd3 c1, crd3 c2, std::vector<vec2> poly1, Material* first1, Material* second1) {
 	pg1.assign(poly1, c1, nullptr);
 	pg2.assign(poly1, c2, nullptr);
 	p1 = c1;
@@ -78,11 +79,13 @@ ScatterType Portals::scatter(const Ray& ray,
 	scattered.pos = inter.pos;
 	scattered.dir = ray.dir;
 	if (currentTriangle == 1) {
-		scattered.pos = teleportVector(p1, p2, scattered.pos);
-		scattered.dir = teleportDirection(p1, p2, scattered.dir);
+		prtl::portal3 portal(p1, p2);
+		scattered.pos = portal.teleport(scattered.pos);
+		scattered.dir = portal.teleportDir(scattered.dir);
 	} else {
-		scattered.pos = teleportVector(p2, p1, scattered.pos);
-		scattered.dir = teleportDirection(p2, p1, scattered.dir);
+		prtl::portal3 portal(p2, p1);
+		scattered.pos = portal.teleport(scattered.pos);
+		scattered.dir = portal.teleportDir(scattered.dir);
 	}
 	clrAbsorbtion = Color(1, 1, 1, 1);
 	diffusion = 0;
@@ -91,9 +94,9 @@ ScatterType Portals::scatter(const Ray& ray,
 
 //-----------------------------------------------------------------------------
 Portals invert(Portals a) {
-	CoordSystem coords1 = a.p2;
+	crd3 coords1 = a.p2;
 	coords1.k = -coords1.k;
-	CoordSystem coords2 = a.p1;
+	crd3 coords2 = a.p1;
 	coords2.k = -coords2.k;
 	return Portals(coords1, coords2, a.poly, a.second, a.first);
 }

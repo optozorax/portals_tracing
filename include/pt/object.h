@@ -25,6 +25,7 @@ namespace pt
 		double t;
 		vec3 pos;
 		vec3 normal;
+		int inf;
 	};
 
 	enum ScatterType

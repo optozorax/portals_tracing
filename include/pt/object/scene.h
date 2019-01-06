@@ -1,6 +1,7 @@
 #ifndef PT_SCENE_H
 #define PT_SCENE_H
 
+#include <vector>
 #include <pt/object.h>
 
 namespace pt

@@ -1,45 +1,17 @@
 #ifndef PT_BASICS_H
 #define PT_BASICS_H
 
-#include <prtl/coord_system.h>
-#include <prtl/vector2.h>
-#include <prtl/vector3.h>
-#include <prtl/common.h>
+#include <spob/spob.h>
+#include <prtl/portal.h>
 #include <prtl/polygon.h>
 
 namespace pt
 {
 
-	// Используем это сущности из prtl
-	using prtl::vec3;
-	using prtl::vec2;
-	using prtl::CoordSystem;
+	// Используем это сущности из spob
+	using namespace spob;
+	using prtl::portal3;
 	using prtl::pointInPolygon;
-	using prtl::dot;
-	using prtl::cross;
-	using prtl::calculateCoordSystem;
-	using prtl::computeCenter;
-	using prtl::computeContour;
-	using prtl::fromCoordSystem;
-	using prtl::fromCoordSystemDirection;
-	using prtl::isCoordSystemNear;
-	using prtl::isPolygonsEqual;
-	using prtl::isRightCoordSystem;
-	using prtl::isVec2Near;
-	using prtl::isVec3Near;
-	using prtl::operator*;
-	using prtl::operator+;
-	using prtl::operator-;
-	using prtl::operator/;
-	using prtl::rotate;
-	using prtl::rotateAroundAxis;
-	using prtl::standard;
-	using prtl::teleportCoordSystem;
-	using prtl::teleportDirection;
-	using prtl::teleportVector;
-	using prtl::toCoordSystem;
-	using prtl::toCoordSystemDirection;
-	using prtl::transform;
 
 	//-------------------------------------------------------------------------
 	const double pi = 3.141592653589793238462643383279;

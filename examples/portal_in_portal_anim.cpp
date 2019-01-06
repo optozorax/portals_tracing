@@ -37,15 +37,15 @@ private:
 };
 
 //-----------------------------------------------------------------------------
-pt::Vector transform(pt::CoordSystem c, pt::Vector2 b) {
+pt::vec3 transform(pt::CoordSystem c, pt::vec2 b) {
 	return c.pos + c.i * b.x + c.j * b.y;
 }
 
 //-----------------------------------------------------------------------------
-void addContour2(pt::Scene& scene, pt::CoordSystem c, pt::Poly2 poly, pt::Material* material) {
+void addContour2(pt::Scene& scene, pt::CoordSystem c, pt::std::vector<vec2> poly, pt::Material* material) {
 	using namespace pt;
 	double thick = 0.01;
-	std::vector<Vector> mas;
+	std::vector<vec3> mas;
 	for (int i = 0; i < poly.size(); i++)
 		mas.push_back(transform(c, poly[i]));
 
@@ -57,14 +57,14 @@ void addPortals(Scene& scene, RayRenderer ren, CoordSystem c1, CoordSystem c2) {
 	double it = dot(c1.k, c1.pos - c2.pos)/dot(c1.k, c2.i);
 	double jt = dot(c1.k, c1.pos - c2.pos)/dot(c1.k, c2.j);
 
-	Poly2 mas1; 
+	std::vector<vec2> mas1; 
 	mas1.push_back({it, 0});
 	mas1.push_back({1, 0});
 	mas1.push_back({1, 1});
 	mas1.push_back({0, 1});
 	mas1.push_back({0, jt});
 
-	Poly2 mas2;
+	std::vector<vec2> mas2;
 	mas2.push_back({0, jt});
 	mas2.push_back({0, 0});
 	mas2.push_back({it, 0});
@@ -82,7 +82,7 @@ void addPortals(Scene& scene, RayRenderer ren, CoordSystem c1, CoordSystem c2) {
 	addContour2(scene, c3, mas2, pt2);
 	addContour2(scene, c2, mas1, pt2);
 
-	Poly2 mas3;
+	std::vector<vec2> mas3;
 	mas3.push_back({0, 0});
 	mas3.push_back({1, 0});
 	mas3.push_back({1, 1});
@@ -97,9 +97,9 @@ void initScene(Scene& scene, RayRenderer& ren, double t) {
 	//---------------------------------------------------------------------
 	// RAY-RENDERER
 	ren.skyColor = pt::Color(1, 1, 1);
-	ren.luminaries.push_back(PointLightSource(Vector(0.5, 0.5, 3), pt::Color(0.5, 0.5, 0.5)));
-	ren.luminaries.push_back(PointLightSource(Vector(-3, 0, 3), pt::Color(0.5, 0.5, 0.5)));
-	ren.luminaries.push_back(PointLightSource(Vector(-0.1, -0.1, 0.1), pt::Color(0.5, 0.5, 0.5)));
+	ren.luminaries.push_back(PointLightSource(vec3(0.5, 0.5, 3), pt::Color(0.5, 0.5, 0.5)));
+	ren.luminaries.push_back(PointLightSource(vec3(-3, 0, 3), pt::Color(0.5, 0.5, 0.5)));
+	ren.luminaries.push_back(PointLightSource(vec3(-0.1, -0.1, 0.1), pt::Color(0.5, 0.5, 0.5)));
 
 	//---------------------------------------------------------------------
 	// Комната
@@ -109,10 +109,10 @@ void initScene(Scene& scene, RayRenderer& ren, double t) {
 		// Пол
 		size = 5;
 		depth = -2;
-		Vector a(-size, -size, depth);
-		Vector b(-size, size, depth);
-		Vector c(size, size, depth);
-		Vector d(size, -size, depth);
+		vec3 a(-size, -size, depth);
+		vec3 b(-size, size, depth);
+		vec3 c(size, size, depth);
+		vec3 d(size, -size, depth);
 		scene.array.push_back(new Triangle(a, b, c, new Scatter(pt::Color(0.1, 0, 0.1))));
 		scene.array.push_back(new Triangle(c, d, a, new Scatter(pt::Color(0.1, 0, 0.1))));
 
@@ -120,10 +120,10 @@ void initScene(Scene& scene, RayRenderer& ren, double t) {
 		// Потолок
 		size = 5;
 		depth = 6;
-		Vector a1(-size, -size, depth);
-		Vector b1(-size, size, depth);
-		Vector c1(size, size, depth);
-		Vector d1(size, -size, depth);
+		vec3 a1(-size, -size, depth);
+		vec3 b1(-size, size, depth);
+		vec3 c1(size, size, depth);
+		vec3 d1(size, -size, depth);
 		scene.array.push_back(new Triangle(a1, b1, c1, new Scatter(pt::Color(0, 0.1, 0.1))));
 		scene.array.push_back(new Triangle(c1, d1, a1, new Scatter(pt::Color(0, 0.1, 0.1))));
 
@@ -151,13 +151,13 @@ void initScene(Scene& scene, RayRenderer& ren, double t) {
 	//---------------------------------------------------------------------
 	// Портал в портале
 	CoordSystem coords1;
-	coords1.i = Vector(1, 0, 0);
-	coords1.j = Vector(0, 1, 0);
-	coords1.k = Vector(0, 0, -1);
-	coords1.pos = Vector(-0.5, -0.5, 0);
+	coords1.i = vec3(1, 0, 0);
+	coords1.j = vec3(0, 1, 0);
+	coords1.k = vec3(0, 0, -1);
+	coords1.pos = vec3(-0.5, -0.5, 0);
 
 	CoordSystem coords2 = coords1;
-	coords2 = rotate(coords2, Vector(pt::pi - pt::pi/4, 0, -pt::pi/2));
+	coords2 = rotate(coords2, vec3(pt::pi - pt::pi/4, 0, -pt::pi/2));
 	coords2.pos += coords1.i * 0.7 + coords1.j * 0.5;
 	coords2.pos.z -= t;
 
@@ -183,13 +183,13 @@ int main() {
 		double beta = 0.334;
 		double distance = 1.2;
 
-		Vector pos(Vector(sin(pt::pi/2 - beta) * cos(alpha), sin(pt::pi/2 - beta) * sin(alpha), cos(pt::pi/2 - beta)));
+		vec3 pos(vec3(sin(pt::pi/2 - beta) * cos(alpha), sin(pt::pi/2 - beta) * sin(alpha), cos(pt::pi/2 - beta)));
 
 		pos *= distance; 
-		pos += Vector(0, 0, 0.5);
+		pos += vec3(0, 0, 0.5);
 
 		PerspectiveCamera cam(1, pi/2.0, 0, pos, img.getWidth(), img.getHeight());
-		cam.lookAt(Vector(0, 0, 0.5));
+		cam.lookAt(vec3(0, 0, 0.5));
 
 		//---------------------------------------------------------------------
 		// Рендеринг

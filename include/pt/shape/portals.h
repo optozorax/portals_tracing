@@ -11,10 +11,10 @@ namespace pt
 	class Portals : public Object
 	{
 	public:
-		Portals(CoordSystem c1, CoordSystem c2, std::vector<vec2> poly, Material* first, Material* second);
+		Portals(crd3 c1, crd3 c2, std::vector<vec2> poly, Material* first, Material* second);
 		~Portals();
 
-		void assign(CoordSystem c1, CoordSystem c2, std::vector<vec2> poly, Material* first, Material* second);
+		void assign(crd3 c1, crd3 c2, std::vector<vec2> poly, Material* first, Material* second);
 
 		bool intersect(const Ray& ray, 
 					   Intersection& inter, 
@@ -28,8 +28,8 @@ namespace pt
 							double& diffusion) const;
 		Polygon pg1;
 		Polygon pg2;
-		CoordSystem p1;
-		CoordSystem p2;
+		crd3 p1;
+		crd3 p2;
 		std::vector<vec2> poly;
 		Material* first;
 		Material* second;

@@ -8,7 +8,7 @@ namespace pt
 {
 
 //-----------------------------------------------------------------------------
-ThreadPartiallyRender::ThreadPartiallyRender(Renderer* renderer) : m_renderer(renderer) {
+ThreadPartiallyRender::ThreadPartiallyRender(StandardRenderer* renderer) : m_renderer(renderer) {
 	m_thread = 0;
 }
 
@@ -19,7 +19,7 @@ struct Information {
 	Object* scene;
 	double* percent;
 	TravelPoints* trvl;
-	Renderer* renderer;
+	StandardRenderer* renderer;
 };
 
 //-----------------------------------------------------------------------------
@@ -29,12 +29,15 @@ DWORD WINAPI renderingThread(LPVOID data) {
 	Information inf = *(Information*)(data);
 	delete data;
 
+	inf.renderer->assign(inf.camera, inf.scene, inf.img);
+
 	// Алгоритм
 	Point_i p;
+#
 	for (int i = 0; i < inf.trvl->size(); ++i) {
 		*(inf.percent) = double(i)/inf.trvl->size();
 		p = (inf.trvl)->get(i);
-		(*(inf.img))(p.x, p.y) = (inf.renderer)->computePixel(p.x, p.y, *(inf.camera), *(inf.scene));
+		(*(inf.img))(p.x, p.y) = (inf.renderer)->computePixel(p.x, p.y);
 	}
 
 	return 0;
@@ -80,12 +83,11 @@ void ThreadPartiallyRender::extend(void) {
 }
 
 //-----------------------------------------------------------------------------
-twg::ImageBase ThreadPartiallyRender::getCurrentImage(bool isPause = true) {
+void ThreadPartiallyRender::getCurrentImage(twg::ImageBase& img, bool isPause = true) {
 	using namespace twg;
 
 	pause();
 
-	ImageBase img(Point_i(1, 1));
 	Image img3(m_img);
 	img3.colorCorrection();
 	toTwgImage(img3, img);
@@ -93,8 +95,6 @@ twg::ImageBase ThreadPartiallyRender::getCurrentImage(bool isPause = true) {
 
 	if (!isPause)
 		extend();
-
-	return img;
 }
 
 //-----------------------------------------------------------------------------

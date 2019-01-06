@@ -12,7 +12,7 @@ namespace pt
 	class TexturePolygon : public Object
 	{
 	public:
-		TexturePolygon(const std::vector<vec2>& polygon, CoordSystem coords, Image* img, const prtl::FindBorders& brd);
+		TexturePolygon(const std::vector<vec2>& polygon, crd3 coords, Image* img, const prtl::FindBorders& brd);
 
 		bool intersect(const Ray& ray, 
 					   Intersection& inter, 
@@ -28,7 +28,7 @@ namespace pt
 		Image* img;
 
 		std::vector<vec2> array;
-		CoordSystem coords;
+		crd3 coords;
 		
 		double d;
 		vec3 normal;

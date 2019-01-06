@@ -15,9 +15,9 @@ Triangle::Triangle(vec3 a, vec3 b, vec3 c, Material* material) :
 	// Equation of plane, every x in plane when: (n, x) + d = 0
 	normal = (cross(b-a, c-b)).normalize();
 	d = -dot(normal, c);
-	ab = (b-a).getLength();
-	bc = (c-b).getLength();
-	ac = (c-a).getLength();
+	ab = distance(b, a);
+	bc = distance(c, b);
+	ac = distance(c, a);
 	S = area(ab, bc, ac);				
 }
 
@@ -34,9 +34,9 @@ bool Triangle::intersect(const Ray& ray,
 			vec3 x = ray.pos + ray.dir * t;
 
 			// Point in triangle <=> area of triangle = sum of inner triangles
-			double xa = (a-x).getLength();
-			double xb = (b-x).getLength();
-			double xc = (c-x).getLength();
+			double xa = distance(a, x);
+			double xb = distance(b, x);
+			double xc = distance(c, x);
 
 			double S1 = area(ab, xa, xb);
 			double S2 = area(bc, xb, xc);

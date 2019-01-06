@@ -27,43 +27,45 @@ namespace pt
 	class Renderer1
 	{
 	public:
-		Renderer1(const Camera& camera, 
-				 const Object& scene,
-				 Image& img) : camera(camera), scene(scene), img(img) {}
+		Renderer1() {}
 		virtual ~Renderer1() {}
 
+		void assign(Camera* camera1, Object* scene1, Image* img1) {
+			camera = camera1;
+			scene = scene1;
+			img = img1;
+		}
+
 		virtual void render(void) = 0;
+
+		virtual Color computePixel(int x, int y) const = 0;
+		virtual Color computeColor(Ray ray) const = 0;
 	protected:
-		const Camera&	camera;
-		const Object&	scene;
-		Image&			img;
+		Camera*	camera;
+		Object*	scene;
+		Image*	img;
 
 		virtual void onStartRender(void) {}
-		virtual void onEveryLine(double percent) {}
-		virtual void onEndRendering(void) {}
-
-		virtual Color computePixel(int x, int y) = 0;
-		virtual Color computeColor(Ray ray) = 0;
+		virtual void onEveryLine(double percent) const {}
+		virtual void onEndRendering(void) const {}
 	};
 
 	//-------------------------------------------------------------------------
 	/** Стандартный класс рендеринга, на основе которого строятся ray- и path-tracing. Имеет в себе не только простой рендеринг, но еще и фичу: точечные источники освещения, которые поддерживают не только полупрозрачные объекты, но еще и порталы. Вообще освещение можно было бы моделировать при помощи сфер с материалом light, но это будет слишком долго. */
-	class StandardRendererWithPointLight : public Renderer1
+	class StandardRenderer : public Renderer1
 	{
 	public:
 		/** Инициализация рендеринга. Для каждой новой картинки необходимо заново инициализировать рендерер.
-			Для ray-tracing: isDiffuse = 0, isBreakOnMaterial = true.
-			Для path-tracing: isDiffuse = 1, isBreakOnMaterial = false. */
-		StandardRendererWithPointLight(const Camera& camera, 
-									   const Object& scene,
-									   Image& img, 
-									   int maxDepth,
-									   double tMax, 
-									   bool isDiffuse, 
-									   bool isBreakOnMaterial,
-									   bool isWriteText);
+			Для ray-tracing: isDiffuse = false, isBreakOnMaterial = true.
+			Для path-tracing: isDiffuse = true, isBreakOnMaterial = false. */
+		StandardRenderer(int threads,
+						 int maxDepth,
+						 double tMax, 
+						 bool isDiffuse, 
+						 bool isBreakOnMaterial,
+						 bool isWriteText);
 
-		~StandardRendererWithPointLight();
+		~StandardRenderer();
 
 		/** Рендерит в заданную картинку с заданной камерой, сценой и параметрами. Порядок рендеринга - случайные пиксели, это дает возможность хорошо предсказывать время рендеринга. */
 		void render(void);
@@ -74,12 +76,16 @@ namespace pt
 		/** Удаляет все порталы из обработки рендером. */
 		void clearPortals(void);
 
+		Color computePixel(int x, int y) const;
+		Color computeColor(Ray ray) const;
+
 		/** Массив точечных источников освещения. Пользователь сам их задает, далее это учитывается при рендеринге. */
 		std::vector<PointLight>	luminaries;
 	protected:
 		std::vector<Portals*> portals;
 		std::vector<Portals*> invertedPortals;
 
+		int threads;
 		int maxDepth;
 		double tMax;
 		bool isDiffuse;
@@ -90,16 +96,13 @@ namespace pt
 
 		/** Эти функции выводят информацию в консоль. */
 		void onStartRender(void);
-		void onEveryLine(double percent);
-		void onEndRendering(void);
-
-		Color computePixel(int x, int y);
-		Color computeColor(Ray ray);
+		void onEveryLine(double percent) const;
+		void onEndRendering(void) const;
 
 		/** Считает все возможное освещение от точечных источников освещения в данной позиции сцены, при этом учитывается наличие порталов, а так же то, что объекты могут быть полупрозрачны. */
 		Color computeLight(vec3 pos, vec3 normal,
 						   std::vector<std::pair<Portals*, vec3> >& teleportation,
-						   int depth);
+						   int depth) const;
 	};
 
 	//-------------------------------------------------------------------------
@@ -113,20 +116,18 @@ namespace pt
 			Не поддерживает depth of field.
 			Не поддерживает рассеянные тени и рассеянное освещение(например от неба, от источников освещения, имеющих форму).
 	 */
-	class RayTracing : public StandardRendererWithPointLight
+	class RayTracing : public StandardRenderer
 	{
 	public:
-		RayTracing(const Camera& camera, 
-				   const Object& scene,
-				   Image& img, 
-				   int aliasing = 1,
+		RayTracing(int aliasing = 1,
+				   int threads = 1,
 				   bool isWriteText = true,
 				   int maxDepth = 30,
 				   double tMax = 100000);
 
 	protected:
 		int antialiasing;
-		Color computePixel(int x, int y);
+		Color computePixel(int x, int y) const;
 	};
 
 	//-------------------------------------------------------------------------
@@ -143,20 +144,18 @@ namespace pt
 			Поддержка depth of field.
 			Поддержка рассеянных теней и рассеянного освещения(например от неба, от источников освещения, имеющих форму).
 	 */
-	class PathTracing : public StandardRendererWithPointLight
+	class PathTracing : public StandardRenderer
 	{
 	public:
-		PathTracing(const Camera& camera, 
-					const Object& scene,
-					Image& img, 
-					int samples = 400,
+		PathTracing(int samples = 400,
+					int threads = 1,
 					bool isWriteText = true,
 					int maxDepth = 30,
 					double tMax = 100000);
 
 	protected:
 		int samples;
-		Color computePixel(int x, int y);
+		Color computePixel(int x, int y) const;
 	};
 
 };

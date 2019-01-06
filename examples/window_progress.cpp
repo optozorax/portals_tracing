@@ -9,7 +9,7 @@ namespace pt
 using namespace twg;
 
 //-----------------------------------------------------------------------------
-WindowProgress::WindowProgress(Point_i size, Renderer* ren, Camera* cam, Object* scene, std::string imageName) : 
+WindowProgress::WindowProgress(Point_i size, StandardRenderer* ren, Camera* cam, Object* scene, std::string imageName) : 
 	WindowEvents(WindowType(stdIcon, Point_i(100, 100), Point_i(200, 200), stdMin, stdMax, L"Drawing progress", WINDOW_STANDART)),
 	img(size.x, size.y),
 	ren(ren),
@@ -17,7 +17,8 @@ WindowProgress::WindowProgress(Point_i size, Renderer* ren, Camera* cam, Object*
 	scene(scene),
 	isStarted(false),
 	sizeInstalled(false),
-	imageName(imageName) {
+	imageName(imageName),
+	img1({1, 1}) {
 }
 
 //-----------------------------------------------------------------------------
@@ -55,7 +56,7 @@ bool WindowProgress::onMessage(int32u id, void* data) {
 			sout << percent << L"%, time: " << (int)(time1) << L", left: " << (int)(left);
 			setCaption(sout.str());
 
-			ImageBase img1 = ren.getCurrentImage(false);
+			ren.getCurrentImage(img1, false);
 			img1.copyTo(&canvas, Point_i(0, 0), Point_i(0, 0), img1.size());
 
 			if (ren.getPercent() == 1) {

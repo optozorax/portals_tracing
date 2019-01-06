@@ -8,14 +8,15 @@ namespace pt
 using namespace twg;
 
 //-----------------------------------------------------------------------------
-PtWindow::PtWindow(WindowType type, Renderer* ren, Camera* cam, Object* scene) : 
+PtWindow::PtWindow(WindowType type, StandardRenderer* ren) : 
 	WindowEvents(type),
 	img(type.size.x, type.size.y),
 	moveRegime(false),
 	ren(ren),
-	cam(cam),
+	cam(1, 1, 1, {}, 1, 1),
 	scene(scene),
-	isStarted(false) {
+	isStarted(false),
+	img1({1, 1}) {
 }
 
 //-----------------------------------------------------------------------------
@@ -25,22 +26,36 @@ PtWindow::~PtWindow() {
 
 //-----------------------------------------------------------------------------
 void PtWindow::start(void) {
-	createScene();
-
+	createScene(scene);
+	setFirstCam(focal, viewAngle, pos, lookAt, distance, alpha, beta);
+	
 	img.resize(getClientSize().x, getClientSize().y);
-	ren.start(cam, &img, scene);
+	ren.start(&cam, &img, &scene);
 
-	//beta = pt::pi/5;
-	//alpha = -pt::pi/3 + 0.3;
-	//beta = 0.814;
-	//alpha = -0.612;
-	//distance = 1.5;
-	beta = 0.294;
-	alpha = -0.252;
-	distance = 3.1;
 	changeCam();
 
 	SetTimer(getHwnd(), 1220, 1000/fps, NULL);
+}
+
+//-----------------------------------------------------------------------------
+void PtWindow::reCreateScene(void) {
+	long time = GetTickCount();
+
+	isEnter = false;
+	ren.getCurrentImage(img1, true);
+	img1.copyTo(&canvas, Point_i(0, 0), Point_i(0, 0), img1.size());
+
+	ren.stop();
+	scene.array.clear();
+	reCreateSceneUser(scene);
+
+	img.clear();
+	ren.start(&cam, &img, &scene);
+	isEnter = true;
+
+	time = GetTickCount() - time;
+	if (time < 1000 / fps)
+		Sleep(1000 / fps - time);
 }
 
 //-----------------------------------------------------------------------------
@@ -48,12 +63,15 @@ void PtWindow::changeCam() {
 	long time = GetTickCount();
 
 	isEnter = false;
-	ImageBase img1(ren.getCurrentImage(true));
+	ren.getCurrentImage(img1, true);
 	img1.copyTo(&canvas, Point_i(0, 0), Point_i(0, 0), img1.size());
+
 	ren.stop();
-	onChangeCam(alpha, beta, distance, img.getWidth(), img.getHeight());
+	cam.assign(focal, viewAngle, 0, getRotatedVector(pos, distance, alpha, beta), img1.width(), img1.height());
+	cam.lookAt(lookAt);
+
 	img.clear();
-	ren.start(cam, &img, scene);
+	ren.start(&cam, &img, &scene);
 	isEnter = true;
 
 	time = GetTickCount() - time;
@@ -69,7 +87,7 @@ bool PtWindow::onMouse(Point_i pos, MouseType type) {
 
 	switch (type) {
 		case MOUSE_R_DOWN:
-			func();
+			onRightMouseClick();
 			break;
 		case MOUSE_L_DOWN:
 			moveRegime = true;
@@ -108,20 +126,24 @@ bool PtWindow::onMouse(Point_i pos, MouseType type) {
 //-----------------------------------------------------------------------------
 bool PtWindow::onResize(Rect rect, SizingType type) {
 	long time = GetTickCount();
-	isEnter = false;
 
-	ImageBase img1 = ren.getCurrentImage(true);
+	isEnter = false;
+	ren.getCurrentImage(img1, true);
 	img1.copyTo(&canvas, Point_i(0, 0), Point_i(0, 0), img1.size());
 	ren.stop();
 	img.resize(rect.x(), rect.y());
-	onChangeCam(alpha, beta, distance, img.getWidth(), img.getHeight());
+	
+	ren.stop();
+	cam.assign(focal, viewAngle, 0, getRotatedVector(pos, distance, alpha, beta), img1.width(), img1.height());
+	cam.lookAt(lookAt);
+
 	img.clear();
-	ren.start(cam, &img, scene);
+	ren.start(&cam, &img, &scene);
 	isEnter = true;
 
 	time = GetTickCount() - time;
-	if (time < 1000/fps)
-		Sleep(1000/fps - time);
+	if (time < 1000 / fps)
+		Sleep(1000 / fps - time);
 
 	return true;
 }
@@ -138,17 +160,18 @@ bool PtWindow::onMessage(int32u id, void* data) {
 	if (!isStarted) {
 		start();
 		isStarted = true;
-		setClientSize(getWindowSize());
 	}
 	if (id == WINDOWS_MESSAGE) {
 		onMessageStruct msg = *(onMessageStruct*)(data);
 		if (msg.msg == WM_TIMER && msg.wParam == 1220 && isEnter) {
+			// Вывод данных в заголовок
 			std::wstringstream sout;
 			sout.precision(4);
 			sout << std::setw(5) << (ren.getPercent() * 100) << L"%, alpha: " << alpha << L", beta: " << beta << L", distance: " << distance;
 			setCaption(sout.str());
 
-			ImageBase img1 = ren.getCurrentImage(false);
+			// Обновление изображения
+			ren.getCurrentImage(img1, false);
 			img1.copyTo(&canvas, Point_i(0, 0), Point_i(0, 0), img1.size());
 			if (ren.getPercent() == 1)
 				isEnter = false;

@@ -12,13 +12,13 @@ bool Scene::intersect(const Ray& ray,
 		Intersection inter1;
 		inter.t = tMax;
 		bool isIntersect = array[0]->intersect(ray, inter, tMin, tMax);;
-		m_current = 0;
+		inter.inf = 0;
 		for (int i = 1; i < array.size(); ++i) {
 			if (array[i]->intersect(ray, inter1, tMin, tMax)) {
 				isIntersect = true;
 				if (inter1.t <= inter.t) {
 					inter = inter1;
-					m_current = i;
+					inter.inf = i;
 				}
 			}
 		}
@@ -33,7 +33,7 @@ ScatterType Scene::scatter(const Ray& ray,
 					Color& clrAbsorbtion,
 					Ray& scattered,
 					double& diffusion) const {
-	return array[m_current]->scatter(ray, inter, clrAbsorbtion, scattered, diffusion);
+	return array[inter.inf]->scatter(ray, inter, clrAbsorbtion, scattered, diffusion);
 }
 
 };

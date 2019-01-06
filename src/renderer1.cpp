@@ -1,9 +1,11 @@
 #include <sstream>
 #include <algorithm>
+#include <random>
 #include <iostream>
 #include <chrono>
 #include <string>
 #include <iomanip>
+#include <mutex>
 
 #include <pt/renderer1.h>
 
@@ -75,15 +77,14 @@ namespace {
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-StandardRendererWithPointLight::StandardRendererWithPointLight(const Camera& camera, 
-	const Object& scene,
-	Image& img, 
-	int maxDepth, 
+StandardRenderer::StandardRenderer(
+	int threads,
+	int maxDepth,
 	double tMax,
 	bool isDiffuse, 
 	bool isBreakOnMaterial,
 	bool isWriteText) : 
-	Renderer1(camera, scene, img),
+	threads(threads),
 	maxDepth(maxDepth),
 	tMax(tMax),
 	isDiffuse(isDiffuse),
@@ -92,13 +93,13 @@ StandardRendererWithPointLight::StandardRendererWithPointLight(const Camera& cam
 }
 
 //-----------------------------------------------------------------------------
-StandardRendererWithPointLight::~StandardRendererWithPointLight() {
+StandardRenderer::~StandardRenderer() {
 	for (auto i : invertedPortals)
 		delete i;
 }
 
 //-----------------------------------------------------------------------------
-void StandardRendererWithPointLight::addPortal(Portals* portal) {
+void StandardRenderer::addPortal(Portals* portal) {
 	portals.push_back(portal);
 	Portals* inv = new Portals(*portal);
 	*inv = invert(*portal);
@@ -106,7 +107,7 @@ void StandardRendererWithPointLight::addPortal(Portals* portal) {
 }
 
 //-----------------------------------------------------------------------------
-void StandardRendererWithPointLight::clearPortals(void) {
+void StandardRenderer::clearPortals(void) {
 	for (auto i : invertedPortals)
 		delete i;
 	portals.clear();
@@ -114,25 +115,39 @@ void StandardRendererWithPointLight::clearPortals(void) {
 }
 
 //-----------------------------------------------------------------------------
-void StandardRendererWithPointLight::render(void) {
-	std::vector<int> pixels(img.getWidth() * img.getHeight(), 0);
+void StandardRenderer::render(void) {
+	std::vector<int> pixels(img->getWidth() * img->getHeight(), 0);
 	for (int i = 0; i < pixels.size(); ++i)
 		pixels[i] = i;
 	std::random_shuffle(pixels.begin(), pixels.end());
 
+	std::mutex write_mutex;
+	int renderedPixelsCount = 0;
+
 	onStartRender();
-	for (int i = 0; i < pixels.size(); ++i) {
-		if (i % img.getHeight() == 0)
-			onEveryLine(double(i)/pixels.size());
-		int x = i % img.getWidth();
-		int y = i / img.getWidth();
-		img(x, y) = computePixel(x, y);
+	std::vector<std::thread> threads_mas;
+	for (int i = 0; i < threads; ++i) {
+		threads_mas.push_back(std::thread([&] (int i) {
+			for (int j = i; j < pixels.size(); j += threads) {
+				write_mutex.lock();
+				renderedPixelsCount++;
+				if (renderedPixelsCount % img->getHeight() == 0)
+					onEveryLine(double(renderedPixelsCount)/pixels.size());
+				write_mutex.unlock();
+
+				int x = pixels[j] % img->getWidth();
+				int y = pixels[j] / img->getWidth();
+				(*img)(x, y) = computePixel(x, y);
+			}
+		}, i));
 	}
+	for (auto& i : threads_mas)
+		i.join();
 	onEndRendering();
 }
 
 //-----------------------------------------------------------------------------
-void StandardRendererWithPointLight::onStartRender(void) {
+void StandardRenderer::onStartRender(void) {
 	using namespace std;
 	if (isWriteText) {
 		time = getCurrentTime();
@@ -144,7 +159,7 @@ void StandardRendererWithPointLight::onStartRender(void) {
 }
 
 //-----------------------------------------------------------------------------
-void StandardRendererWithPointLight::onEveryLine(double percent) {
+void StandardRenderer::onEveryLine(double percent) const {
 	using namespace std;
 	if (isWriteText) {
 		stringstream sout;
@@ -170,7 +185,7 @@ void StandardRendererWithPointLight::onEveryLine(double percent) {
 }
 
 //-----------------------------------------------------------------------------
-void StandardRendererWithPointLight::onEndRendering(void) {
+void StandardRenderer::onEndRendering(void) const {
 	using namespace std;
 	if (isWriteText) {
 		cout << '\r' << setw(9) << "100% |";
@@ -186,12 +201,12 @@ void StandardRendererWithPointLight::onEndRendering(void) {
 }
 
 //-----------------------------------------------------------------------------
-Color StandardRendererWithPointLight::computePixel(int x, int y) {
-	return computeColor(camera.getRay(x, y, isDiffuse));
+Color StandardRenderer::computePixel(int x, int y) const {
+	return computeColor(camera->getRay(x, y, isDiffuse));
 }
 
 //-----------------------------------------------------------------------------
-Color StandardRendererWithPointLight::computeColor(Ray ray) {
+Color StandardRenderer::computeColor(Ray ray) const {
 	Color resultColor = Color(1, 1, 1, 1);
 	Intersection inter;
 	Color clrAbsorbtion;
@@ -200,8 +215,8 @@ Color StandardRendererWithPointLight::computeColor(Ray ray) {
 	ScatterType returned;
 	
 	for (int i = 0; i < maxDepth; ++i) {
-		if (scene.intersect(ray, inter, 0, tMax)) {
-			returned = scene.scatter(ray, inter, clrAbsorbtion, scattered, diffusion);
+		if (scene->intersect(ray, inter, 0, tMax)) {
+			returned = scene->scatter(ray, inter, clrAbsorbtion, scattered, diffusion);
 
 			if (returned == SCATTER_NEXT)
 				returned = returned;
@@ -274,10 +289,10 @@ Color StandardRendererWithPointLight::computeColor(Ray ray) {
 }
 
 //-----------------------------------------------------------------------------
-Color StandardRendererWithPointLight::computeLight(
+Color StandardRenderer::computeLight(
 	vec3 pos, vec3 normal,
 	std::vector<std::pair<Portals*, vec3> >& teleportation,
-	int depth) {
+	int depth) const {
 	// В этой функции предполагается, что все источники света должны быть телепортированы через порталы, указанные в teleportation, и для всех них как раз проверяется, чтобы через все эти порталы свет мог попасть к текущему месту, которое проверяется на освещенность
 
 	// Тут тоже отложим поддержку прозрачности до лучших времен
@@ -306,14 +321,14 @@ Color StandardRendererWithPointLight::computeLight(
 
 			// Проверяем, чтобы на пути от портала до текущего положения источника света не было препятствий
 			ray.pos += ray.dir * (inter.t + 0.00001);
-			t = (i.pos - ray.pos).getLength();
-			isIntersect = scene.intersect(ray, inter, 0, t + 1);
+			t = distance(i.pos, ray.pos);
+			isIntersect = scene->intersect(ray, inter, 0, t + 1);
 			isPass &= !isIntersect || (isIntersect && inter.t > t);
 			if (!isPass) goto next;
 
 			// Сдвигаем источник света по лучу ближе к текущему месту, на освещенность данного конкретного места не повлияет, а после сдвига телепортируем, чтобы рассчитывать это для других порталов
 			i.pos -= ray.dir * (t + 0.00003);
-			i.pos = teleportVector(portal.p2, portal.p1, i.pos);
+			i.pos = portal3(portal.p2, portal.p1).teleport(i.pos);
 		}
 
 		// Получаем луч от текущего абсолютного места до текущего источника света
@@ -323,8 +338,8 @@ Color StandardRendererWithPointLight::computeLight(
 		ray.pos += ray.dir * 0.00001;
 
 		// Проверяем, чтобы на пути не было препятствий
-		t = (i.pos - pos).getLength();
-		isIntersect = scene.intersect(ray, inter, 0, t + 1);
+		t = distance(i.pos, pos);
+		isIntersect = scene->intersect(ray, inter, 0, t + 1);
 		isPass &= !isIntersect || (isIntersect && inter.t > t);
 		if (!isPass) goto next;
 
@@ -341,9 +356,9 @@ Color StandardRendererWithPointLight::computeLight(
 			auto recursion = [&] (Portals* portal) {
 				vec3 newPos;
 				if (teleportation.size() != 0)
-					newPos = teleportVector(portal->p1, portal->p2, teleportation.back().second);
+					newPos = portal3(portal->p1, portal->p2).teleport(teleportation.back().second);
 				else
-					newPos = teleportVector(portal->p1, portal->p2, pos);
+					newPos = portal3(portal->p1, portal->p2).teleport(pos);
 				teleportation.push_back({portal, newPos});
 				result += computeLight(pos, normal, teleportation, depth-1);
 				teleportation.pop_back();
@@ -362,23 +377,21 @@ Color StandardRendererWithPointLight::computeLight(
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-RayTracing::RayTracing(const Camera& camera, 
-					   const Object& scene,
-					   Image& img, 
-					   int aliasing,
+RayTracing::RayTracing(int aliasing,
+					   int threads,
 					   bool isWriteText,
 					   int maxDepth,
-					   double tMax) : StandardRendererWithPointLight(camera, scene, img, maxDepth, tMax, false, true, isWriteText), antialiasing(aliasing) {
+					   double tMax) : StandardRenderer(threads, maxDepth, tMax, false, true, isWriteText), antialiasing(aliasing) {
 }
 
 //-----------------------------------------------------------------------------
-Color RayTracing::computePixel(int x, int y) {
+Color RayTracing::computePixel(int x, int y) const {
 	Color clr(0, 0, 0, 0);
 	for (int ki = 0; ki < antialiasing; ++ki) {
 		for (int kj = 0; kj < antialiasing; ++kj) {
 			double x1 = x + double(ki)/antialiasing;
 			double y1 = y + double(kj)/antialiasing;
-			Ray ray = camera.getRay(x1, y1, isDiffuse);
+			Ray ray = camera->getRay(x1, y1, isDiffuse);
 			clr += computeColor(ray);
 		}
 	}
@@ -391,22 +404,20 @@ Color RayTracing::computePixel(int x, int y) {
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-PathTracing::PathTracing(const Camera& camera, 
-						 const Object& scene,
-						 Image& img, 
-						 int samples,
+PathTracing::PathTracing(int samples,
+						 int threads,
 						 bool isWriteText,
 						 int maxDepth,
-						 double tMax) : StandardRendererWithPointLight(camera, scene, img, maxDepth, tMax, true, false, isWriteText), samples(samples) {
+						 double tMax) : StandardRenderer(threads, maxDepth, tMax, true, false, isWriteText), samples(samples) {
 }
 
 //-----------------------------------------------------------------------------
-Color PathTracing::computePixel(int x, int y) {
+Color PathTracing::computePixel(int x, int y) const {
 	Color clr(0, 0, 0, 0);
 	for (int i = 0; i < samples; ++i) {
 		double x1 = x + random();
 		double y1 = y + random();
-		Ray ray = camera.getRay(x1, y1, isDiffuse);
+		Ray ray = camera->getRay(x1, y1, isDiffuse);
 		clr += computeColor(ray);
 	}
 	clr /= samples;

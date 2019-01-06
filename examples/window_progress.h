@@ -16,11 +16,14 @@ namespace pt
 	class WindowProgress : public twg::WindowEvents
 	{
 	public:
-		WindowProgress(twg::Point_i size, Renderer* ren, Camera* cam, Object* scene, std::string imageName);
+		WindowProgress(twg::Point_i size, StandardRenderer* ren, Camera* cam, Object* scene, std::string imageName);
 		~WindowProgress();
 
 		//---------------------------------------------------------------------
 		bool onMessage(twg::int32u id, void* data);
+	protected:
+		twg::ImageBase			img1;
+
 	private:
 		Image					img;
 		ThreadPartiallyRender	ren;
