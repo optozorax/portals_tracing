@@ -25,7 +25,8 @@ namespace pt
 		double t;
 		vec3 pos;
 		vec3 normal;
-		struct {
+		struct Data {
+			int type;
 			int integer;
 			vec2 vector;
 			bool boolean;
