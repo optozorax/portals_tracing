@@ -33,7 +33,6 @@ namespace pt
 		std::vector<vec2> poly;
 		Material* first;
 		Material* second;
-		mutable int currentTriangle;
 	};
 
 	//-------------------------------------------------------------------------

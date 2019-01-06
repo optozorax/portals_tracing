@@ -37,26 +37,26 @@ bool Portals::intersect(const Ray& ray,
 	bool firstLessSecond = inter1.t < inter2.t;
 
 	if (isFirst && isSecond && firstLessSecond) {
-		currentTriangle = 1;
 		inter = inter1;
+		inter.data.integer = 1;
 		return true;
 	}
 
 	if (isFirst && isSecond && !firstLessSecond) {
-		currentTriangle = 2;
 		inter = inter2;
+		inter.data.integer = 2;
 		return true;
 	}	
 
 	if (isFirst) {
-		currentTriangle = 1;
 		inter = inter1;
+		inter.data.integer = 1;
 		return true;
 	}
 
 	if (isSecond) {
-		currentTriangle = 2;
 		inter = inter2;
+		inter.data.integer = 2;
 		return true;
 	}
 
@@ -69,16 +69,16 @@ ScatterType Portals::scatter(const Ray& ray,
 							 Color& clrAbsorbtion,
 							 Ray& scattered,
 							 double& diffusion) const {
-	if (currentTriangle == 1)
+	if (inter.data.integer == 1)
 		if (dot(inter.normal, p1.k) > 0)
 			return first->scatter(ray, inter, clrAbsorbtion, scattered, diffusion);
-	if (currentTriangle == 2)
+	if (inter.data.integer == 2)
 		if (dot(inter.normal, p2.k) < 0)
 			return second->scatter(ray, inter, clrAbsorbtion, scattered, diffusion);
 
 	scattered.pos = inter.pos;
 	scattered.dir = ray.dir;
-	if (currentTriangle == 1) {
+	if (inter.data.integer == 1) {
 		prtl::portal3 portal(p1, p2);
 		scattered.pos = portal.teleport(scattered.pos);
 		scattered.dir = portal.teleportDir(scattered.dir);

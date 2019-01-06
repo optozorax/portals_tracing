@@ -21,8 +21,6 @@ namespace pt
 							double& diffusion) const;
 
 		std::vector<Object*> array;
-	private:
-		mutable unsigned int m_current;
 	};
 
 };

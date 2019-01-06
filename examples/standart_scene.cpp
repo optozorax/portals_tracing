@@ -49,20 +49,26 @@ int main() {
 	Scene scene;
 	initScene(scene);
 
-	Image img(1024, 576);
+	Image img(1920, 1080);
 
 	PerspectiveCamera cam(12, 20*pi/180, 0.1, vec3(12, 3, 2), img.getWidth(), img.getHeight());
 	cam.lookAt(vec3(0, 0, 1));
 
-	RayTracing ren2(cam, scene, img, 3);
-	ren2.luminaries.push_back(PointLight(vec3(0, 0, 5), Color(0.5, 0.5, 0.5)));
-	ren2.render();
-	img.colorCorrection();
-	saveAsBmp(img, "standard_ray.bmp");
+	{
+		RayTracing ren(3, 16, true);
+		ren.luminaries.push_back(PointLight(vec3(0, 0, 5), Color(0.5, 0.5, 0.5)));
+		ren.assign(&cam, &scene, &img);
+		ren.render();
+		img.colorCorrection();
+		saveAsBmp(img, "standard_ray.bmp");
+	}
 
-	PathTracing ren(cam, scene, img, 400);
-	ren.luminaries.push_back(PointLight(vec3(0, 0, 5), Color(0.5, 0.5, 0.5)));
-	ren.render();
-	img.colorCorrection();
-	saveAsBmp(img, "standard_path.bmp");
+	{
+		PathTracing ren(400, 16, true);
+		ren.luminaries.push_back(PointLight(vec3(0, 0, 5), Color(0.5, 0.5, 0.5)));
+		ren.assign(&cam, &scene, &img);
+		ren.render();
+		img.colorCorrection();
+		saveAsBmp(img, "standard_path.bmp");
+	}
 }

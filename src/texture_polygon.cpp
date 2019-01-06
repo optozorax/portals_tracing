@@ -41,7 +41,8 @@ bool TexturePolygon::intersect(const Ray& ray,
 			if (!inRect)
 				return false;
 
-			imgPos = brd.toImg(r);
+			vec2 imgPos = brd.toImg(r);
+			inter.data.vector = imgPos;
 			if (imgPos.x < 0 || imgPos.x > img->getWidth() ||
 				imgPos.y < 0 || imgPos.y > img->getHeight())
 				return false;
@@ -73,7 +74,7 @@ ScatterType TexturePolygon::scatter(const Ray& ray,
 						 Color& clrAbsorbtion,
 						 Ray& scattered,
 						 double& diffusion) const {
-	clrAbsorbtion = img->operator()(imgPos.x, imgPos.y);
+	clrAbsorbtion = img->operator()(inter.data.vector.x, inter.data.vector.y);
 	scattered.pos = inter.pos;
 	scattered.dir = inter.normal;
 	diffusion = 1;

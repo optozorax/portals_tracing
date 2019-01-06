@@ -25,15 +25,15 @@ bool MathRoom::intersect(const Ray& ray,
 		inter.normal = vec3(0, 0, 1);
 		inter.pos = ray.pos + ray.dir * inter.t;
 
-		x = inter.pos.x;
-		y = inter.pos.y;
-		isPlane = true;
+		inter.data.vector.x = inter.pos.x;
+		inter.data.vector.y = inter.pos.y;
+		inter.data.boolean = true;
 	} else {
 		// Попали на полусферу неба
 		to_sphere:
-		alpha = std::atan2(ray.dir.y, ray.dir.x);
-		beta = std::atan2(std::sqrt(ray.dir.x*ray.dir.x + ray.dir.y*ray.dir.y), ray.dir.z);
-		isPlane = false;
+		inter.data.vector.x= std::atan2(ray.dir.y, ray.dir.x);
+		inter.data.vector.y = std::atan2(std::sqrt(ray.dir.x*ray.dir.x + ray.dir.y*ray.dir.y), ray.dir.z);
+		inter.data.boolean = false;
 
 		inter.t = tMax;
 		inter.pos = ray.pos + ray.dir * inter.t;
@@ -48,7 +48,7 @@ ScatterType MathRoom::scatter(const Ray& ray,
 						 Color& clrAbsorbtion,
 						 Ray& scattered,
 						 double& diffusion) const {
-	if (isPlane) {
+	if (inter.data.boolean) {
 		const double axisWidth = 0.035;
 		const double gridWidth = 0.01;
 		const Color axisColor(0, 0, 0);
@@ -56,6 +56,8 @@ ScatterType MathRoom::scatter(const Ray& ray,
 		const Color planeColor(0.9, 0.9, 0.9);
 		const double gridSize = 1;
 
+		double x = inter.data.vector.x;
+		double y = inter.data.vector.y;
 		if (fabs(x) < axisWidth || fabs(y) < axisWidth) {
 			clrAbsorbtion = axisColor;
 		} else {
@@ -82,7 +84,7 @@ ScatterType MathRoom::scatter(const Ray& ray,
 	} else {
 		const Color lower(0, 0.5, 0.5);
 		const Color upper(0.8, 0.8, 0.8);
-		double between = 1 - beta/(pi/2.0);
+		double between = 1 - inter.data.vector.y/(pi/2.0);
 
 		clrAbsorbtion.r = upper.r*between + lower.r*(1-between);
 		clrAbsorbtion.g = upper.g*between + lower.g*(1-between);

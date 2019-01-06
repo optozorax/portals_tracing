@@ -22,9 +22,6 @@ namespace pt
 							Color& clrAbsorbtion,
 							Ray& scattered,
 							double& diffusion) const;
-	private:
-		mutable bool isPlane, isSphere;
-		mutable double x, y, alpha, beta;
 	};
 
 };

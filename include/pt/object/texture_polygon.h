@@ -34,7 +34,6 @@ namespace pt
 		vec3 normal;
 		vec2 min, max;
 
-		mutable vec2 imgPos;
 		prtl::FindBorders brd;
 	};
 
