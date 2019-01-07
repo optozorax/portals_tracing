@@ -25,6 +25,8 @@ namespace pt
 		Color clr2;
 	};
 
+	inline Object_ptr makeSky(Color clr1, Color clr2) { return Object_ptr(new Sky(clr1, clr2)); }
+
 };
 
 #endif

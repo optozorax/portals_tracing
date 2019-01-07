@@ -94,22 +94,17 @@ StandardRenderer::StandardRenderer(
 
 //-----------------------------------------------------------------------------
 StandardRenderer::~StandardRenderer() {
-	for (auto i : invertedPortals)
-		delete i;
 }
 
 //-----------------------------------------------------------------------------
-void StandardRenderer::addPortal(Portals* portal) {
+void StandardRenderer::addPortal(Portals_ptr portal) {
 	portals.push_back(portal);
-	Portals* inv = new Portals(*portal);
-	*inv = invert(*portal);
+	Portals_ptr inv = std::make_shared<Portals>(invert(*portal));
 	invertedPortals.push_back(inv);
 }
 
 //-----------------------------------------------------------------------------
 void StandardRenderer::clearPortals(void) {
-	for (auto i : invertedPortals)
-		delete i;
 	portals.clear();
 	invertedPortals.clear();
 }
@@ -236,7 +231,7 @@ Color StandardRenderer::computeColor(Ray ray) const {
 			// Считаем цвет освещения, но его надо считать только когда у нас обычный материал
 			if (returned == SCATTER_RAYTRACING_END) {
 				Color lightColor = Color(1, 1, 1, 1);
-				std::vector<std::pair<Portals*, vec3> > teleportation;
+				std::vector<std::pair<Portals_ptr, vec3> > teleportation;
 				lightColor += computeLight(scattered.pos, inter.normal, teleportation, 3);
 				clrAbsorbtion = lightColor * clrAbsorbtion;
 			}
@@ -291,7 +286,7 @@ Color StandardRenderer::computeColor(Ray ray) const {
 //-----------------------------------------------------------------------------
 Color StandardRenderer::computeLight(
 	vec3 pos, vec3 normal,
-	std::vector<std::pair<Portals*, vec3> >& teleportation,
+	std::vector<std::pair<Portals_ptr, vec3> >& teleportation,
 	int depth) const {
 	// В этой функции предполагается, что все источники света должны быть телепортированы через порталы, указанные в teleportation, и для всех них как раз проверяется, чтобы через все эти порталы свет мог попасть к текущему месту, которое проверяется на освещенность
 
@@ -353,7 +348,7 @@ Color StandardRenderer::computeLight(
 	// Далее, если позволяет глубина, перебираем все порталы дальше
 	if (depth > 0) {
 		for (int i = 0; i < portals.size(); ++i) {
-			auto recursion = [&] (Portals* portal) {
+			auto recursion = [&] (Portals_ptr portal) {
 				vec3 newPos;
 				if (teleportation.size() != 0)
 					newPos = portal3(portal->p1, portal->p2).teleport(teleportation.back().second);

@@ -9,7 +9,7 @@ namespace pt
 	class Triangle : public Shape
 	{
 	public:
-		Triangle(vec3 a, vec3 b, vec3 c, Material* material);
+		Triangle(vec3 a, vec3 b, vec3 c, Material_ptr material);
 
 		bool intersect(const Ray& ray, 
 					   Intersection& inter, 
@@ -23,6 +23,8 @@ namespace pt
 		double S;
 		double ab, bc, ac;
 	};
+
+	inline Object_ptr makeTriangle(vec3 a, vec3 b, vec3 c, Material_ptr material) { return Object_ptr(new Triangle(a, b, c, material)); }
 
 };
 

@@ -12,7 +12,6 @@
 #include <pt/camera/360.h>
 #include <pt/camera/orthogonal.h>
 #include <pt/renderer1.h>
-#include <pt/renderer/ray-tracing.h>
 #include <pt/pt2easybmp.h>
 
 int main() {
@@ -28,7 +27,7 @@ int main() {
 	PerspectiveCamera cam(1, pi / 2.0, 0, camPos, img.getWidth(), img.getHeight());
 	cam.lookAt(lookAt);
 
-	RayTracing ren(cam, scene, img, 2);
+	RayTracing ren(2, 4, true);
 
 	// Создаем пол
 	const double size = 500;
@@ -37,8 +36,8 @@ int main() {
 	mas2.push_back({-size, size});
 	mas2.push_back({size, size});
 	mas2.push_back({size, -size});
-	CoordSystem floor = standard;
-	scene.array.push_back(new pt::Polygon(mas2, floor, new Scatter(Color(0.4, 0, 0.6))));
+	crd3 floor = getStandardCrd3();
+	scene.array.push_back(makePolygon(mas2, floor, makeScatter(Color(0.4, 0, 0.6))));
 
 	Color portalFirstColor0 = Color(1, 0.5, 0.15); // orange
 	Color portalSecondColor0 = Color(0.1, 0.55, 1); // blue
@@ -66,25 +65,27 @@ int main() {
 	contour.push_back({-1, -1});
 
 	// Первая пара порталов
-	CoordSystem p11 = standard;
-	CoordSystem p12 = standard;
+	crd3 p11 = getStandardCrd3();
+	crd3 p12 = getStandardCrd3();
 	p11.pos = {0, 0, 1};
 	p12.pos = {2 + 2*h, 2, 1};
-	scene.array.push_back(new Portals(p11, p12, mas, new Scatter(portalFirstColor0), new Scatter(portalSecondColor0)));
-	ren.portals.push_back((Portals*)scene.array.back());
-	scene.array.push_back(new pt::Polygon(contour, p11, new Scatter(portalFirstColor0)));
-	scene.array.push_back(new pt::Polygon(contour, p12, new Scatter(portalSecondColor0)));
+	Portals_ptr prt = makePortals(p11, p12, mas, makeScatter(portalFirstColor0), makeScatter(portalSecondColor0));
+	scene.array.push_back(prt);
+	ren.addPortal(prt);
+	scene.array.push_back(makePolygon(contour, p11, makeScatter(portalFirstColor0)));
+	scene.array.push_back(makePolygon(contour, p12, makeScatter(portalSecondColor0)));
 
 	// Вторая пара порталов
-	CoordSystem p21 = standard;
-	CoordSystem p22 = standard;
+	crd3 p21 = getStandardCrd3();
+	crd3 p22 = getStandardCrd3();
 	p21.pos = p12.pos;
 	p21.pos.z += 1;
 	p22.pos = {0, 2, 2};
-	scene.array.push_back(new Portals(p21, p22, mas, new Scatter(portalFirstColor1), new Scatter(portalSecondColor1)));
-	ren.portals.push_back((Portals*)scene.array.back());
-	scene.array.push_back(new pt::Polygon(contour, p21, new Scatter(portalFirstColor1)));
-	scene.array.push_back(new pt::Polygon(contour, p22, new Scatter(portalSecondColor1)));
+	Portals_ptr prt1 = makePortals(p21, p22, mas, makeScatter(portalFirstColor1), makeScatter(portalSecondColor1));
+	scene.array.push_back(prt1);
+	ren.addPortal(prt1);
+	scene.array.push_back(makePolygon(contour, p21, makeScatter(portalFirstColor1)));
+	scene.array.push_back(makePolygon(contour, p22, makeScatter(portalSecondColor1)));
 
 	// Источник освещения
 	vec3 lightPos = p22.pos;
@@ -95,17 +96,17 @@ int main() {
 	// Добавляем сферы, которые показывают положение источника освещения
 	double spsize = 0.05;
 	vec3 spherePos = lightPos + vec3(0, 0, spsize + 0.01);
-	scene.array.push_back(new Sphere(spherePos, spsize, new Scatter(Color(1, 1, 1, 1))));
+	scene.array.push_back(makeSphere(spherePos, spsize, makeScatter(Color(1, 1, 1, 1))));
 
 	if (isDrawHints) {
-		vec3 spherePos1 = teleportVector(ren.portals[1]->p2, ren.portals[1]->p1, spherePos);
-		scene.array.push_back(new Sphere(spherePos1, spsize, new Scatter(Color(0.5, 0.5, 0.5, 1))));
-		vec3 spherePos2 = teleportVector(ren.portals[0]->p2, ren.portals[0]->p1, spherePos1);
-		scene.array.push_back(new Sphere(spherePos2, spsize, new Scatter(Color(0.25, 0.25, 0.25, 1))));
+		vec3 spherePos1 = space3(prt1->p1).from(space3(prt1->p2).to(spherePos));
+		scene.array.push_back(makeSphere(spherePos1, spsize, makeScatter(Color(0.5, 0.5, 0.5, 1))));
+		vec3 spherePos2 = space3(prt->p1).from(space3(prt->p2).to(spherePos1));
+		scene.array.push_back(makeSphere(spherePos2, spsize, makeScatter(Color(0.25, 0.25, 0.25, 1))));
 	}
 
 	// Добавляем небо
-	scene.array.push_back(new Sky(Color(0.3, 0.3, 0.9), Color(1, 1, 1)));
+	scene.array.push_back(makeSky(Color(0.3, 0.3, 0.9), Color(1, 1, 1)));
 
 	// Для отладки
 	/*Ray ray;
@@ -114,6 +115,7 @@ int main() {
 	ren.computeColor(ray);*/
 
 	// Рендерим первую картинку
+	ren.assign(&cam, &scene, &img);
 	ren.render();
 	img.colorCorrection();
 	if (isDrawHints)
@@ -134,10 +136,8 @@ int main() {
 	// Рендерим картинку сверху
 	Orthogonal cam2(vec3(1, 1, 5), 10.0 / img.getWidth() , img.getWidth(), img.getHeight());
 	cam2.lookTowards(vec3(1, 1 - 0.001, 0));
-	RayTracing ren2(cam2, scene, img, 1);
-	ren2.luminaries = ren.luminaries;
-	ren2.portals = ren.portals;
-	ren2.render();
+	ren.assign(&cam2, &scene, &img);
+	ren.render();
 	img.colorCorrection();
 	if (isDrawHints)
 		saveAsBmp(img, "portal_light_test1_hints_3.bmp");

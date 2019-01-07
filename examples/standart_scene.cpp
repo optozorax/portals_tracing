@@ -21,28 +21,28 @@ float myrandom() {
 
 void initScene(Scene& scene) {
 	auto& array = scene.array;
-	array.push_back(new Sky(Color(1, 1, 1), Color(0.5, 0.7, 1).sqrt()));
+	array.push_back(makeSky(Color(1, 1, 1), Color(0.5, 0.7, 1).sqrt()));
 
 	for(int i = -11; i < 11; ++i) {
 		for(int j = -11; j < 11; ++j) {
 			vec3 c(i + 0.9 * myrandom(), j + 0.9 * myrandom(), 0.2);
 			double p = myrandom();
 			if(p < 0.8) {
-				array.push_back(new Sphere(c, 0.2, new Scatter(Color(myrandom(), myrandom(), myrandom()).sqrt())));
+				array.push_back(makeSphere(c, 0.2, makeScatter(Color(myrandom(), myrandom(), myrandom()).sqrt())));
 			} else if(p < 0.95) {
 				double r = 0.5 * (1 + myrandom());
 				double g = 0.5 * (1 + myrandom());
 				double b = 0.5 * (1 + myrandom());
-				array.push_back(new Sphere(c, 0.2, new Reflect(Color(r, g, b).sqrt(), 0.5 * myrandom())));
+				array.push_back(makeSphere(c, 0.2, makeReflect(Color(r, g, b).sqrt(), 0.5 * myrandom())));
 			} else {
-				array.push_back(new Sphere(c, 0.2, new Refract(1.5, 0)));
+				array.push_back(makeSphere(c, 0.2, makeRefract(1.5, 0)));
 			}
 		}
 	}
-	array.push_back(new Sphere(vec3(0, 0, 1), 1, new Refract(1.5, 0)));
-	array.push_back(new Sphere(vec3(-4, 0, 1), 1, new Scatter(Color(0.4, 0.2, 0.1).sqrt())));
-	array.push_back(new Sphere(vec3(4, 0, 1), 1, new Reflect(Color(0.7, 0.6, 0.5).sqrt(), 0)));
-	array.push_back(new Sphere(vec3(0, 0, -1000), 1000, new Scatter(Color(0.5, 0.5, 0.5).sqrt())));
+	array.push_back(makeSphere(vec3(0, 0, 1), 1, makeRefract(1.5, 0)));
+	array.push_back(makeSphere(vec3(-4, 0, 1), 1, makeScatter(Color(0.4, 0.2, 0.1).sqrt())));
+	array.push_back(makeSphere(vec3(4, 0, 1), 1, makeReflect(Color(0.7, 0.6, 0.5).sqrt(), 0)));
+	array.push_back(makeSphere(vec3(0, 0, -1000), 1000, makeScatter(Color(0.5, 0.5, 0.5).sqrt())));
 }
 
 int main() {

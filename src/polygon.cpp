@@ -4,12 +4,12 @@ namespace pt
 {
 
 //-----------------------------------------------------------------------------
-Polygon::Polygon(const std::vector<vec2>& polygon, crd3 coords1, Material* material) : Shape(material) {
+Polygon::Polygon(const std::vector<vec2>& polygon, crd3 coords1, Material_ptr material) : Shape(material) {
 	assign(polygon, coords1, material);
 }
 
 //-----------------------------------------------------------------------------
-void Polygon::assign(const std::vector<vec2>& polygon, crd3 coords1, Material* material1) {
+void Polygon::assign(const std::vector<vec2>& polygon, crd3 coords1, Material_ptr material1) {
 	array = polygon;
 	coords = coords1;
 	material = material1;

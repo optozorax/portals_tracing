@@ -20,7 +20,7 @@ namespace pt
 							Ray& scattered,
 							double& diffusion) const;
 
-		std::vector<Object*> array;
+		std::vector<Object_ptr> array;
 	};
 
 };

@@ -20,6 +20,8 @@ namespace pt
 		Color clr;
 	};
 
+	inline Material_ptr makeLight(Color clr) { return Material_ptr(new Light(clr)); }
+
 };
 
 #endif

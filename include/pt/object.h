@@ -12,6 +12,9 @@ namespace pt
 	class Material;
 	class Object;
 
+	typedef std::shared_ptr<Object> Object_ptr;
+	typedef std::shared_ptr<Material> Material_ptr;
+
 	//-------------------------------------------------------------------------
 	struct Ray
 	{
@@ -75,7 +78,7 @@ namespace pt
 	class Shape : public Object
 	{
 	public:
-		Shape(Material* material) : material(material) {}
+		Shape(Material_ptr material) : material(material) {}
 
 		virtual bool intersect(const Ray& ray, 
 							   Intersection& inter, 
@@ -89,7 +92,7 @@ namespace pt
 			return material->scatter(ray, inter, clrAbsorbtion, scattered, diffusion);
 		}	
 
-		Material* material;
+		Material_ptr material;
 	};
 
 };

@@ -15,9 +15,6 @@
 #include <pt/material/reflect.h>
 #include <pt/camera/360.h>
 #include <pt/camera/orthogonal.h>
-#include <pt/renderer/ray-tracing.h>
-#include <pt/renderer/path-tracing.h>
-#include <pt/renderer/thread-renderer.h>
 #include <pt/pt2easybmp.h>
 
 using namespace pt;
@@ -37,23 +34,18 @@ private:
 };
 
 //-----------------------------------------------------------------------------
-pt::vec3 transform(pt::CoordSystem c, pt::vec2 b) {
-	return c.pos + c.i * b.x + c.j * b.y;
-}
-
-//-----------------------------------------------------------------------------
-void addContour2(pt::Scene& scene, pt::CoordSystem c, pt::std::vector<vec2> poly, pt::Material* material) {
+void addContour2(pt::Scene& scene, crd3 c, std::vector<vec2> poly, pt::Material_ptr material) {
 	using namespace pt;
 	double thick = 0.01;
 	std::vector<vec3> mas;
 	for (int i = 0; i < poly.size(); i++)
-		mas.push_back(transform(c, poly[i]));
+		mas.push_back(plane3(c).from(poly[i]));
 
-	scene.array.push_back(new Contour(mas, thick, false, material));
+	scene.array.push_back(makeContour(mas, thick, false, material));
 }
 
 //-----------------------------------------------------------------------------
-void addPortals(Scene& scene, RayRenderer ren, CoordSystem c1, CoordSystem c2) {
+void addPortals(Scene& scene, RayTracing ren, crd3 c1, crd3 c2) {
 	double it = dot(c1.k, c1.pos - c2.pos)/dot(c1.k, c2.i);
 	double jt = dot(c1.k, c1.pos - c2.pos)/dot(c1.k, c2.j);
 
@@ -69,13 +61,13 @@ void addPortals(Scene& scene, RayRenderer ren, CoordSystem c1, CoordSystem c2) {
 	mas2.push_back({0, 0});
 	mas2.push_back({it, 0});
 
-	CoordSystem c3 = teleportCoordSystem(c1, c2, c2);
+	crd3 c3 = space3(c2).from(space3(c1).to(c2));
 
-	Scatter* pt1 = new Scatter(pt::Color(1, 0.5, 0.15));
-	Scatter* pt2 = new Scatter(pt::Color(0.1, 0.55, 1));
+	Material_ptr pt1 = makeScatter(pt::Color(1, 0.5, 0.15));
+	Material_ptr pt2 = makeScatter(pt::Color(0.1, 0.55, 1));
 
-	Portals* prt1 = new Portals(c1, c2, mas1, pt1, pt2);
-	Portals* prt2 = new Portals(c1, c3, mas2, pt1, pt2);
+	Portals_ptr prt1 = makePortals(c1, c2, mas1, pt1, pt2);
+	Portals_ptr prt2 = makePortals(c1, c3, mas2, pt1, pt2);
 	scene.array.push_back(prt1);
 	scene.array.push_back(prt2);
 
@@ -93,13 +85,13 @@ void addPortals(Scene& scene, RayRenderer ren, CoordSystem c1, CoordSystem c2) {
 }
 
 //-----------------------------------------------------------------------------
-void initScene(Scene& scene, RayRenderer& ren, double t) {
+void initScene(Scene& scene, RayTracing& ren, double t) {
 	//---------------------------------------------------------------------
 	// RAY-RENDERER
-	ren.skyColor = pt::Color(1, 1, 1);
-	ren.luminaries.push_back(PointLightSource(vec3(0.5, 0.5, 3), pt::Color(0.5, 0.5, 0.5)));
-	ren.luminaries.push_back(PointLightSource(vec3(-3, 0, 3), pt::Color(0.5, 0.5, 0.5)));
-	ren.luminaries.push_back(PointLightSource(vec3(-0.1, -0.1, 0.1), pt::Color(0.5, 0.5, 0.5)));
+	scene.array.push_back(makeSky(Color(1, 1, 1), Color(1, 1, 1)));
+	ren.luminaries.push_back(PointLight(vec3(0.5, 0.5, 3), pt::Color(0.5, 0.5, 0.5)));
+	ren.luminaries.push_back(PointLight(vec3(-3, 0, 3), pt::Color(0.5, 0.5, 0.5)));
+	ren.luminaries.push_back(PointLight(vec3(-0.1, -0.1, 0.1), pt::Color(0.5, 0.5, 0.5)));
 
 	//---------------------------------------------------------------------
 	// Комната
@@ -113,8 +105,8 @@ void initScene(Scene& scene, RayRenderer& ren, double t) {
 		vec3 b(-size, size, depth);
 		vec3 c(size, size, depth);
 		vec3 d(size, -size, depth);
-		scene.array.push_back(new Triangle(a, b, c, new Scatter(pt::Color(0.1, 0, 0.1))));
-		scene.array.push_back(new Triangle(c, d, a, new Scatter(pt::Color(0.1, 0, 0.1))));
+		scene.array.push_back(makeTriangle(a, b, c, makeScatter(pt::Color(0.35, 0, 0.35))));
+		scene.array.push_back(makeTriangle(c, d, a, makeScatter(pt::Color(0.35, 0, 0.35))));
 
 		//-----------------------------------------------------------------
 		// Потолок
@@ -124,39 +116,39 @@ void initScene(Scene& scene, RayRenderer& ren, double t) {
 		vec3 b1(-size, size, depth);
 		vec3 c1(size, size, depth);
 		vec3 d1(size, -size, depth);
-		scene.array.push_back(new Triangle(a1, b1, c1, new Scatter(pt::Color(0, 0.1, 0.1))));
-		scene.array.push_back(new Triangle(c1, d1, a1, new Scatter(pt::Color(0, 0.1, 0.1))));
+		scene.array.push_back(makeTriangle(a1, b1, c1, makeScatter(pt::Color(0, 0.35, 0.35))));
+		scene.array.push_back(makeTriangle(c1, d1, a1, makeScatter(pt::Color(0, 0.35, 0.35))));
 
 		//-----------------------------------------------------------------
 		// Стена 1
-		scene.array.push_back(new Triangle(a, a1, b1, new Scatter(pt::Color(0, 0, 0.1))));
-		scene.array.push_back(new Triangle(b1, b, a, new Scatter(pt::Color(0, 0, 0.1))));
+		scene.array.push_back(makeTriangle(a, a1, b1, makeScatter(pt::Color(0, 0, 0.35))));
+		scene.array.push_back(makeTriangle(b1, b, a, makeScatter(pt::Color(0, 0, 0.35))));
 
 		//-----------------------------------------------------------------
 		// Стена 2
-		scene.array.push_back(new Triangle(b, b1, c1, new Scatter(pt::Color(0, 0.1, 0))));
-		scene.array.push_back(new Triangle(c1, c, b, new Scatter(pt::Color(0, 0.1, 0))));
+		scene.array.push_back(makeTriangle(b, b1, c1, makeScatter(pt::Color(0, 0.35, 0))));
+		scene.array.push_back(makeTriangle(c1, c, b, makeScatter(pt::Color(0, 0.35, 0))));
 
 		//-----------------------------------------------------------------
 		// Стена 3
-		scene.array.push_back(new Triangle(d, c1, d1, new Scatter(pt::Color(0.1, 0, 0))));
-		scene.array.push_back(new Triangle(c1, c, d, new Scatter(pt::Color(0.1, 0, 0))));
+		scene.array.push_back(makeTriangle(d, c1, d1, makeScatter(pt::Color(0.35, 0, 0))));
+		scene.array.push_back(makeTriangle(c1, c, d, makeScatter(pt::Color(0.35, 0, 0))));
 
 		//-----------------------------------------------------------------
 		// Стена 4
-		scene.array.push_back(new Triangle(a, a1, d1, new Scatter(pt::Color(0.1, 0.1, 0))));
-		scene.array.push_back(new Triangle(d1, d, a, new Scatter(pt::Color(0.1, 0.1, 0))));
+		scene.array.push_back(makeTriangle(a, a1, d1, makeScatter(pt::Color(0.35, 0.35, 0))));
+		scene.array.push_back(makeTriangle(d1, d, a, makeScatter(pt::Color(0.35, 0.35, 0))));
 	}
 
 	//---------------------------------------------------------------------
 	// Портал в портале
-	CoordSystem coords1;
+	crd3 coords1;
 	coords1.i = vec3(1, 0, 0);
 	coords1.j = vec3(0, 1, 0);
 	coords1.k = vec3(0, 0, -1);
 	coords1.pos = vec3(-0.5, -0.5, 0);
 
-	CoordSystem coords2 = coords1;
+	crd3 coords2 = coords1;
 	coords2 = rotate(coords2, vec3(pt::pi - pt::pi/4, 0, -pt::pi/2));
 	coords2.pos += coords1.i * 0.7 + coords1.j * 0.5;
 	coords2.pos.z -= t;
@@ -168,11 +160,10 @@ void initScene(Scene& scene, RayRenderer& ren, double t) {
 int main() {
 	using namespace pt;
 
-	#pragma omp parallel for num_threads(4)
 	for (int i = 1; i < 301; ++i) {
 		Time time;
 		Image img(500, 500);
-		RayRenderer ren(2);
+		RayTracing ren(2, 4, false);
 		Scene scene;
 
 		initScene(scene, ren, i/300.0 * (276.0 / 600.0));
@@ -193,14 +184,15 @@ int main() {
 
 		//---------------------------------------------------------------------
 		// Рендеринг
-		ren.render(cam, img, scene);
+		ren.assign(&cam, &scene, &img);
+		ren.render();
 
 		img.colorCorrection();
 
 		//---------------------------------------------------------------------
 		// Сохранение изображения
 		std::stringstream sout;
-		sout << "portal_" << i << ".bmp";
+		sout << "anim/portal_" << i << ".bmp";
 		saveAsBmp(img, sout.str());
 
 		std::cout << "i: " << i << ", time: " << time.getTime() << std::endl;

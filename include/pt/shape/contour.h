@@ -14,7 +14,7 @@ namespace pt
 	class Contour : public Shape
 	{
 	public:
-		Contour(std::vector<vec3> array, double thick, bool isClosed, Material* material) : Shape(material) {
+		Contour(std::vector<vec3> array, double thick, bool isClosed, Material_ptr material) : Shape(material) {
 			assign(array, thick, isClosed);
 		}
 
@@ -26,9 +26,9 @@ namespace pt
 					   double tMax) const;
 	private:
 		Scene					m_scene;
-		std::vector<Sphere> 	m_spheres;
-		std::vector<Cylinder> 	m_cylinders;
 	};
+
+	inline Object_ptr makeContour(std::vector<vec3> array, double thick, bool isClosed, Material_ptr material) { return Object_ptr(new Contour(array, thick, isClosed, material)); }
 
 };
 

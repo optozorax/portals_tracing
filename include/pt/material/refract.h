@@ -21,6 +21,8 @@ namespace pt
 		double diffuse;
 	};
 
+	inline Material_ptr makeRefract(double refractiveIndex, double diffusion) { return Material_ptr(new Refract(refractiveIndex, diffusion)); }
+
 };
 
 #endif

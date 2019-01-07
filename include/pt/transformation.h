@@ -16,7 +16,7 @@ namespace pt
 	class Transformation : public Object
 	{
 	public:
-		Transformation(Object* obj) : m_obj(obj) {}
+		Transformation(Object_ptr obj) : m_obj(obj) {}
 
 		bool intersect(const Ray& ray, 
 					   Intersection& inter, 
@@ -32,7 +32,7 @@ namespace pt
 		virtual vec3 inverse(const vec3& p) const = 0;
 		
 	private:
-		Object* m_obj;
+		Object_ptr m_obj;
 		mutable Ray ray1;
 		mutable Intersection inter1;
 	};
@@ -41,7 +41,7 @@ namespace pt
 	class TrMove : public Transformation
 	{
 	public:
-		TrMove(const vec3& diff, Object* obj);
+		TrMove(const vec3& diff, Object_ptr obj);
 
 		vec3 transform(const vec3& p) const;
 		vec3 inverse(const vec3& p) const;
@@ -53,7 +53,7 @@ namespace pt
 	class TrRotate : public Transformation
 	{
 	public:
-		TrRotate(const vec3& angles, Object* obj);
+		TrRotate(const vec3& angles, Object_ptr obj);
 
 		vec3 transform(const vec3& p) const;
 		vec3 inverse(const vec3& p) const;
@@ -67,7 +67,7 @@ namespace pt
 	class TrScale : public Transformation
 	{
 	public:
-		TrScale(const vec3& scale, Object* obj);
+		TrScale(const vec3& scale, Object_ptr obj);
 
 		vec3 transform(const vec3& p) const;
 		vec3 inverse(const vec3& p) const;
@@ -79,7 +79,7 @@ namespace pt
 	class TrComplex : public Transformation
 	{
 	public:
-		TrComplex(const vec3& scale, const vec3& angles, const vec3& diff, Object* obj);
+		TrComplex(const vec3& scale, const vec3& angles, const vec3& diff, Object_ptr obj);
 
 		vec3 transform(const vec3& p) const;
 		vec3 inverse(const vec3& p) const;

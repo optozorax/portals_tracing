@@ -28,6 +28,8 @@ namespace pt
 		int m_size;
 	};
 
+	inline Object_ptr makeCubeMap(std::string bmp) { return Object_ptr(new CubeMap(bmp)); }
+
 };
 
 #endif

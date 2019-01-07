@@ -1,6 +1,8 @@
 #ifndef PT_BASICS_H
 #define PT_BASICS_H
 
+#include <memory>
+
 #include <spob/spob.h>
 #include <prtl/portal.h>
 #include <prtl/polygon.h>

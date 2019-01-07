@@ -4,7 +4,7 @@
 #include <pt/object.h>
 #include <pt/image.h>
 #include <pt/shape/polygon.h>
-#include <prtl/find_borders.h>
+#include <prtl_vis/find_borders.h>
 
 namespace pt
 {
@@ -36,6 +36,8 @@ namespace pt
 
 		prtl::FindBorders brd;
 	};
+
+	inline Object_ptr makeTexturePolygon(const std::vector<vec2>& polygon, crd3 coords, Image* img, const prtl::FindBorders& brd) { return Object_ptr(new TexturePolygon(polygon, coords, img, brd)); }
 
 };
 

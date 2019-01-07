@@ -20,6 +20,8 @@ namespace pt
 		Color clr;
 	};
 
+	inline Material_ptr makeScatter(Color clr) { return Material_ptr(new Scatter(clr)); }
+
 };
 
 #endif

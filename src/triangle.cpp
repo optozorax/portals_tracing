@@ -9,7 +9,7 @@ double area(double a, double b, double c) {
 	return sqrt(p*(p-a)*(p-b)*(p-c));
 }
 //-----------------------------------------------------------------------------
-Triangle::Triangle(vec3 a, vec3 b, vec3 c, Material* material) :
+Triangle::Triangle(vec3 a, vec3 b, vec3 c, Material_ptr material) :
 	a(a), b(b), c(c),
 	Shape(material) {
 	// Equation of plane, every x in plane when: (n, x) + d = 0

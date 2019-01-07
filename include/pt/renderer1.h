@@ -71,7 +71,7 @@ namespace pt
 		void render(void);
 
 		/** Добавляет во внутреннее хранилище портал для последующей обработки. */
-		void addPortal(Portals* portal);
+		void addPortal(Portals_ptr portal);
 
 		/** Удаляет все порталы из обработки рендером. */
 		void clearPortals(void);
@@ -82,8 +82,8 @@ namespace pt
 		/** Массив точечных источников освещения. Пользователь сам их задает, далее это учитывается при рендеринге. */
 		std::vector<PointLight>	luminaries;
 	protected:
-		std::vector<Portals*> portals;
-		std::vector<Portals*> invertedPortals;
+		std::vector<Portals_ptr> portals;
+		std::vector<Portals_ptr> invertedPortals;
 
 		int threads;
 		int maxDepth;
@@ -101,7 +101,7 @@ namespace pt
 
 		/** Считает все возможное освещение от точечных источников освещения в данной позиции сцены, при этом учитывается наличие порталов, а так же то, что объекты могут быть полупрозрачны. */
 		Color computeLight(vec3 pos, vec3 normal,
-						   std::vector<std::pair<Portals*, vec3> >& teleportation,
+						   std::vector<std::pair<Portals_ptr, vec3> >& teleportation,
 						   int depth) const;
 	};
 

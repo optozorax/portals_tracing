@@ -10,9 +10,9 @@ namespace pt
 	class Polygon : public Shape
 	{
 	public:
-		Polygon(const std::vector<vec2>& polygon, crd3 coords, Material* material);
+		Polygon(const std::vector<vec2>& polygon, crd3 coords, Material_ptr material);
 
-		void assign(const std::vector<vec2>& polygon, crd3 coords, Material* material);
+		void assign(const std::vector<vec2>& polygon, crd3 coords, Material_ptr material);
 
 		bool intersect(const Ray& ray, 
 					   Intersection& inter, 
@@ -26,6 +26,8 @@ namespace pt
 		vec3 normal;
 		vec2 min, max;
 	};
+
+	inline Object_ptr makePolygon(const std::vector<vec2>& polygon, crd3 coords, Material_ptr material) { return Object_ptr(new Polygon(polygon, coords, material)); }
 
 };
 

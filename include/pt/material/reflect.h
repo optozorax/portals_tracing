@@ -21,6 +21,8 @@ namespace pt
 		double diffuse;
 	};
 
+	inline Material_ptr makeReflect(Color clr, double diffusion) { return Material_ptr(new Reflect(clr, diffusion)); }
+
 };
 
 #endif

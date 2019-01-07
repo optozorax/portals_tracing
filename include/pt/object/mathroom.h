@@ -10,7 +10,7 @@ namespace pt
 	class MathRoom : public Object
 	{
 	public:
-		MathRoom();
+		MathRoom(void);
 
 		bool intersect(const Ray& ray, 
 					   Intersection& inter, 
@@ -23,6 +23,8 @@ namespace pt
 							Ray& scattered,
 							double& diffusion) const;
 	};
+
+	inline Object_ptr makeMathRoom(void) { return Object_ptr(new MathRoom()); }
 
 };
 

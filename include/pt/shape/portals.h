@@ -11,10 +11,10 @@ namespace pt
 	class Portals : public Object
 	{
 	public:
-		Portals(crd3 c1, crd3 c2, std::vector<vec2> poly, Material* first, Material* second);
+		Portals(crd3 c1, crd3 c2, std::vector<vec2> poly, Material_ptr first, Material_ptr second);
 		~Portals();
 
-		void assign(crd3 c1, crd3 c2, std::vector<vec2> poly, Material* first, Material* second);
+		void assign(crd3 c1, crd3 c2, std::vector<vec2> poly, Material_ptr first, Material_ptr second);
 
 		bool intersect(const Ray& ray, 
 					   Intersection& inter, 
@@ -31,9 +31,13 @@ namespace pt
 		crd3 p1;
 		crd3 p2;
 		std::vector<vec2> poly;
-		Material* first;
-		Material* second;
+		Material_ptr first;
+		Material_ptr second;
 	};
+
+	typedef std::shared_ptr<Portals> Portals_ptr;
+
+	inline Portals_ptr makePortals(crd3 c1, crd3 c2, std::vector<vec2> poly, Material_ptr first, Material_ptr second) { return Portals_ptr(new Portals(c1, c2, poly, first, second)); }
 
 	//-------------------------------------------------------------------------
 	Portals invert(Portals a);
