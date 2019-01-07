@@ -8,7 +8,7 @@
 #include <pt/material/scatter.h>
 #include <pt/material/reflect.h>
 #include <pt/material/refract.h>
-#include <pt/renderer1.h>
+#include <pt/renderer.h>
 #include <pt/pt2easybmp.h>
 
 using namespace pt;

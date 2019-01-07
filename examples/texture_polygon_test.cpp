@@ -14,7 +14,7 @@
 #include <pt/material/reflect.h>
 #include <pt/camera/360.h>
 #include <pt/camera/orthogonal.h>
-#include <pt/renderer1.h>
+#include <pt/renderer.h>
 #include <pt/pt2easybmp.h>
 #include <pt/pt2twg.h>
 
@@ -46,7 +46,7 @@ int main() {
 	mas2.push_back({ size, size });
 	mas2.push_back({ size, -size });
 	crd3 floor = getStandardCrd3();
-	scene.array.push_back(makePolygon(mas2, floor, makeScatter(Color(0.4, 0, 0.6))));
+	scene.add(makePolygon(mas2, floor, makeScatter(Color(0.4, 0, 0.6))));
 
 	Color portalFirstColor0 = Color(1, 0.5, 0.15); // orange
 	Color portalSecondColor0 = Color(0.1, 0.55, 1); // blue
@@ -93,10 +93,10 @@ int main() {
 	FindBorders brd(300, 0);
 	brd.process(mas);
 	brd.finish();
-	scene.array.push_back(makeTexturePolygon(mas, p11, &img3, brd));
-	scene.array.push_back(makeTexturePolygon(mas, p12, &img3, brd));
-	scene.array.push_back(makePolygon(contour, p11, makeScatter(portalFirstColor0)));
-	scene.array.push_back(makePolygon(contour, p12, makeScatter(portalSecondColor0)));
+	scene.add(makeTexturePolygon(mas, p11, &img3, brd));
+	scene.add(makeTexturePolygon(mas, p12, &img3, brd));
+	scene.add(makePolygon(contour, p11, makeScatter(portalFirstColor0)));
+	scene.add(makePolygon(contour, p12, makeScatter(portalSecondColor0)));
 
 	// Источник освещения
 	vec3 lightPos = p12.pos;
@@ -108,10 +108,10 @@ int main() {
 	// Добавляем сферы, которые показывают положение источника освещения
 	double spsize = 0.05;
 	vec3 spherePos = lightPos + vec3(0, 0, spsize + 0.01);
-	scene.array.push_back(makeSphere(spherePos, spsize, makeScatter(Color(1, 1, 1))));
+	scene.add(makeSphere(spherePos, spsize, makeScatter(Color(1, 1, 1))));
 
 	// Добавляем небо
-	scene.array.push_back(makeSky(Color(0.3, 0.3, 0.9), Color(1, 1, 1)));
+	scene.add(makeSky(Color(0.3, 0.3, 0.9), Color(1, 1, 1)));
 
 	// Рендерим
 	ren.render();

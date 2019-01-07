@@ -9,7 +9,7 @@
 #include <pt/shape/cylinder.h>
 #include <pt/material/scatter.h>
 #include <pt/material/reflect.h>
-#include <pt/renderer1.h>
+#include <pt/renderer.h>
 #include <pt/pt2easybmp.h>
 
 using namespace pt;
@@ -28,7 +28,7 @@ void addContour(Scene& scene, const plane3& c, std::vector<vec2> poly, Material_
 	}
 	mas.push_back(mas.front());
 
-	scene.array.push_back(makeContour(mas, thick, false, material));
+	scene.add(makeContour(mas, thick, false, material));
 }
 
 void initScene(Scene& scene, RayTracing& ren) {
@@ -44,8 +44,8 @@ void initScene(Scene& scene, RayTracing& ren) {
 		vec3 b(-size, size, depth);
 		vec3 c(size, size, depth);
 		vec3 d(size, -size, depth);
-		scene.array.push_back(makeTriangle(a, b, c, makeScatter(pt::Color(0.35, 0, 0.35))));
-		scene.array.push_back(makeTriangle(c, d, a, makeScatter(pt::Color(0.35, 0, 0.35))));
+		scene.add(makeTriangle(a, b, c, makeScatter(pt::Color(0.35, 0, 0.35))));
+		scene.add(makeTriangle(c, d, a, makeScatter(pt::Color(0.35, 0, 0.35))));
 	}
 
 	{
@@ -67,7 +67,7 @@ void initScene(Scene& scene, RayTracing& ren) {
 		coords2.pos = vec3(-0.5, 0.5, 1.8);
 
 		Portals_ptr prt = makePortals(coords2, coords1, mas2, pt1, pt2);
-		scene.array.push_back(prt);
+		scene.add(prt);
 		ren.addPortal(prt);
 		addContour(scene, coords2, mas2, pt1);
 		addContour(scene, coords1, mas2, pt2);
@@ -76,19 +76,19 @@ void initScene(Scene& scene, RayTracing& ren) {
 		coords2.pos = vec3(-0.5, 0.5, 1);
 
 		Portals_ptr prt1 = makePortals(coords2, coords1, mas2, pt1, pt2);
-		scene.array.push_back(prt1);
+		scene.add(prt1);
 		ren.addPortal(prt1);
 		addContour(scene, coords2, mas2, pt1);
 		addContour(scene, coords1, mas2, pt2);
 
 		coords2.pos = vec3(-0.5, 0.5, 0.5);
-		scene.array.push_back(makePolygon(mas2, coords2, sc));
+		scene.add(makePolygon(mas2, coords2, sc));
 
 		coords1.pos = vec3(-0.5, 0.5, 3);
-		scene.array.push_back(makePolygon(mas2, coords1, sc));
+		scene.add(makePolygon(mas2, coords1, sc));
 
 		coords1.pos = vec3(-0.5, 0.5, 1.6);
-		scene.array.push_back(makePolygon(mas2, coords1, sc));
+		scene.add(makePolygon(mas2, coords1, sc));
 	}
 }
 
@@ -111,7 +111,7 @@ int main() {
 
 	RayTracing ren(2, 4, true);
 	ren.luminaries.push_back(PointLight(vec3(0, 0, 4), pt::Color(1, 1, 1)));
-	scene.array.push_back(makeSky(Color(1, 1, 1), Color(1, 1, 1)));
+	scene.add(makeSky(Color(1, 1, 1), Color(1, 1, 1)));
 
 	initScene(scene, ren);
 

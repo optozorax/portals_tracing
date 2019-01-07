@@ -11,7 +11,7 @@
 #include <pt/material/reflect.h>
 #include <pt/camera/360.h>
 #include <pt/camera/orthogonal.h>
-#include <pt/renderer1.h>
+#include <pt/renderer.h>
 #include <pt/pt2easybmp.h>
 
 int main() {
@@ -37,7 +37,7 @@ int main() {
 	mas2.push_back({size, size});
 	mas2.push_back({size, -size});
 	crd3 floor = getStandardCrd3();
-	scene.array.push_back(makePolygon(mas2, floor, makeScatter(Color(0.4, 0, 0.6))));
+	scene.add(makePolygon(mas2, floor, makeScatter(Color(0.4, 0, 0.6))));
 
 	Color portalFirstColor0 = Color(1, 0.5, 0.15); // orange
 	Color portalSecondColor0 = Color(0.1, 0.55, 1); // blue
@@ -70,10 +70,10 @@ int main() {
 	p11.pos = {0, 0, 1};
 	p12.pos = {2 + 2*h, 2, 1};
 	Portals_ptr prt = makePortals(p11, p12, mas, makeScatter(portalFirstColor0), makeScatter(portalSecondColor0));
-	scene.array.push_back(prt);
+	scene.add(prt);
 	ren.addPortal(prt);
-	scene.array.push_back(makePolygon(contour, p11, makeScatter(portalFirstColor0)));
-	scene.array.push_back(makePolygon(contour, p12, makeScatter(portalSecondColor0)));
+	scene.add(makePolygon(contour, p11, makeScatter(portalFirstColor0)));
+	scene.add(makePolygon(contour, p12, makeScatter(portalSecondColor0)));
 
 	// Вторая пара порталов
 	crd3 p21 = getStandardCrd3();
@@ -82,10 +82,10 @@ int main() {
 	p21.pos.z += 1;
 	p22.pos = {0, 2, 2};
 	Portals_ptr prt1 = makePortals(p21, p22, mas, makeScatter(portalFirstColor1), makeScatter(portalSecondColor1));
-	scene.array.push_back(prt1);
+	scene.add(prt1);
 	ren.addPortal(prt1);
-	scene.array.push_back(makePolygon(contour, p21, makeScatter(portalFirstColor1)));
-	scene.array.push_back(makePolygon(contour, p22, makeScatter(portalSecondColor1)));
+	scene.add(makePolygon(contour, p21, makeScatter(portalFirstColor1)));
+	scene.add(makePolygon(contour, p22, makeScatter(portalSecondColor1)));
 
 	// Источник освещения
 	vec3 lightPos = p22.pos;
@@ -96,17 +96,17 @@ int main() {
 	// Добавляем сферы, которые показывают положение источника освещения
 	double spsize = 0.05;
 	vec3 spherePos = lightPos + vec3(0, 0, spsize + 0.01);
-	scene.array.push_back(makeSphere(spherePos, spsize, makeScatter(Color(1, 1, 1, 1))));
+	scene.add(makeSphere(spherePos, spsize, makeScatter(Color(1, 1, 1, 1))));
 
 	if (isDrawHints) {
 		vec3 spherePos1 = space3(prt1->p1).from(space3(prt1->p2).to(spherePos));
-		scene.array.push_back(makeSphere(spherePos1, spsize, makeScatter(Color(0.5, 0.5, 0.5, 1))));
+		scene.add(makeSphere(spherePos1, spsize, makeScatter(Color(0.5, 0.5, 0.5, 1))));
 		vec3 spherePos2 = space3(prt->p1).from(space3(prt->p2).to(spherePos1));
-		scene.array.push_back(makeSphere(spherePos2, spsize, makeScatter(Color(0.25, 0.25, 0.25, 1))));
+		scene.add(makeSphere(spherePos2, spsize, makeScatter(Color(0.25, 0.25, 0.25, 1))));
 	}
 
 	// Добавляем небо
-	scene.array.push_back(makeSky(Color(0.3, 0.3, 0.9), Color(1, 1, 1)));
+	scene.add(makeSky(Color(0.3, 0.3, 0.9), Color(1, 1, 1)));
 
 	// Для отладки
 	/*Ray ray;

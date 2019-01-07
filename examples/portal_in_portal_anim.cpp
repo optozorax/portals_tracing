@@ -41,7 +41,7 @@ void addContour2(pt::Scene& scene, crd3 c, std::vector<vec2> poly, pt::Material_
 	for (int i = 0; i < poly.size(); i++)
 		mas.push_back(plane3(c).from(poly[i]));
 
-	scene.array.push_back(makeContour(mas, thick, false, material));
+	scene.add(makeContour(mas, thick, false, material));
 }
 
 //-----------------------------------------------------------------------------
@@ -68,8 +68,8 @@ void addPortals(Scene& scene, RayTracing ren, crd3 c1, crd3 c2) {
 
 	Portals_ptr prt1 = makePortals(c1, c2, mas1, pt1, pt2);
 	Portals_ptr prt2 = makePortals(c1, c3, mas2, pt1, pt2);
-	scene.array.push_back(prt1);
-	scene.array.push_back(prt2);
+	scene.add(prt1);
+	scene.add(prt2);
 
 	addContour2(scene, c3, mas2, pt2);
 	addContour2(scene, c2, mas1, pt2);
@@ -88,7 +88,7 @@ void addPortals(Scene& scene, RayTracing ren, crd3 c1, crd3 c2) {
 void initScene(Scene& scene, RayTracing& ren, double t) {
 	//---------------------------------------------------------------------
 	// RAY-RENDERER
-	scene.array.push_back(makeSky(Color(1, 1, 1), Color(1, 1, 1)));
+	scene.add(makeSky(Color(1, 1, 1), Color(1, 1, 1)));
 	ren.luminaries.push_back(PointLight(vec3(0.5, 0.5, 3), pt::Color(0.5, 0.5, 0.5)));
 	ren.luminaries.push_back(PointLight(vec3(-3, 0, 3), pt::Color(0.5, 0.5, 0.5)));
 	ren.luminaries.push_back(PointLight(vec3(-0.1, -0.1, 0.1), pt::Color(0.5, 0.5, 0.5)));
@@ -105,8 +105,8 @@ void initScene(Scene& scene, RayTracing& ren, double t) {
 		vec3 b(-size, size, depth);
 		vec3 c(size, size, depth);
 		vec3 d(size, -size, depth);
-		scene.array.push_back(makeTriangle(a, b, c, makeScatter(pt::Color(0.35, 0, 0.35))));
-		scene.array.push_back(makeTriangle(c, d, a, makeScatter(pt::Color(0.35, 0, 0.35))));
+		scene.add(makeTriangle(a, b, c, makeScatter(pt::Color(0.35, 0, 0.35))));
+		scene.add(makeTriangle(c, d, a, makeScatter(pt::Color(0.35, 0, 0.35))));
 
 		//-----------------------------------------------------------------
 		// Потолок
@@ -116,28 +116,28 @@ void initScene(Scene& scene, RayTracing& ren, double t) {
 		vec3 b1(-size, size, depth);
 		vec3 c1(size, size, depth);
 		vec3 d1(size, -size, depth);
-		scene.array.push_back(makeTriangle(a1, b1, c1, makeScatter(pt::Color(0, 0.35, 0.35))));
-		scene.array.push_back(makeTriangle(c1, d1, a1, makeScatter(pt::Color(0, 0.35, 0.35))));
+		scene.add(makeTriangle(a1, b1, c1, makeScatter(pt::Color(0, 0.35, 0.35))));
+		scene.add(makeTriangle(c1, d1, a1, makeScatter(pt::Color(0, 0.35, 0.35))));
 
 		//-----------------------------------------------------------------
 		// Стена 1
-		scene.array.push_back(makeTriangle(a, a1, b1, makeScatter(pt::Color(0, 0, 0.35))));
-		scene.array.push_back(makeTriangle(b1, b, a, makeScatter(pt::Color(0, 0, 0.35))));
+		scene.add(makeTriangle(a, a1, b1, makeScatter(pt::Color(0, 0, 0.35))));
+		scene.add(makeTriangle(b1, b, a, makeScatter(pt::Color(0, 0, 0.35))));
 
 		//-----------------------------------------------------------------
 		// Стена 2
-		scene.array.push_back(makeTriangle(b, b1, c1, makeScatter(pt::Color(0, 0.35, 0))));
-		scene.array.push_back(makeTriangle(c1, c, b, makeScatter(pt::Color(0, 0.35, 0))));
+		scene.add(makeTriangle(b, b1, c1, makeScatter(pt::Color(0, 0.35, 0))));
+		scene.add(makeTriangle(c1, c, b, makeScatter(pt::Color(0, 0.35, 0))));
 
 		//-----------------------------------------------------------------
 		// Стена 3
-		scene.array.push_back(makeTriangle(d, c1, d1, makeScatter(pt::Color(0.35, 0, 0))));
-		scene.array.push_back(makeTriangle(c1, c, d, makeScatter(pt::Color(0.35, 0, 0))));
+		scene.add(makeTriangle(d, c1, d1, makeScatter(pt::Color(0.35, 0, 0))));
+		scene.add(makeTriangle(c1, c, d, makeScatter(pt::Color(0.35, 0, 0))));
 
 		//-----------------------------------------------------------------
 		// Стена 4
-		scene.array.push_back(makeTriangle(a, a1, d1, makeScatter(pt::Color(0.35, 0.35, 0))));
-		scene.array.push_back(makeTriangle(d1, d, a, makeScatter(pt::Color(0.35, 0.35, 0))));
+		scene.add(makeTriangle(a, a1, d1, makeScatter(pt::Color(0.35, 0.35, 0))));
+		scene.add(makeTriangle(d1, d, a, makeScatter(pt::Color(0.35, 0.35, 0))));
 	}
 
 	//---------------------------------------------------------------------

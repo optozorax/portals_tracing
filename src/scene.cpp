@@ -36,4 +36,9 @@ ScatterType Scene::scatter(const Ray& ray,
 	return array[inter.data.type]->scatter(ray, inter, clrAbsorbtion, scattered, diffusion);
 }
 
+//-----------------------------------------------------------------------------
+void Scene::add(Object_ptr obj) {
+	array.push_back(obj);
+}
+
 };

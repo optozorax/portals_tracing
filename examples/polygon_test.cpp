@@ -5,7 +5,7 @@
 #include <pt/shape/polygon.h>
 #include <pt/shape/sphere.h>
 #include <pt/material/scatter.h>
-#include <pt/renderer1.h>
+#include <pt/renderer.h>
 #include <pt/pt2easybmp.h>
 
 using namespace pt;
@@ -21,8 +21,8 @@ void initScene(Scene& scene) {
 		vec3 b(-size, size, depth);
 		vec3 c(size, size, depth);
 		vec3 d(size, -size, depth);
-		scene.array.push_back(makeTriangle(a, b, c, makeScatter(pt::Color(0.6, 0.6, 0.6))));
-		scene.array.push_back(makeTriangle(c, d, a, makeScatter(pt::Color(0.6, 0.6, 0.6))));
+		scene.add(makeTriangle(a, b, c, makeScatter(pt::Color(0.6, 0.6, 0.6))));
+		scene.add(makeTriangle(c, d, a, makeScatter(pt::Color(0.6, 0.6, 0.6))));
 	}
 
 	crd3 coords1;
@@ -114,7 +114,7 @@ void initScene(Scene& scene) {
 		array.push_back(makePolygon(mas, coords2, sc));
 	}
 
-	scene.array.push_back(makeSky(Color(1, 1, 1), Color(0, 0.2, 0.2)));
+	scene.add(makeSky(Color(1, 1, 1), Color(0, 0.2, 0.2)));
 }
 
 int main() {

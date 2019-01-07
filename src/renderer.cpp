@@ -7,7 +7,7 @@
 #include <iomanip>
 #include <mutex>
 
-#include <pt/renderer1.h>
+#include <pt/renderer.h>
 
 namespace pt
 {
