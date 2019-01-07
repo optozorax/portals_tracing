@@ -4,7 +4,7 @@ namespace pt
 {
 
 //-----------------------------------------------------------------------------
-TexturePolygon::TexturePolygon(const std::vector<vec2>& polygon, crd3 coords, Image* img, const prtl::FindBorders& brd) : img(img), array(polygon), coords(coords), brd(brd) {
+TexturePolygon::TexturePolygon(const std::vector<vec2>& polygon, crd3 coords, Image* img, const space2& tr) : img(img), array(polygon), coords(coords), tr(tr) {
 	d = -dot(coords.k, coords.pos);
 	normal = coords.k;
 
@@ -41,7 +41,7 @@ bool TexturePolygon::intersect(const Ray& ray,
 			if (!inRect)
 				return false;
 
-			vec2 imgPos = brd.toImg(r);
+			vec2 imgPos = tr.to(r);
 			inter.data.vector = imgPos;
 			if (imgPos.x < 0 || imgPos.x > img->getWidth() ||
 				imgPos.y < 0 || imgPos.y > img->getHeight())

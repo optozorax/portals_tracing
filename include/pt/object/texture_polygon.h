@@ -4,7 +4,6 @@
 #include <pt/object.h>
 #include <pt/image.h>
 #include <pt/shape/polygon.h>
-#include <prtl_vis/find_borders.h>
 
 namespace pt
 {
@@ -12,7 +11,7 @@ namespace pt
 	class TexturePolygon : public Object
 	{
 	public:
-		TexturePolygon(const std::vector<vec2>& polygon, crd3 coords, Image* img, const prtl::FindBorders& brd);
+		TexturePolygon(const std::vector<vec2>& polygon, crd3 coords, Image* img, const space2& tr);
 
 		bool intersect(const Ray& ray, 
 					   Intersection& inter, 
@@ -34,10 +33,10 @@ namespace pt
 		vec3 normal;
 		vec2 min, max;
 
-		prtl::FindBorders brd;
+		space2 tr;
 	};
 
-	inline Object_ptr makeTexturePolygon(const std::vector<vec2>& polygon, crd3 coords, Image* img, const prtl::FindBorders& brd) { return Object_ptr(new TexturePolygon(polygon, coords, img, brd)); }
+	inline Object_ptr makeTexturePolygon(const std::vector<vec2>& polygon, crd3 coords, Image* img, const space2& tr) { return Object_ptr(new TexturePolygon(polygon, coords, img, tr)); }
 
 };
 
