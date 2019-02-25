@@ -408,10 +408,16 @@ PathTracing::PathTracing(int samples,
 
 //-----------------------------------------------------------------------------
 Color PathTracing::computePixel(int x, int y) const {
+	// Использована квазислучайная последовательность https://habr.com/ru/post/440892/
+	const double g = 1.32471795724474602596090885447809;
+	const double ax = std::fmod(1.0/g, 1.0);
+	const double ay = std::fmod(1.0/g/g, 1.0);
+	const double seed = 0.5;
+
 	Color clr(0, 0, 0, 0);
 	for (int i = 0; i < samples; ++i) {
-		double x1 = x + random();
-		double y1 = y + random();
+		double x1 = x + std::fmod(seed + ax*i, 1.0);
+		double y1 = y + std::fmod(seed + ay*i, 1.0);
 		Ray ray = camera->getRay(x1, y1, isDiffuse);
 		clr += computeColor(ray);
 	}
