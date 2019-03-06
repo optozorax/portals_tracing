@@ -9,6 +9,8 @@ namespace pt
 
 	void saveAsBmp(Image& img, std::string name);
 	void loadAsBmp(Image& img, std::string name);
+	void saveAsPng(Image& img, std::string name);
+	void loadAsPng(Image& img, std::string name);
 
 };
 
