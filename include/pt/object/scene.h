@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <pt/object.h>
+#include <prtl_vis/scene_reader.h>
 
 namespace pt
 {
@@ -24,6 +25,8 @@ namespace pt
 
 		std::vector<Object_ptr> array;
 	};
+
+	Scene loadFrame(const scene::Frame& frame);
 
 };
 

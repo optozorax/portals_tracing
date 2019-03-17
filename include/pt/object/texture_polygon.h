@@ -11,7 +11,7 @@ namespace pt
 	class TexturePolygon : public Object
 	{
 	public:
-		TexturePolygon(const std::vector<vec2>& polygon, crd3 coords, Image* img, const space2& tr);
+		TexturePolygon(const std::vector<vec2>& polygon, crd3 coords, Image_ptr img, const space2& tr);
 
 		bool intersect(const Ray& ray, 
 					   Intersection& inter, 
@@ -24,7 +24,7 @@ namespace pt
 							Ray& scattered,
 							double& diffusion) const;
 	private:
-		Image* img;
+		Image_ptr img;
 
 		std::vector<vec2> array;
 		crd3 coords;
@@ -36,7 +36,7 @@ namespace pt
 		space2 tr;
 	};
 
-	inline Object_ptr makeTexturePolygon(const std::vector<vec2>& polygon, crd3 coords, Image* img, const space2& tr) { return Object_ptr(new TexturePolygon(polygon, coords, img, tr)); }
+	inline Object_ptr makeTexturePolygon(const std::vector<vec2>& polygon, crd3 coords, Image_ptr img, const space2& tr) { return Object_ptr(new TexturePolygon(polygon, coords, img, tr)); }
 
 };
 

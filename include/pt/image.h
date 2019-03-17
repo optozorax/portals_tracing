@@ -1,6 +1,7 @@
 #ifndef PT_IMAGE_H
 #define PT_IMAGE_H
 
+#include <memory>
 #include <pt/basics.h>
 
 namespace pt
@@ -30,6 +31,8 @@ namespace pt
 		int 	m_width;
 		int		m_height;
 	};
+
+	typedef std::shared_ptr<Image> Image_ptr;
 
 };
 

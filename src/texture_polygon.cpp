@@ -4,7 +4,7 @@ namespace pt
 {
 
 //-----------------------------------------------------------------------------
-TexturePolygon::TexturePolygon(const std::vector<vec2>& polygon, crd3 coords, Image* img, const space2& tr) : img(img), array(polygon), coords(coords), tr(tr) {
+TexturePolygon::TexturePolygon(const std::vector<vec2>& polygon, crd3 coords, Image_ptr img, const space2& tr) : img(img), array(polygon), coords(coords), tr(tr) {
 	d = -dot(coords.k, coords.pos);
 	normal = coords.k;
 
