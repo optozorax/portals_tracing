@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <random>
 #include <iostream>
+#include <stack>
 #include <chrono>
 #include <string>
 #include <iomanip>
@@ -202,9 +203,11 @@ Color StandardRenderer::computePixel(int x, int y) const {
 
 //-----------------------------------------------------------------------------
 Color StandardRenderer::computeColor(Ray ray) const {
-	Color resultColor = Color(1, 1, 1, 1);
 	Intersection inter;
 	Color clrAbsorbtion;
+	std::stack<Color> colorStack;
+	std::stack<Color> pointLightColorStack;
+	std::stack<bool> pointLightColorStackBool;
 	Ray scattered;
 	double diffusion;
 	ScatterType returned;
@@ -233,11 +236,15 @@ Color StandardRenderer::computeColor(Ray ray) const {
 				Color lightColor = Color(1, 1, 1, 1);
 				std::vector<std::pair<Portals_ptr, vec3> > teleportation;
 				lightColor += computeLight(scattered.pos, inter.normal, teleportation, 3);
-				clrAbsorbtion = lightColor * clrAbsorbtion;
+				pointLightColorStack.push(lightColor * clrAbsorbtion);
+				pointLightColorStackBool.push(true);
+			} else {
+				pointLightColorStack.push(Color(0, 0, 0, 0));
+				pointLightColorStackBool.push(false);
 			}
 
 			// Посчитать результирующй цвет после данного отражения
-			resultColor = clrAbsorbtion * resultColor;
+			colorStack.push(clrAbsorbtion);
 
 			// Если полигон полупрозрачный, то его цвет будет комбинацией двух лучей, сложенных с учетом прозрачности
 			if (opaque != 1.0) {
@@ -275,9 +282,25 @@ Color StandardRenderer::computeColor(Ray ray) const {
 				break;
 		} else {
 			if (i == 0)
-				resultColor = Color(0, 0, 0, 0);
-			break;
+				return Color(0, 0, 0, 0);
+			else
+				break;
 		}
+	}
+
+	Color resultColor = Color(1, 1, 1, 1);
+	while (!colorStack.empty()) {
+		if (pointLightColorStackBool.top()) {
+			resultColor = colorStack.top() * resultColor;
+			resultColor += pointLightColorStack.top();
+			resultColor /= 2.0;
+		} else {
+			resultColor = colorStack.top() * resultColor;
+		}
+
+		colorStack.pop();
+		pointLightColorStack.pop();
+		pointLightColorStackBool.pop();
 	}
 
 	return resultColor;
