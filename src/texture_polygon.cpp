@@ -42,7 +42,14 @@ bool TexturePolygon::intersect(const Ray& ray,
 				return false;
 
 			vec2 imgPos = tr.to(r);
-			inter.data.vector = imgPos;
+			//% TODO разобраться с этим кодом, потому что для лабы он работает, а для animation.h - нет
+			imgPos.x += int(std::fabs(imgPos.x) + 2);
+			imgPos.y += int(std::fabs(imgPos.y) + 2);
+			imgPos.x = std::fmodf(imgPos.x, 1);
+			imgPos.y = std::fmodf(imgPos.y, 1);
+			imgPos.x *= img->getWidth();
+			imgPos.y *= img->getHeight();
+			//% TODO разобраться с этим кодом, потому что для лабы он работает, а для animation.h - нет
 			if (imgPos.x < 0 || imgPos.x > img->getWidth() ||
 				imgPos.y < 0 || imgPos.y > img->getHeight())
 				return false;
@@ -50,6 +57,7 @@ bool TexturePolygon::intersect(const Ray& ray,
 				return false;
 
 			if (pointInPolygon(array, r)) {
+				inter.data.vector = imgPos;
 				inter.t = t;
 				if (dot(ray.dir, normal) < 0)
 					inter.normal = normal;

@@ -81,25 +81,7 @@ Scene loadFrame(const scene::Frame& frame) {
 	for (auto& i : frame.textured_polygons) {
 		space2 line1 = makeLine2(i.polygon[0], i.polygon[1]);
 		space2 line2 = makeLine2(i.tex_coords[0], i.tex_coords[1]);
-		space2 newSpace = invert(line2.to(line1));
-		vec2 a(1, 1);
-		assert(isNear(line1.to(line2.to(a)), space2(line1.to(line2)).to(a)));
-		assert(isNear(
-			line2.from(line1.to(i.polygon[0])), 
-			i.tex_coords[0]
-		));
-		assert(isNear(
-			line2.from(line1.to(i.polygon[1])), 
-			i.tex_coords[1]
-		));
-		assert(isNear(
-			newSpace.to(i.polygon[0]),
-			i.tex_coords[0]
-		));
-		assert(isNear(
-			newSpace.to(i.polygon[1]),
-			i.tex_coords[1]
-		));
+		space2 newSpace = invert(line2.from(invert(line1)));
 		result.array.push_back(makeTexturePolygon(
 			i.polygon,
 			i.crd,
