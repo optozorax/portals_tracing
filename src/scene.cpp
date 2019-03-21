@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <pt/object/scene.h>
 #include <pt/shape/polygon.h>
 #include <pt/object/texture_polygon.h>
@@ -79,9 +81,40 @@ Scene loadFrame(const scene::Frame& frame) {
 
 	// Считываем текстурированные полигоны
 	for (auto& i : frame.textured_polygons) {
-		space2 line1 = makeLine2(i.polygon[0], i.polygon[1]);
-		space2 line2 = makeLine2(i.tex_coords[0], i.tex_coords[1]);
-		space2 newSpace = invert(line2.from(invert(line1)));
+		space2 line1, line2, newSpace;
+
+		// Подбираем такие 3 точки, чтобы получилась невырожденная система координат
+		for (int j = 0; j < i.polygon.size() - 2; j++) {
+			auto a = i.polygon[j];
+			auto b = i.polygon[j+1];
+			auto c = i.polygon[j+2];
+
+			auto at = i.tex_coords[j];
+			auto bt = i.tex_coords[j+1];
+			auto ct = i.tex_coords[j+2];
+
+			line1 = space2(b - a, c - a, a);
+			line2 = space2(bt - at, ct - at, at);
+
+			newSpace = combine(invert(line2), line1);
+
+			// Проверяем на невырожденность
+			for (int k = 0; k < i.polygon.size(); k++) {
+				if (!isNear(i.tex_coords[k], newSpace.to(i.polygon[k]))) {
+					goto next_iteration;
+				}
+			}
+
+			// Если проверка не разу не случилась, то нам подходит эта система координат
+			goto end_cycle;
+
+			next_iteration:;
+		}
+
+		// В нормальном случае мы должны перескочить этот участок
+		std::cout << "You have line figure with texture. That's bad." << std::endl;
+
+		end_cycle:
 		result.array.push_back(makeTexturePolygon(
 			i.polygon,
 			i.crd,
