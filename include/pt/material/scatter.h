@@ -9,7 +9,7 @@ namespace pt
 	class Scatter : public Material
 	{
 	public:
-		Scatter(Color clr);
+		Scatter(Color clr, double k_coef = 1, double s_coef = 0);
 
 		ScatterType scatter(const Ray& ray,
 							const Intersection& inter,
@@ -18,9 +18,11 @@ namespace pt
 							double& diffusion) const;	
 		
 		Color clr;
+		double s_coef;
+		double k_coef;
 	};
 
-	inline Material_ptr makeScatter(Color clr) { return Material_ptr(new Scatter(clr)); }
+	inline Material_ptr makeScatter(Color clr, double k_coef = 1, double s_coef = 0) { return Material_ptr(new Scatter(clr, k_coef,  s_coef)); }
 
 };
 

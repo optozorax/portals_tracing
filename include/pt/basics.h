@@ -33,9 +33,9 @@ namespace pt
 		/** Умножает два цвета, только в пространстве r, g, b. Если один из цветов Transparent, то возвращает текущий цвет.
 
 		ИЛИ. Считает, что оба цвета полупрозрачные и считает как если бы текущий накладывался поверх a. */
-		Color operator*(const Color& a);
+		Color operator*(const Color& a) const;
 
-		Color operator*(double a);
+		Color operator*(double a) const;
 		Color operator+=(const Color& a);
 
 		/** Получает квадратный корень из цвета. При этом квадратный корень из альфа-канала не берется. */

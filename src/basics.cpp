@@ -33,7 +33,7 @@ Color overlay(const Color& upper, const Color& lower) {
 }
 
 //-----------------------------------------------------------------------------
-Color Color::operator*(const Color& a) {
+Color Color::operator*(const Color& a) const {
 	Color clr = *this;
 	clr.a = clr.a + a.a*(1 - clr.a);
 	clr.r *= a.r;
@@ -52,7 +52,7 @@ Color Color::operator+=(const Color& clr) {
 }
 
 //-----------------------------------------------------------------------------
-Color Color::operator*(double a) {
+Color Color::operator*(double a) const {
 	Color clr = *this;
 	clr.r *= a;
 	clr.g *= a;

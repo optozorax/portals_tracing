@@ -1,5 +1,6 @@
 #include <fstream>
 #include <iostream>
+#include <iomanip>
 
 #include <pt/pt.h>
 #include <pt/object/scene.h>
@@ -18,25 +19,71 @@
 #include <prtl_vis/scene_reader.h>
 
 int main(int argc, char** argv) {
-	std::string filename = "test12.json";
-	if (argc > 1)
+	std::string settingsFile = "settings.json";
+	std::string filename = "scene.json";
+	if (argc > 1) {
 		filename = std::string(argv[1]);
+		std::cout << "Read file `" << filename << "`" << std::endl;
+	} else {
+		std::cout << "Please specify file to be rendered in command line arguments." << std::endl;
+		std::cout << "Filename interpreted as `" << filename << "`." << std::endl;
+	}
 
 	scene::json js;
-	std::ifstream fin(filename);
-	fin >> js;
-	fin.close();
+	try {
+		std::ifstream fin(filename);
+		fin >> js;
+		fin.close();
+	} catch (...) {
+		std::cout << "File `scene.json` didn't exists or it not contains the scene." << std::endl;
+		std::cout << "Terminate program." << std::endl;
+		system("pause");
+		return 1;
+	}
 
 	auto scenejs = scene::parseScene(js);
 	spob::vec3 lookAt = scenejs.cam_rotate_around;
 	spob::vec3 pos = spheric2cartesian(scenejs.cam_spheric_pos) + lookAt;
 
-	int width = 500, height = 250;
-	bool isUsePathTracing = false;
-	int rayTracingSamples = 1;
-	int pathTracingSamples = 2000;
-	int threads = 1;
-	bool isLog = true;
+	int width, height;
+	bool isUsePathTracing;
+	int rayTracingSamples;
+	int pathTracingSamples;
+	int threads;
+	bool isLog;
+
+	scene::json settings;
+	try {
+		std::ifstream fin(settingsFile);
+		fin >> settings;
+		fin.close();
+	} catch (...) {
+		std::cout << "Settings file is clear or didn't exists." << std::endl;
+		std::cout << "Created standard `settings.json`." << std::endl;
+		settings = scene::json();
+		settings["width"] = 1000;
+		settings["height"] = int(settings["width"]) / 2; 
+		settings["isUsePathTracing"] = false;
+		settings["rayTracingSamples"] = 2;
+		settings["pathTracingSamples"] = 200;
+		settings["threads"] = 4;
+		settings["isLog"] = true;
+		std::ofstream fout(settingsFile);
+		fout << std::setw(4) << settings;
+		fout.close();
+
+		system("pause");
+	}
+
+	width = settings["width"];
+	height = settings["height"];
+	isUsePathTracing = settings["isUsePathTracing"];
+	rayTracingSamples = settings["rayTracingSamples"];
+	pathTracingSamples = settings["pathTracingSamples"];
+	threads = settings["threads"];
+	isLog = settings["isLog"];
+
+	std::cout << std::endl << std::endl;
 
 	using namespace pt;
 
@@ -46,17 +93,12 @@ int main(int argc, char** argv) {
 		Image img(width, height);
 		Scene scene = loadFrame(scenejs.frames[i]);
 		scene.add(makeSky(Color(0.3, 0.3, 0.9), Color(1, 1, 1)));
-		double size = 5;
-		std::vector<vec2> square = {{0, 0}, {0, size}, {size, size}, {size, 0},};
-		auto crd = getStandardCrd3();
-		crd.move(vec3(0, 0, 3));
-		//scene.add(makePolygon(square, crd, makeLight(Color(1.5, 1.5, 1.5))));
 	
 		PerspectiveCamera cam(1, pi/2.0, 0, pos, img.getWidth(), img.getHeight());
 		cam.lookAt(lookAt);
 		StandardRenderer* ren;
 		if (isUsePathTracing)
-			ren = new PathTracing(pathTracingSamples, threads, isLog, 4);
+			ren = new PathTracing(pathTracingSamples, threads, isLog, 30);
 		else
 			ren = new RayTracing(rayTracingSamples, threads, isLog, 100);
 		ren->luminaries.push_back(PointLight(vec3(0, 0, 3), Color(1.5, 1.5, 1.5)));
@@ -65,5 +107,7 @@ int main(int argc, char** argv) {
 		ren->render();
 		img.colorCorrection();
 		saveAsPng(img, filename + "_" + std::to_string(i) + ".png");
+
+		delete ren;
 	}
 }

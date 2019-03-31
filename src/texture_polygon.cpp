@@ -1,10 +1,10 @@
-#include <pt/object/texture_polygon.h>
+п»ї#include <pt/object/texture_polygon.h>
 
 namespace pt
 {
 
 //-----------------------------------------------------------------------------
-TexturePolygon::TexturePolygon(const std::vector<vec2>& polygon, crd3 coords, Image_ptr img, const space2& tr) : img(img), array(polygon), coords(coords), tr(tr) {
+TexturePolygon::TexturePolygon(const std::vector<vec2>& polygon, crd3 coords, Image_ptr img, const space2& tr, double k_coef, double s_coef) : img(img), array(polygon), coords(coords), tr(tr), k_coef(k_coef), s_coef(s_coef) {
 	d = -dot(coords.k, coords.pos);
 	normal = coords.k;
 
@@ -42,14 +42,16 @@ bool TexturePolygon::intersect(const Ray& ray,
 				return false;
 
 			vec2 imgPos = tr.to(r);
-			//% TODO разобраться с этим кодом, потому что для лабы он работает, а для animation.h - нет
+			
+			// РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ РєРѕРѕСЂРґРёРЅР°С‚ РёР· [0, 1]x[0, 1] РІ РєРѕРѕСЂРґРёРЅР°С‚С‹ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ. РўР°Рє Р¶Рµ С‚РµРєСЃС‚СѓСЂР° РґРµР»Р°РµС‚СЃСЏ РїРѕРІС‚РѕСЂСЏСЋС‰РµР№СЃСЏ.
 			imgPos.x += int(std::fabs(imgPos.x) + 2);
 			imgPos.y += int(std::fabs(imgPos.y) + 2);
 			imgPos.x = std::fmodf(imgPos.x, 1);
 			imgPos.y = std::fmodf(imgPos.y, 1);
 			imgPos.x *= img->getWidth();
 			imgPos.y *= img->getHeight();
-			//% TODO разобраться с этим кодом, потому что для лабы он работает, а для animation.h - нет
+			
+
 			if (imgPos.x < 0 || imgPos.x > img->getWidth() ||
 				imgPos.y < 0 || imgPos.y > img->getHeight())
 				return false;
@@ -82,11 +84,8 @@ ScatterType TexturePolygon::scatter(const Ray& ray,
 						 Color& clrAbsorbtion,
 						 Ray& scattered,
 						 double& diffusion) const {
-	clrAbsorbtion = img->operator()(inter.data.vector.x, inter.data.vector.y);
-	scattered.pos = inter.pos;
-	scattered.dir = inter.normal;
-	diffusion = 1;
-	return SCATTER_RAYTRACING_END;
+	Scatter s(img->operator()(inter.data.vector.x, inter.data.vector.y), k_coef, s_coef);
+	return s.scatter(ray, inter, clrAbsorbtion, scattered, diffusion);
 }
 
 };

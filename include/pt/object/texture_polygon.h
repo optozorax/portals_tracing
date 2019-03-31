@@ -4,6 +4,7 @@
 #include <pt/object.h>
 #include <pt/image.h>
 #include <pt/shape/polygon.h>
+#include <pt/material/scatter.h>
 
 namespace pt
 {
@@ -11,7 +12,7 @@ namespace pt
 	class TexturePolygon : public Object
 	{
 	public:
-		TexturePolygon(const std::vector<vec2>& polygon, crd3 coords, Image_ptr img, const space2& tr);
+		TexturePolygon(const std::vector<vec2>& polygon, crd3 coords, Image_ptr img, const space2& tr, double k_coef = 1, double s_coef = 0);
 
 		bool intersect(const Ray& ray, 
 					   Intersection& inter, 
@@ -32,11 +33,13 @@ namespace pt
 		double d;
 		vec3 normal;
 		vec2 min, max;
+	
+		double k_coef, s_coef;
 
 		space2 tr;
 	};
 
-	inline Object_ptr makeTexturePolygon(const std::vector<vec2>& polygon, crd3 coords, Image_ptr img, const space2& tr) { return Object_ptr(new TexturePolygon(polygon, coords, img, tr)); }
+	inline Object_ptr makeTexturePolygon(const std::vector<vec2>& polygon, crd3 coords, Image_ptr img, const space2& tr, double k_coef = 1, double s_coef = 0) { return Object_ptr(new TexturePolygon(polygon, coords, img, tr, k_coef, s_coef)); }
 
 };
 
