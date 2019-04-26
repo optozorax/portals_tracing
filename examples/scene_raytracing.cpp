@@ -47,6 +47,7 @@ int main(int argc, char** argv) {
 
 	int width, height;
 	bool isUsePathTracing;
+	bool isDrawDepth;
 	int rayTracingSamples;
 	int pathTracingSamples;
 	int threads;
@@ -64,6 +65,7 @@ int main(int argc, char** argv) {
 		settings["width"] = 1000;
 		settings["height"] = int(settings["width"]) / 2; 
 		settings["isUsePathTracing"] = false;
+		settings["isDrawDepth"] = false;
 		settings["rayTracingSamples"] = 2;
 		settings["pathTracingSamples"] = 200;
 		settings["threads"] = 4;
@@ -78,6 +80,7 @@ int main(int argc, char** argv) {
 	width = settings["width"];
 	height = settings["height"];
 	isUsePathTracing = settings["isUsePathTracing"];
+	isDrawDepth = settings["isDrawDepth"];
 	rayTracingSamples = settings["rayTracingSamples"];
 	pathTracingSamples = settings["pathTracingSamples"];
 	threads = settings["threads"];
@@ -91,6 +94,7 @@ int main(int argc, char** argv) {
 		if (isLog)
 			std::cout << "Rendering " << i << " frame of " << scenejs.frames.size() << " frames total" << std::endl;;
 		Image img(width, height);
+		Image dImg(width, height);
 		Scene scene = loadFrame(scenejs.frames[i]);
 		scene.add(makeSky(Color(0.3, 0.3, 0.9), Color(1, 1, 1)));
 	
@@ -103,10 +107,17 @@ int main(int argc, char** argv) {
 			ren = new RayTracing(rayTracingSamples, threads, isLog, 100);
 		ren->luminaries.push_back(PointLight(vec3(0, 0, 3), Color(1.5, 1.5, 1.5)));
 		ren->luminaries.push_back(PointLight(vec3(0, 1, 3), Color(0.5, 0.5, 0.5)));
-		ren->assign(&cam, &scene, &img);
+		ren->assign(&cam, &scene, &img, &dImg);
 		ren->render();
+
 		img.colorCorrection();
 		saveAsPng(img, filename + "_" + std::to_string(i) + ".png");
+		
+		if (isDrawDepth) {
+			toGrayScaleDoubleImg(dImg);
+			saveAsPng(dImg, filename + "_" + std::to_string(i) + "_depth.png");
+			saveAsDoubleImg(&img, filename + "_" + std::to_string(i) + ".double");
+		}
 
 		delete ren;
 	}

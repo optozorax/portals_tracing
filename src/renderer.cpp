@@ -133,7 +133,10 @@ void StandardRenderer::render(void) {
 
 				int x = pixels[j] % img->getWidth();
 				int y = pixels[j] / img->getWidth();
-				(*img)(x, y) = computePixel(x, y);
+				auto pix = computePixel(x, y);
+				(*img)(x, y) = pix.color;
+				if (isDrawDepth) 
+					(*dImg)(x, y) = Color(pix.depth, 0, 0);
 			}
 		}, i));
 	}
@@ -197,12 +200,12 @@ void StandardRenderer::onEndRendering(void) const {
 }
 
 //-----------------------------------------------------------------------------
-Color StandardRenderer::computePixel(int x, int y) const {
+Renderer1::Frag StandardRenderer::computePixel(int x, int y) const {
 	return computeColor(camera->getRay(x, y, isDiffuse));
 }
 
 //-----------------------------------------------------------------------------
-Color StandardRenderer::computeColor(Ray ray) const {
+Renderer1::Frag StandardRenderer::computeColor(Ray ray) const {
 	Intersection inter;
 	Color clrAbsorbtion;
 	std::stack<Color> colorStack;
@@ -211,9 +214,17 @@ Color StandardRenderer::computeColor(Ray ray) const {
 	Ray scattered;
 	double diffusion;
 	ScatterType returned;
+
+	double depth = tMax;
+	bool isDepthInitialized = false;
 	
 	for (int i = 0; i < maxDepth; ++i) {
 		if (scene->intersect(ray, inter, 0, tMax)) {
+			if (!isDepthInitialized) {
+				depth = inter.t;
+				isDepthInitialized = true;
+			}
+
 			returned = scene->scatter(ray, inter, clrAbsorbtion, scattered, diffusion);
 
 			if (returned == SCATTER_NEXT)
@@ -282,7 +293,7 @@ Color StandardRenderer::computeColor(Ray ray) const {
 				break;
 		} else {
 			if (i == 0)
-				return Color(0, 0, 0, 0);
+				return Frag(Color(0, 0, 0, 0), depth);
 			else
 				break;
 		}
@@ -303,7 +314,7 @@ Color StandardRenderer::computeColor(Ray ray) const {
 		pointLightColorStackBool.pop();
 	}
 
-	return resultColor;
+	return Frag(resultColor, depth);
 }
 
 //-----------------------------------------------------------------------------
@@ -403,18 +414,21 @@ RayTracing::RayTracing(int aliasing,
 }
 
 //-----------------------------------------------------------------------------
-Color RayTracing::computePixel(int x, int y) const {
+Renderer1::Frag RayTracing::computePixel(int x, int y) const {
 	Color clr(0, 0, 0, 0);
+	double depth = tMax;
 	for (int ki = 0; ki < antialiasing; ++ki) {
 		for (int kj = 0; kj < antialiasing; ++kj) {
 			double x1 = x + double(ki)/antialiasing;
 			double y1 = y + double(kj)/antialiasing;
 			Ray ray = camera->getRay(x1, y1, isDiffuse);
-			clr += computeColor(ray);
+			auto pix = computeColor(ray);
+			clr += pix.color;
+			depth = std::min(depth, pix.depth);
 		}
 	}
 	clr /= antialiasing * antialiasing;
-	return clr;
+	return Frag(clr, depth);
 }
 
 //-----------------------------------------------------------------------------
@@ -430,7 +444,7 @@ PathTracing::PathTracing(int samples,
 }
 
 //-----------------------------------------------------------------------------
-Color PathTracing::computePixel(int x, int y) const {
+Renderer1::Frag PathTracing::computePixel(int x, int y) const {
 	// Использована квазислучайная последовательность https://habr.com/ru/post/440892/
 	const double g = 1.32471795724474602596090885447809;
 	const double ax = std::fmod(1.0/g, 1.0);
@@ -438,14 +452,17 @@ Color PathTracing::computePixel(int x, int y) const {
 	const double seed = 0.5;
 
 	Color clr(0, 0, 0, 0);
+	double depth = tMax;
 	for (int i = 0; i < samples; ++i) {
 		double x1 = x + std::fmod(seed + ax*i, 1.0);
 		double y1 = y + std::fmod(seed + ay*i, 1.0);
 		Ray ray = camera->getRay(x1, y1, isDiffuse);
-		clr += computeColor(ray);
+		auto pix = computeColor(ray);
+		clr += pix.color;
+		depth = std::min(depth, pix.depth);
 	}
 	clr /= samples;
-	return clr;
+	return Frag(clr, depth);
 }
 
 };

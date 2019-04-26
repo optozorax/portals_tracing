@@ -27,23 +27,41 @@ namespace pt
 	class Renderer1
 	{
 	public:
-		Renderer1() {}
+		Renderer1() : isDrawDepth(false) {}
 		virtual ~Renderer1() {}
 
 		void assign(Camera* camera1, Object* scene1, Image* img1) {
 			camera = camera1;
 			scene = scene1;
 			img = img1;
+			isDrawDepth = false;
+		}
+
+		void assign(Camera* camera1, Object* scene1, Image* img1, Image* dImg1) {
+			camera = camera1;
+			scene = scene1;
+			img = img1;
+			dImg = dImg1;
+			isDrawDepth = true;
 		}
 
 		virtual void render(void) = 0;
 
-		virtual Color computePixel(int x, int y) const = 0;
-		virtual Color computeColor(Ray ray) const = 0;
+		struct Frag
+		{
+			Frag(Color color, double depth) : color(color), depth(depth) {}
+			Color color;
+			double depth;
+		};
+
+		virtual Frag computePixel(int x, int y) const = 0;
+		virtual Frag computeColor(Ray ray) const = 0;
 	protected:
 		Camera*	camera;
 		Object*	scene;
 		Image*	img;
+		Image*	dImg;
+		bool    isDrawDepth;
 
 		virtual void onStartRender(void) {}
 		virtual void onEveryLine(double percent) const {}
@@ -76,8 +94,8 @@ namespace pt
 		/** Удаляет все порталы из обработки рендером. */
 		void clearPortals(void);
 
-		Color computePixel(int x, int y) const;
-		Color computeColor(Ray ray) const;
+		Frag computePixel(int x, int y) const;
+		Frag computeColor(Ray ray) const;
 
 		/** Массив точечных источников освещения. Пользователь сам их задает, далее это учитывается при рендеринге. */
 		std::vector<PointLight>	luminaries;
@@ -127,7 +145,7 @@ namespace pt
 
 	protected:
 		int antialiasing;
-		Color computePixel(int x, int y) const;
+		Frag computePixel(int x, int y) const;
 	};
 
 	//-------------------------------------------------------------------------
@@ -155,7 +173,7 @@ namespace pt
 
 	protected:
 		int samples;
-		Color computePixel(int x, int y) const;
+		Frag computePixel(int x, int y) const;
 	};
 
 };

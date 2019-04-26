@@ -2,6 +2,7 @@
 #define PT_IMAGE_H
 
 #include <memory>
+#include <string>
 #include <pt/basics.h>
 
 namespace pt
@@ -33,6 +34,12 @@ namespace pt
 	};
 
 	typedef std::shared_ptr<Image> Image_ptr;
+
+	//-------------------------------------------------------------------------
+	void saveAsDoubleImg(const Image& img, const std::string& name);
+	void loadAsDoubleImg(Image& img, const std::string& name);
+
+	void toGrayScaleDoubleImg(Image& img);
 
 };
 
