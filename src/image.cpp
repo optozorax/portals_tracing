@@ -129,19 +129,22 @@ void loadAsDoubleImg(Image& img, const std::string& name) {
 }
 
 //-----------------------------------------------------------------------------
-void toGrayScaleDoubleImg(Image& img) {
-	double mymin = img(0, 0).r, mymax = img(0, 0).r;
+void toGrayScaleDoubleImg(Image& img, double ignoreMax) {
+	double mymin = img(0, 0).r, mymax = 0;
 
 	for (int i = 0; i < img.getWidth(); i++) {
 		for (int j = 0; j < img.getHeight(); j++) {
 			mymin = std::min(mymin, img(i, j).r);
-			mymax = std::max(mymax, img(i, j).r);
+			if (ignoreMax < 0 || img(i, j).r < ignoreMax)
+				mymax = std::max(mymax, img(i, j).r);
 		}
 	}
 
 	for (int i = 0; i < img.getWidth(); i++) {
 		for (int j = 0; j < img.getHeight(); j++) {
-			double value = 1 - (img(i, j).r - mymin)/(mymax-mymin);
+			double value = (img(i, j).r - mymin)/(mymax-mymin);
+			if (value > 1) value = 1;
+			value = 1 - value;
 			img(i, j).r = value;
 			img(i, j).g = value;
 			img(i, j).b = value;

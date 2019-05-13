@@ -97,6 +97,9 @@ namespace pt
 		Frag computePixel(int x, int y) const;
 		Frag computeColor(Ray ray) const;
 
+		/** Устанавливает фоновое освещение. */
+		void setAmbientLight(Color clr);
+
 		/** Массив точечных источников освещения. Пользователь сам их задает, далее это учитывается при рендеринге. */
 		std::vector<PointLight>	luminaries;
 	protected:
@@ -109,6 +112,7 @@ namespace pt
 		bool isDiffuse;
 		bool isBreakOnMaterial;
 		bool isWriteText;
+		Color ambient;
 
 		double time;
 

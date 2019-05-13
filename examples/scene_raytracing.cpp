@@ -105,8 +105,9 @@ int main(int argc, char** argv) {
 			ren = new PathTracing(pathTracingSamples, threads, isLog, 30);
 		else
 			ren = new RayTracing(rayTracingSamples, threads, isLog, 100);
-		ren->luminaries.push_back(PointLight(vec3(0, 0, 3), Color(1.5, 1.5, 1.5)));
-		ren->luminaries.push_back(PointLight(vec3(0, 1, 3), Color(0.5, 0.5, 0.5)));
+		ren->setAmbientLight(Color(1, 1, 1, 1));
+		ren->luminaries.push_back(PointLight(vec3(0, 0, 1), Color(1.5, 1.5, 1.5)));
+		ren->luminaries.push_back(PointLight(vec3(0, 1, 2.9), Color(0.5, 0.5, 0.5)));
 		ren->assign(&cam, &scene, &img, &dImg);
 		ren->render();
 

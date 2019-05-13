@@ -28,6 +28,7 @@ int main() {
 	cam.lookAt(lookAt);
 
 	RayTracing ren(2, 4, true);
+	ren.setAmbientLight(Color(0.7, 0.7, 0.7, 1));
 
 	// Создаем пол
 	const double size = 500;
@@ -119,9 +120,9 @@ int main() {
 	ren.render();
 	img.colorCorrection();
 	if (isDrawHints)
-		saveAsBmp(img, "portal_light_test1_hints_1.bmp");
+		saveAsPng(img, "portal_light_test1_hints_1.png");
 	else
-		saveAsBmp(img, "portal_light_test1_1.bmp");
+		saveAsPng(img, "portal_light_test1_1.png");
 
 	// Рендерим вторую картинку с другого угла
 	cam.pos = {0, -3, 1.2};
@@ -129,9 +130,9 @@ int main() {
 	ren.render();
 	img.colorCorrection();
 	if (isDrawHints)
-		saveAsBmp(img, "portal_light_test1_hints_2.bmp");
+		saveAsPng(img, "portal_light_test1_hints_2.png");
 	else
-		saveAsBmp(img, "portal_light_test1_2.bmp");
+		saveAsPng(img, "portal_light_test1_2.png");
 
 	// Рендерим картинку сверху
 	Orthogonal cam2(vec3(1, 1, 5), 10.0 / img.getWidth() , img.getWidth(), img.getHeight());
@@ -140,7 +141,7 @@ int main() {
 	ren.render();
 	img.colorCorrection();
 	if (isDrawHints)
-		saveAsBmp(img, "portal_light_test1_hints_3.bmp");
+		saveAsPng(img, "portal_light_test1_hints_3.png");
 	else
-		saveAsBmp(img, "portal_light_test1_3.bmp");
+		saveAsPng(img, "portal_light_test1_3.png");
 }

@@ -14,7 +14,7 @@ Ray Orthogonal::getRay(double x, double y, bool isDiffuse) const {
 	x *= scale;
 	y *= scale;
 	Ray ray;
-	ray.pos = i*x - j*y + pos;
+	ray.pos = -i*x - j*y + pos;
 	ray.dir = k;
 	return ray;
 }

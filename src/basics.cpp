@@ -1,4 +1,5 @@
 #include <random>
+#include <mutex>
 #include <math.h>
 #include <pt/basics.h>
 
@@ -9,8 +10,12 @@ std::mt19937 generator;
 std::uniform_real_distribution<double> distribution(0, 1);
 
 //-----------------------------------------------------------------------------
+std::mutex m;
 double random(void) {
-	return distribution(generator);
+	m.lock();
+	double result = distribution(generator);
+	m.unlock();
+	return result;
 }
 
 //-----------------------------------------------------------------------------
@@ -87,13 +92,19 @@ bool refract(vec3& ray, const vec3& normal, double r) {
 
 //-----------------------------------------------------------------------------
 vec3 randomSphere(void) {
-	double alpha = random() * 2 * pi;
+	/*double alpha = random() * 2 * pi;
 	double beta = random() * 2 * pi;
 	vec3 r;
 	r.x = sin(alpha) * cos(beta);
 	r.y = sin(alpha) * sin(beta);
 	r.z = cos(beta);
-	return r;
+	return r;*/
+	// WTF?
+	vec3 v;
+	do {
+		v = vec3(random(), random(), random()) * 2 - vec3(1);
+	} while(v.length() > 1);
+	return v;
 }
 
 };

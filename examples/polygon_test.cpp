@@ -127,13 +127,14 @@ int main() {
 	cam.lookAt(vec3(0, 0, 0));
 
 	RayTracing ren2(2, 4, true);
+	ren2.setAmbientLight(Color(0.5, 0.5, 0.5, 1));
 	ren2.luminaries.push_back(PointLight(vec3(0, 0, 5), pt::Color(0.5, 0.5, 0.5).sqrt()));
 	ren2.luminaries.push_back(PointLight(vec3(5, 5, 3), pt::Color(0.5, 0.5, 0.5).sqrt()));
 	ren2.luminaries.push_back(PointLight(vec3(-5, -3, 3), pt::Color(0.5, 0.5, 0.5).sqrt()));
 	ren2.assign(&cam, &scene, &img);
 	ren2.render();
 	img.colorCorrection();
-	saveAsBmp(img, "polygon_test.bmp");
+	saveAsPng(img, "polygon_test.png");
 
 	return 0;
 }

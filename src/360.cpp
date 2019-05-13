@@ -12,7 +12,7 @@ Ray Camera360::getRay(double x, double y, bool isDiffuse) const {
 	y -= resolution / 2.0;
 	x *= pi/resolution;
 	y *= pi/resolution;
-	x = -x;
+	//x = -x;
 	y = y + pi/2;
 	Ray ray;
 	ray.pos = pos;

@@ -16,6 +16,7 @@ void Polygon::assign(const std::vector<vec2>& polygon, crd3 coords1, Material_pt
 
 	d = -dot(coords.k, coords.pos);
 	normal = coords.k;
+	normal = normal.normalize();
 
 	min.x = +std::numeric_limits<double>::infinity();
 	min.y = +std::numeric_limits<double>::infinity();

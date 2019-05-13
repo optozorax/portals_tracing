@@ -90,7 +90,8 @@ StandardRenderer::StandardRenderer(
 	tMax(tMax),
 	isDiffuse(isDiffuse),
 	isBreakOnMaterial(isBreakOnMaterial),
-	isWriteText(isWriteText) {
+	isWriteText(isWriteText),
+	ambient(0, 0, 0, 1){
 }
 
 //-----------------------------------------------------------------------------
@@ -227,9 +228,6 @@ Renderer1::Frag StandardRenderer::computeColor(Ray ray) const {
 
 			returned = scene->scatter(ray, inter, clrAbsorbtion, scattered, diffusion);
 
-			if (returned == SCATTER_NEXT)
-				returned = returned;
-
 			// Запоминаем прозрачность текущего цвета
 			double opaque = clrAbsorbtion.a;
 			clrAbsorbtion.a = 1;
@@ -243,8 +241,8 @@ Renderer1::Frag StandardRenderer::computeColor(Ray ray) const {
 			scattered.pos += scattered.dir * 0.00001;
 
 			// Считаем цвет освещения, но его надо считать только когда у нас обычный материал
-			if (returned == SCATTER_RAYTRACING_END) {
-				Color lightColor = Color(1, 1, 1, 1);
+			if (returned == SCATTER_RAYTRACING_END && luminaries.size() != 0) {
+				Color lightColor = Color(0, 0, 0, 1);
 				std::vector<std::pair<Portals_ptr, vec3> > teleportation;
 				lightColor += computeLight(scattered.pos, inter.normal, teleportation, 3);
 				pointLightColorStack.push(lightColor * clrAbsorbtion);
@@ -299,7 +297,16 @@ Renderer1::Frag StandardRenderer::computeColor(Ray ray) const {
 		}
 	}
 
-	Color resultColor = Color(1, 1, 1, 1);
+	Color resultColor(1, 1, 1, 1);
+	if (returned == SCATTER_END) {
+		resultColor = colorStack.top();
+
+		colorStack.pop();
+		pointLightColorStack.pop();
+		pointLightColorStackBool.pop();
+	} else {
+		resultColor = ambient;
+	}
 	while (!colorStack.empty()) {
 		if (pointLightColorStackBool.top()) {
 			resultColor = colorStack.top() * resultColor;
@@ -399,6 +406,11 @@ Color StandardRenderer::computeLight(
 		}
 	}
 	return result;
+}
+
+//-----------------------------------------------------------------------------
+void StandardRenderer::setAmbientLight(Color clr) {
+	ambient = clr;
 }
 
 //-----------------------------------------------------------------------------

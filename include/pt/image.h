@@ -39,7 +39,7 @@ namespace pt
 	void saveAsDoubleImg(const Image& img, const std::string& name);
 	void loadAsDoubleImg(Image& img, const std::string& name);
 
-	void toGrayScaleDoubleImg(Image& img);
+	void toGrayScaleDoubleImg(Image& img, double overrideMax = -1);
 
 };
 
