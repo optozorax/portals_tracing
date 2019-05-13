@@ -1,4 +1,3 @@
-#include <prtl/portal.h>
 #include <pt/shape/portals.h>
 
 namespace pt
@@ -79,13 +78,11 @@ ScatterType Portals::scatter(const Ray& ray,
 	scattered.pos = inter.pos;
 	scattered.dir = ray.dir;
 	if (inter.data.integer == 1) {
-		prtl::portal3 portal(p1, p2);
-		scattered.pos = portal.teleport(scattered.pos);
-		scattered.dir = portal.teleportDir(scattered.dir);
+		scattered.pos = p2.from(p1.to(scattered.pos));
+		scattered.dir = p2.fromDir(p1.toDir(scattered.dir));
 	} else {
-		prtl::portal3 portal(p2, p1);
-		scattered.pos = portal.teleport(scattered.pos);
-		scattered.dir = portal.teleportDir(scattered.dir);
+		scattered.pos = p1.from(p2.to(scattered.pos));
+		scattered.dir = p1.fromDir(p2.toDir(scattered.dir));
 	}
 	clrAbsorbtion = Color(1, 1, 1, 1);
 	diffusion = 0;

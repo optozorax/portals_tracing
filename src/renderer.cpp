@@ -116,7 +116,11 @@ void StandardRenderer::render(void) {
 	std::vector<int> pixels(img->getWidth() * img->getHeight(), 0);
 	for (int i = 0; i < pixels.size(); ++i)
 		pixels[i] = i;
-	std::random_shuffle(pixels.begin(), pixels.end());
+
+	static std::random_device rd;
+	static std::mt19937 g(rd());
+
+	std::shuffle(pixels.begin(), pixels.end(), g);
 
 	std::mutex write_mutex;
 	int renderedPixelsCount = 0;
@@ -364,7 +368,7 @@ Color StandardRenderer::computeLight(
 
 			// Сдвигаем источник света по лучу ближе к текущему месту, на освещенность данного конкретного места не повлияет, а после сдвига телепортируем, чтобы рассчитывать это для других порталов
 			i.pos -= ray.dir * (t + 0.00003);
-			i.pos = portal3(portal.p2, portal.p1).teleport(i.pos);
+			i.pos = portal.p1.from(portal.p2.to(i.pos));
 		}
 
 		// Получаем луч от текущего абсолютного места до текущего источника света
@@ -392,9 +396,9 @@ Color StandardRenderer::computeLight(
 			auto recursion = [&] (Portals_ptr portal) {
 				vec3 newPos;
 				if (teleportation.size() != 0)
-					newPos = portal3(portal->p1, portal->p2).teleport(teleportation.back().second);
+					newPos = portal->p2.from(portal->p1.to(teleportation.back().second));
 				else
-					newPos = portal3(portal->p1, portal->p2).teleport(pos);
+					newPos = portal->p2.from(portal->p1.to(pos));
 				teleportation.push_back({portal, newPos});
 				result += computeLight(pos, normal, teleportation, depth-1);
 				teleportation.pop_back();

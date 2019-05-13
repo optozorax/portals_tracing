@@ -4,16 +4,13 @@
 #include <memory>
 
 #include <spob/spob.h>
-#include <prtl/portal.h>
-#include <prtl/polygon.h>
+#include <pt/poly.h>
 
 namespace pt
 {
 
 	// Используем это сущности из spob
 	using namespace spob;
-	using prtl::portal3;
-	using prtl::pointInPolygon;
 
 	//-------------------------------------------------------------------------
 	const double pi = 3.141592653589793238462643383279;

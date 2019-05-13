@@ -28,8 +28,8 @@ namespace pt
 							double& diffusion) const;
 		Polygon pg1;
 		Polygon pg2;
-		crd3 p1;
-		crd3 p2;
+		space3 p1;
+		space3 p2;
 		std::vector<vec2> poly;
 		Material_ptr first;
 		Material_ptr second;
