@@ -1,7 +1,6 @@
 #include <iostream>
 #include <sstream>
 #include <iomanip>
-#include <windows.h>
 
 #include <pt/pt.h>
 #include <pt/object/scene.h>

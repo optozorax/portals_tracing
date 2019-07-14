@@ -1,5 +1,4 @@
 #include <iostream>
-#include <windows.h>
 
 #include <pt/pt.h>
 #include <pt/object/scene.h>

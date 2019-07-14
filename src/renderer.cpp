@@ -7,6 +7,7 @@
 #include <string>
 #include <iomanip>
 #include <mutex>
+#include <thread>
 
 #include <pt/renderer.h>
 

@@ -1,12 +1,10 @@
 #include <iostream>
-#include <windows.h>
 
 #include <pt/pt.h>
 #include <pt/object/scene.h>
 #include <pt/object/sky.h>
 #include <pt/shape/sphere.h>
 #include <pt/shape/triangle.h>
-#include <pt/shape/cone.h>
 #include <pt/material/scatter.h>
 #include <pt/material/reflect.h>
 #include <pt/camera/360.h>

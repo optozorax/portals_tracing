@@ -1,3 +1,4 @@
+#include <limits>
 #include <pt/shape/polygon.h>
 
 namespace pt

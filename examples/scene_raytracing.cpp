@@ -7,7 +7,6 @@
 #include <pt/object/sky.h>
 #include <pt/shape/sphere.h>
 #include <pt/shape/triangle.h>
-#include <pt/shape/cone.h>
 #include <pt/material/scatter.h>
 #include <pt/material/reflect.h>
 #include <pt/material/light.h>

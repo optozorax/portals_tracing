@@ -1,4 +1,6 @@
-﻿#include <pt/object/texture_polygon.h>
+﻿#include <cmath>
+#include <limits>
+#include <pt/object/texture_polygon.h>
 
 namespace pt
 {
@@ -46,8 +48,8 @@ bool TexturePolygon::intersect(const Ray& ray,
 			// Преобразование координат из [0, 1]x[0, 1] в координаты изображения. Так же текстура делается повторяющейся.
 			imgPos.x += int(std::fabs(imgPos.x) + 2);
 			imgPos.y += int(std::fabs(imgPos.y) + 2);
-			imgPos.x = std::fmodf(imgPos.x, 1);
-			imgPos.y = std::fmodf(imgPos.y, 1);
+			imgPos.x = std::fmod(imgPos.x, 1);
+			imgPos.y = std::fmod(imgPos.y, 1);
 			imgPos.x *= img->getWidth();
 			imgPos.y *= img->getHeight();
 			

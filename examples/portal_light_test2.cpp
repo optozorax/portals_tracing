@@ -1,5 +1,4 @@
 #include <iostream>
-#include <windows.h>
 
 #include <pt/pt.h>
 #include <pt/object/scene.h>
@@ -12,7 +11,7 @@
 #include <pt/camera/360.h>
 #include <pt/camera/orthogonal.h>
 #include <pt/renderer.h>
-#include <pt/renderer/ray-tracing.h>
+#include <pt/renderer.h>
 #include <pt/pt2easybmp.h>
 
 int main() {
@@ -28,7 +27,8 @@ int main() {
 	PerspectiveCamera cam(1, pi / 2.0, 0, camPos, img.getWidth(), img.getHeight());
 	cam.lookAt(lookAt);
 
-	RayTracing ren(cam, scene, img, 100);
+	RayTracing ren(2, 4, true);
+	ren.assign(&cam, &scene, &img);
 
 	// Создаем пол
 	const double size = 500;

@@ -78,8 +78,7 @@ void convert_xyz_to_cube_uv(double x, double y, double z, int *index, double *u,
 
 //-----------------------------------------------------------------------------
 CubeMap::CubeMap(std::string bmp) {
-	std::wstring wstr(bmp.begin(), bmp.end());
-	m_image.ReadFromFile(wstr.c_str());
+	m_image.ReadFromFile(bmp.c_str());
 	m_size = m_image.TellWidth()/4;
 }
 

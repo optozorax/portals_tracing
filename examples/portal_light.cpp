@@ -118,5 +118,5 @@ int main() {
 	ren.assign(&cam, &scene, &img);
 	ren.render();
 	img.colorCorrection();
-	saveAsBmp(img, "portal_light.bmp");
+	saveAsPng(img, "portal_light.bmp");
 }

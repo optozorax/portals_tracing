@@ -1,8 +1,8 @@
+#include <chrono>
+
 #include <iostream>
 #include <sstream>
 #include <omp.h>
-
-#include <windows.h>
 
 #include <pt/pt.h>
 #include <pt/object/scene.h>
@@ -18,20 +18,6 @@
 #include <pt/pt2easybmp.h>
 
 using namespace pt;
-
-//-----------------------------------------------------------------------------
-class Time
-{
-public:
-	Time() {
-		tick = GetTickCount();
-	}
-	float getTime(void) {
-		return (GetTickCount() - tick)/1000.0;
-	}
-private:
-	unsigned long tick;
-};
 
 //-----------------------------------------------------------------------------
 void addContour2(pt::Scene& scene, crd3 c, std::vector<vec2> poly, pt::Material_ptr material) {
@@ -161,7 +147,6 @@ int main() {
 	using namespace pt;
 
 	for (int i = 1; i < 301; ++i) {
-		Time time;
 		Image img(500, 500);
 		RayTracing ren(2, 4, false);
 		Scene scene;
@@ -193,8 +178,6 @@ int main() {
 		// Сохранение изображения
 		std::stringstream sout;
 		sout << "anim/portal_" << i << ".bmp";
-		saveAsBmp(img, sout.str());
-
-		std::cout << "i: " << i << ", time: " << time.getTime() << std::endl;
+		saveAsPng(img, sout.str());
 	}
 }
