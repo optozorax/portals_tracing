@@ -4,6 +4,7 @@
 
 #include <pt/pt.h>
 #include <pt/object/scene.h>
+#include <pt/object/scene2.h>
 #include <pt/object/sky.h>
 #include <pt/shape/sphere.h>
 #include <pt/shape/triangle.h>
