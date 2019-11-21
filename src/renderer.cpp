@@ -359,7 +359,7 @@ Color StandardRenderer::computeLight(
 			ray.dir.normalize();
 
 			// Проверяем, чтобы этот луч входил в портал
-			isPass &= dot(ray.dir, portal.p2.k) > 0;
+			isPass &= dot(ray.dir, portal.p2.k) < 0;
 			if (!isPass) goto next;
 			isPass &= portal.pg2.intersect(ray, inter, 0, tMax);
 			if (!isPass) goto next;
