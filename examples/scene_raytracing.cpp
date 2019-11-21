@@ -160,6 +160,38 @@ spob::vec3 interpolate(const spob::vec3& a, const spob::vec3& b, double percent)
 	return a + (b-a) * percent;
 }
 
+typedef std::pair<spob::vec3, spob::vec3> Luminary;
+typedef std::vector<Luminary> Luminaries;
+
+scene::json unparse(const Luminary& luminary) {
+	scene::json result;
+	result["pos"] = scene::unparse(luminary.first);
+	result["color"] = scene::unparse(luminary.second);
+	return result;
+}
+
+scene::json unparse(const Luminaries& luminaries) {
+	scene::json result;
+	for (auto& i : luminaries) {
+		result.push_back(unparse(i));
+	}
+	return result;
+}
+
+Luminary parseLuminary(const scene::json& luminary) {
+	Luminary result;
+	result.first = scene::parseVec3(luminary["pos"]);
+	result.second = scene::parseVec3(luminary["color"]);
+	return result;
+}
+
+Luminaries parseLuminaries(const scene::json& obj) {
+	Luminaries result;
+	for (const auto& i : obj)
+		result.push_back(parseLuminary(i));
+	return result;
+}
+
 int main(int argc, char** argv) {
 	std::string settingsFile = "settings.json";
 	std::string filename = "scene.json";
@@ -192,10 +224,13 @@ int main(int argc, char** argv) {
 	int pathTracingSamples;
 	int threads;
 	bool isLog;
+	bool teleportLightFromPortals;
 
 	bool isAnimationFromCameraData;
 	int fps;
 	std::string cameraDataFile;
+
+	Luminaries luminaries;
 
 	scene::json settings;
 	try {
@@ -205,6 +240,9 @@ int main(int argc, char** argv) {
 	} catch (...) {
 		std::cout << "Settings file is clear or didn't exists." << std::endl;
 		std::cout << "Created standard `settings.json`." << std::endl;
+		luminaries.emplace_back(spob::vec3(0, 0, 1), spob::vec3(1.5, 1.5, 1.5));
+		luminaries.emplace_back(spob::vec3(0, 1, 2.9), spob::vec3(0.5, 0.5, 0.5));
+
 		settings = scene::json();
 		settings["width"] = 1000;
 		settings["height"] = int(settings["width"]) / 2; 
@@ -214,9 +252,11 @@ int main(int argc, char** argv) {
 		settings["pathTracingSamples"] = 200;
 		settings["threads"] = 4;
 		settings["isLog"] = true;
+		settings["teleportLightFromPortals"] = false;
 		settings["isAnimationFromCameraData"] = false;
 		settings["fps"] = 30;
 		settings["cameraDataFile"] = "cam_positions.json";
+		settings["luminaries"] = unparse(luminaries);
 		std::ofstream fout(settingsFile);
 		fout << std::setw(4) << settings;
 		fout.close();
@@ -232,15 +272,17 @@ int main(int argc, char** argv) {
 	pathTracingSamples = settings["pathTracingSamples"];
 	threads = settings["threads"];
 	isLog = settings["isLog"];
+	teleportLightFromPortals = settings["teleportLightFromPortals"];
 	isAnimationFromCameraData = settings["isAnimationFromCameraData"];
 	fps = settings["fps"];
 	cameraDataFile = settings["cameraDataFile"];
+	luminaries = parseLuminaries(settings["luminaries"]);
 
 	std::cout << std::endl << std::endl;
 
 	using namespace pt;
 
-	auto draw_frame = [isLog, width, height, isUsePathTracing, pathTracingSamples, threads, rayTracingSamples, filename, isDrawDepth] (const scene::Frame& frame, const vec3& pos, const vec3& lookAt, int current, int total) {
+	auto draw_frame = [isLog, width, height, isUsePathTracing, teleportLightFromPortals, pathTracingSamples, threads, rayTracingSamples, filename, isDrawDepth, luminaries] (const scene::Frame& frame, const vec3& pos, const vec3& lookAt, int current, int total) {
 		if (isLog)
 			std::cout << "Rendering " << current << " frame of " << total << " frames total" << std::endl;
 		Image img(width, height);
@@ -254,10 +296,14 @@ int main(int argc, char** argv) {
 		if (isUsePathTracing)
 			ren = new PathTracing(pathTracingSamples, threads, isLog, 30);
 		else
-			ren = new RayTracing(rayTracingSamples, threads, isLog, 100);
+			ren = new RayTracing(rayTracingSamples, threads, isLog, 1000);
 		ren->setAmbientLight(Color(1, 1, 1, 1));
-		ren->luminaries.push_back(PointLight(vec3(0, 0, 1), Color(1.5, 1.5, 1.5)));
-		ren->luminaries.push_back(PointLight(vec3(0, 1, 2.9), Color(0.5, 0.5, 0.5)));
+		for (auto& i : luminaries)
+			ren->luminaries.push_back(pt::PointLight(i.first, pt::Color(i.second.x, i.second.y, i.second.z)));
+
+		if (teleportLightFromPortals)
+			for (auto& portal : frame.portals)
+				ren->addPortal(makePortals(portal.crd1, portal.crd2, portal.polygon, nullptr, nullptr));
 
 		ren->assign(&cam, &scene, &img, &dImg);
 		ren->render();
