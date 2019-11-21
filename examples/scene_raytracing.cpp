@@ -313,7 +313,7 @@ int main(int argc, char** argv) {
 		auto camPositions = scene::parseCamPositions(js);
 		double totalTime = calcTotalTime(camPositions);
 		int frames = int(totalTime * fps);
-		scenejs.frames.push_back(scenejs.frames.back());
+		camPositions.push_back(camPositions.back());
 
 		for (int i = 0; i < frames; ++i) {
 			double time = double(i)/fps;
