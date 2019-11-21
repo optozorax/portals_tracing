@@ -243,6 +243,7 @@ Renderer1::Frag StandardRenderer::computeColor(Ray ray) const {
 			scattered.dir.normalize();
 
 			// Сместить положение луча в некотором направлении
+			auto old_scattered_pos = scattered.pos;
 			scattered.pos += scattered.dir * 0.00001;
 
 			// Считаем цвет освещения, но его надо считать только когда у нас обычный материал
@@ -256,6 +257,9 @@ Renderer1::Frag StandardRenderer::computeColor(Ray ray) const {
 				pointLightColorStack.push(Color(0, 0, 0, 0));
 				pointLightColorStackBool.push(false);
 			}
+
+			scattered.pos = old_scattered_pos;
+			scattered.pos += scattered.dir * 0.00000001;
 
 			// Посчитать результирующй цвет после данного отражения
 			colorStack.push(clrAbsorbtion);

@@ -19,12 +19,12 @@ bool Scene::intersect(const Ray& ray,
 	if (array.size() > 0) {
 		Intersection inter1;
 		inter.t = tMax;
-		bool isIntersect = array[0]->intersect(ray, inter, tMin, tMax);;
+		bool isIntersect = false;
 		inter.data.type = 0;
-		for (int i = 1; i < array.size(); ++i) {
+		for (int i = 0; i < array.size(); ++i) {
 			if (array[i]->intersect(ray, inter1, tMin, tMax)) {
-				isIntersect = true;
 				if (inter1.t <= inter.t) {
+					isIntersect = true;
 					inter = inter1;
 					inter.data.type = i;
 				}
