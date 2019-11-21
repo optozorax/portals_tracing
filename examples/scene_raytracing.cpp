@@ -283,6 +283,9 @@ int main(int argc, char** argv) {
 		spob::vec3 lookAt = scenejs.cam_rotate_around;
 		spob::vec3 pos = spheric2cartesian(scenejs.cam_spheric_pos) + lookAt;
 		for (int i = 0; i < scenejs.frames.size(); i++) {
+			if (scenejs.frames[i].center) {
+				pos = spheric2cartesian(scenejs.frames[i].center.value()) + lookAt;
+			}
 			draw_frame(scenejs.frames[i], pos, lookAt, i, scenejs.frames.size());
 
 			if (isLog) {
