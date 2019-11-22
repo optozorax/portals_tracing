@@ -226,6 +226,10 @@ int main(int argc, char** argv) {
 	bool isLog;
 	bool teleportLightFromPortals;
 
+	std::optional<int> startFrame = std::nullopt, endFrame = std::nullopt;
+
+	int frameOffset = 0, frameSum = 1;
+
 	bool isAnimationFromCameraData;
 	int fps;
 	std::string cameraDataFile;
@@ -257,6 +261,15 @@ int main(int argc, char** argv) {
 		settings["fps"] = 30;
 		settings["cameraDataFile"] = "cam_positions.json";
 		settings["luminaries"] = unparse(luminaries);
+
+		scene::json frameCycle;
+		frameCycle["offset"] = frameOffset;
+		frameCycle["sum"] = frameSum;
+		settings["frame_cycle"] = frameCycle;
+
+		settings["start_frame"] = scene::unparse(startFrame);
+		settings["end_frame"] = scene::unparse(endFrame);
+		
 		std::ofstream fout(settingsFile);
 		fout << std::setw(4) << settings;
 		fout.close();
@@ -277,6 +290,10 @@ int main(int argc, char** argv) {
 	fps = settings["fps"];
 	cameraDataFile = settings["cameraDataFile"];
 	luminaries = parseLuminaries(settings["luminaries"]);
+	frameOffset = settings["frame_cycle"]["offset"];
+	frameSum = settings["frame_cycle"]["sum"];
+	startFrame = scene::parseOptional<int>(settings["start_frame"], scene::parseInt);
+	endFrame = scene::parseOptional<int>(settings["end_frame"], scene::parseInt);
 
 	std::cout << std::endl << std::endl;
 
@@ -326,9 +343,12 @@ int main(int argc, char** argv) {
 		analyzer.print_header();
 
 	if (!isAnimationFromCameraData) {
+		if (!startFrame) startFrame = 0;
+		if (!endFrame) endFrame = scenejs.frames.size();
+
 		spob::vec3 lookAt = scenejs.cam_rotate_around;
 		spob::vec3 pos = spheric2cartesian(scenejs.cam_spheric_pos) + lookAt;
-		for (int i = 0; i < scenejs.frames.size(); i++) {
+		for (int i = startFrame.value() + frameOffset; i < endFrame.value(); i += frameSum) {
 			if (scenejs.frames[i].center) {
 				pos = spheric2cartesian(scenejs.frames[i].center.value()) + lookAt;
 			}
@@ -361,7 +381,10 @@ int main(int argc, char** argv) {
 		int frames = int(totalTime * fps);
 		camPositions.push_back(camPositions.back());
 
-		for (int i = 0; i < frames; ++i) {
+		if (!startFrame) startFrame = 0;
+		if (!endFrame) endFrame = frames;
+
+		for (int i = startFrame.value() + frameOffset; i < endFrame.value(); i += frameSum) {
 			double time = double(i)/fps;
 			auto res = getTimeIndex(camPositions, time);
 			int index = res.first;
