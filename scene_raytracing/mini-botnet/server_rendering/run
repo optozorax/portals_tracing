@@ -1,0 +1,4 @@
+#!/bin/bash -u
+
+cd /root/server_rendering/
+python3 server.py -f output

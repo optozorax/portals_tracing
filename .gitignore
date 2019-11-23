@@ -9,3 +9,8 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 _deps
+scene_raytracing/mini-botnet/client_rendering/scene_raytracing.exe
+scene_raytracing/mini-botnet/client_rendering/scene_raytracing
+scene_raytracing/mini-botnet/server_rendering/cam_positions.json
+scene_raytracing/mini-botnet/server_rendering/scene.json
+scene_raytracing/mini-botnet/server_rendering/settings.json

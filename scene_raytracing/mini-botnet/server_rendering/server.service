@@ -1,0 +1,10 @@
+[Unit]
+Description=client_rendering
+
+[Service]
+ExecStart=/root/server_rendering/run
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+

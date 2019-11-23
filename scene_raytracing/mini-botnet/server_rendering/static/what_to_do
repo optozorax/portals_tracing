@@ -1,0 +1,8 @@
+#!/bin/bash -u
+cd
+rm -rf client_rendering
+wget "http://172.17.2.167/client.tar.gz"
+tar -zxvf client.tar.gz
+rm client.tar.gz
+cd client_rendering
+sh setting_up.sh
