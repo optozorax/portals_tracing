@@ -169,7 +169,7 @@ void StandardRenderer::onEveryLine(double percent) const {
 	if (isWriteText) {
 		stringstream sout;
 
-		cout << '\r';
+		//cout << '\r';
 
 		sout.str(std::string());
 		sout << setprecision(2) << percent * 100 << "% |";
@@ -193,7 +193,7 @@ void StandardRenderer::onEveryLine(double percent) const {
 void StandardRenderer::onEndRendering(void) const {
 	using namespace std;
 	if (isWriteText) {
-		cout << '\r' << setw(9) << "100% |";
+		cout << /*'\r' <<*/ setw(9) << "100% |";
 
 		stringstream sout;
 		sout.clear();

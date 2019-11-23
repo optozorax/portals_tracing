@@ -197,10 +197,10 @@ int main(int argc, char** argv) {
 	std::string filename = "scene.json";
 	if (argc > 1) {
 		filename = std::string(argv[1]);
-		std::cout << "Read file `" << filename << "`" << std::endl;
+		//std::cout << "Read file `" << filename << "`" << std::endl;
 	} else {
-		std::cout << "Please specify file to be rendered in command line arguments." << std::endl;
-		std::cout << "Filename interpreted as `" << filename << "`." << std::endl;
+		//std::cout << "Please specify file to be rendered in command line arguments." << std::endl;
+		//std::cout << "Filename interpreted as `" << filename << "`." << std::endl;
 	}
 
 	scene::json js;
@@ -223,7 +223,7 @@ int main(int argc, char** argv) {
 	int rayTracingSamples;
 	int pathTracingSamples;
 	int threads;
-	bool isLog;
+	bool isLog, isAnimationLog;
 	bool teleportLightFromPortals;
 
 	std::optional<int> startFrame = std::nullopt, endFrame = std::nullopt;
@@ -256,6 +256,7 @@ int main(int argc, char** argv) {
 		settings["pathTracingSamples"] = 200;
 		settings["threads"] = 4;
 		settings["isLog"] = true;
+		settings["isAnimationLog"] = false;
 		settings["teleportLightFromPortals"] = false;
 		settings["isAnimationFromCameraData"] = false;
 		settings["fps"] = 30;
@@ -285,6 +286,7 @@ int main(int argc, char** argv) {
 	pathTracingSamples = settings["pathTracingSamples"];
 	threads = settings["threads"];
 	isLog = settings["isLog"];
+	isAnimationLog = settings["isAnimationLog"];
 	teleportLightFromPortals = settings["teleportLightFromPortals"];
 	isAnimationFromCameraData = settings["isAnimationFromCameraData"];
 	fps = settings["fps"];
@@ -295,7 +297,7 @@ int main(int argc, char** argv) {
 	startFrame = scene::parseOptional<int>(settings["start_frame"], scene::parseInt);
 	endFrame = scene::parseOptional<int>(settings["end_frame"], scene::parseInt);
 
-	std::cout << std::endl << std::endl;
+	//std::cout << std::endl << std::endl;
 
 	using namespace pt;
 
@@ -339,7 +341,7 @@ int main(int argc, char** argv) {
 
 	percent_time_analyzer analyzer;
 	analyzer.start();
-	if (!isLog)
+	if (!isLog && isAnimationLog)
 		analyzer.print_header();
 
 	if (!isAnimationFromCameraData) {
@@ -354,7 +356,7 @@ int main(int argc, char** argv) {
 			}
 			draw_frame(scenejs.frames[i], pos, lookAt, i, scenejs.frames.size());
 
-			if (isLog) {
+			if (isLog && isAnimationLog) {
 				std::cout << std::endl << "Total percent:" << std::endl;
 				analyzer.print_header();
 			}
@@ -363,7 +365,8 @@ int main(int argc, char** argv) {
 				std::cout << std::endl << std::endl;
 		}
 	} else {
-		std::cout << "Drawing from camera movements data." << std::endl;
+		if (isLog)
+			std::cout << "Drawing from camera movements data." << std::endl;
 		scene::json js;
 		try {
 			std::ifstream fin(cameraDataFile);
@@ -395,7 +398,7 @@ int main(int argc, char** argv) {
 
 			draw_frame(scenejs.frames[camPositions[index].frame], pos1, lookAt1, i, frames);
 
-			if (isLog) {
+			if (isLog && isAnimationLog) {
 				std::cout << std::endl << "Total percent:" << std::endl;
 				analyzer.print_header();
 			}
