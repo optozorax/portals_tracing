@@ -80,13 +80,9 @@
 
 Изображения в 360 градусов были просмотрены с помощью [www.chiefarchitect.com](https://www.chiefarchitect.com/products/360-panorama-viewer/)
 
+![](img/standard_scene_ray_360.png)
+![](img/standard_scene_2_ray_360.png)
 <table>
-<tr>
-  <td><img src="img/standard_scene_ray_360.png"></td>
-</tr>
-<tr>
-  <td><img src="img/standard_scene_2_ray_360.png"></td>
-</tr>
 <tr>
   <td><img src="img/screen_360_1.png"></td>
   <td><img src="img/screen_360_2.png"></td>
