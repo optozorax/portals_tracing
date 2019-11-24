@@ -1,4 +1,0 @@
-#!/bin/bash -u
-
-cd /root/client_rendering/
-./client.py

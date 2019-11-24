@@ -2,7 +2,8 @@
 Description=client_rendering
 
 [Service]
-ExecStart=/root/server_rendering/run
+WorkingDirectory=/root/server_rendering
+ExecStart=/root/server_rendering/server.py
 Restart=on-failure
 
 [Install]

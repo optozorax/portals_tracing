@@ -36,17 +36,15 @@ intervals = (
     ('s', 1),
 )
 
-def from_seconds(seconds, granularity=4):
+def from_seconds(seconds):
     result = []
 
     for name, count in intervals:
         value = seconds // count
         if value:
             seconds -= value * count
-            if value == 1:
-                name = name.rstrip('s')
             result.append("{}{}".format(int(value), name))
-    return ' '.join(result[:granularity])
+    return ' '.join(result)
 
 def print_header():
     print("|{:<11}|{:>11}|{:>11}|{:>11}|".format("percent", "time passed", "approx time", "left time"))
@@ -76,6 +74,10 @@ def post():
     global sended_to_process
     for filename in request.files:
         frame = name_to_number(filename)
+
+        if len([a for a in sended_to_process if a["frame"] == frame]) == 0:
+            return 'You was render already rendered frame.'
+
         sended_to_process = [a for a in sended_to_process if a["frame"] != frame]
 
         file = request.files[filename]
@@ -124,11 +126,8 @@ def get():
     else:
         if len(sended_to_process):
             first = sended_to_process[0]
-            if time.time() - first["time"] > 20 * 60:
-                frame = first["frame"]
-                sended_to_process.remove(first)
-            else:
-                return "stop_rendering"
+            frame = first["frame"]
+            sended_to_process.remove(first)
         else:
             raise KeyboardInterrupt
 
@@ -156,7 +155,8 @@ def get():
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-f", "--folder", type=str,
-                    help="output folder")
+                    help="output folder",
+                    default="output")
 args = parser.parse_args()
 run_bash_command("mkdir {}".format(args.folder))
 

@@ -8,9 +8,14 @@ from urllib.request import urlopen
 import time
 import subprocess
 
-#url = 'http://217.71.129.139:4207' # Урл, если с обычного компа
-url = "http://172.17.2.167:80" # Урл, если с локальной сети cloud.nstu.ru
-is_windows = False
+url = 'http://url'
+is_windows = True
+
+def delete_file(file):
+	if is_windows:
+		run_bash_command("del {}".format(file))
+	else:
+		run_bash_command("rm {}".format(file))
 
 def run_bash_command(command):
 	subprocess.call(command, shell=True)
@@ -19,6 +24,7 @@ def reload_files():
 	is_finished = False
 	while not is_finished:
 		try:
+			print("Start receiving files for rendering")
 			response = urlopen(url + "/files").read().decode('utf8')
 			data = json.loads(response)
 			files = data["files"]
@@ -33,49 +39,55 @@ def reload_files():
 			time.sleep(10)
 			is_finished = False
 
-after_wait = True
-while True:
-	try:
-		if after_wait:
-			reload_files()
-			after_wait = False
+try:
+	after_wait = True
+	while True:
+		try:
+			if after_wait:
+				reload_files()
+				after_wait = False
 
-		response = urlopen(url).read().decode('utf8')
+			print("Start receiving settings for rendering")
+			response = urlopen(url).read().decode('utf8')
 
-		if response == "stop_rendering":
-			raise Exception("Rendering is DONE")
-	
-		data = json.loads(response)
-		files = data["files"]
-		for i in files:
-			file_content = base64.b64decode(files[i])
-			with open(i, 'wb') as f:
-				f.write(file_content)
+			if response == "stop_rendering":
+				raise Exception("Rendering is DONE")
+		
+			data = json.loads(response)
+			files = data["files"]
+			for i in files:
+				file_content = base64.b64decode(files[i])
+				with open(i, 'wb') as f:
+					f.write(file_content)
 
-		commands = []
-		if is_windows:
-			commands = data["windows_commands"]
-		else:
-			commands = data["linux_commands"]
+			commands = []
+			if is_windows:
+				commands = data["windows_commands"]
+			else:
+				commands = data["linux_commands"]
 
-		for command in commands:
-			run_bash_command(command)
+			print("Run rendering")
 
-		send_file = data["send_file"]
-		with open(send_file, 'rb') as f:
-			r = requests.post(url, files={send_file: f})
-			print(r.text)
+			for command in commands:
+				run_bash_command(command)
 
-		if is_windows:
-			run_bash_command("del {}".format(send_file))
-			run_bash_command("del settings.json")
-		else:
-			run_bash_command("rm {}".format(send_file))
-			run_bash_command("rm settings.json")
+			send_file = data["send_file"]
+			with open(send_file, 'rb') as f:
+				r = requests.post(url, files={send_file: f})
+				print(r.text)
 
-		print("Sended file!")
-	except Exception as e:
-		print(e)
-		print("Wait...")
-		time.sleep(10)
-		after_wait = True
+			delete_file(send_file)
+			delete_file("settings.json")
+
+			print("Sended file!")
+		except Exception as e:
+			print(e)
+			print("Wait...")
+			delete_file("scene.json")
+			delete_file("cam_positions.json")
+			time.sleep(10)
+			after_wait = True
+except KeyboardInterrupt:
+	print("Client stopped")
+	delete_file("scene.json")
+	delete_file("cam_positions.json")
