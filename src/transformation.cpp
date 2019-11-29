@@ -8,6 +8,9 @@ bool Transformation::intersect(const Ray& ray,
 							   Intersection& inter, 
 							   double tMin, 
 							   double tMax) const {
+	Intersection inter1;
+	Ray ray1;
+
 	ray1.pos = transform(ray.pos);
 	ray1.dir = transform(ray.pos + ray.dir) - ray1.pos;
 
@@ -29,16 +32,16 @@ ScatterType Transformation::scatter(const Ray& ray,
 									Color& clrAbsorbtion,
 									Ray& scattered,
 									double& diffusion) const {
-	//Ray ray1;
-	//Intersection inter1;
+	Ray ray1;
+	Intersection inter1;
 	Ray scattered1;
 
-	//ray1.pos = transform(ray.pos);
-	//ray1.dir = transform(ray.pos + ray.dir) - ray1.pos;
+	ray1.pos = transform(ray.pos);
+	ray1.dir = transform(ray.pos + ray.dir) - ray1.pos;
 
-	//inter1.t = inter.t;
-	//inter1.pos = transform(inter.pos);
-	//inter1.normal = transform(inter.pos + inter.normal) - inter1.pos;
+	inter1.t = inter.t;
+	inter1.pos = transform(inter.pos);
+	inter1.normal = transform(inter.pos + inter.normal) - inter1.pos;
 
 	ScatterType returned = m_obj->scatter(ray1, inter1, clrAbsorbtion, scattered1, diffusion);
 

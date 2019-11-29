@@ -33,8 +33,6 @@ namespace pt
 		
 	private:
 		Object_ptr m_obj;
-		mutable Ray ray1;
-		mutable Intersection inter1;
 	};
 
 	//-------------------------------------------------------------------------
